@@ -77,7 +77,8 @@
     const actions = p.type === 'external'
       ? `<a class="btn btn-brand btn-ext" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`
       : `<button class="btn btn-brand-outline btn-add" type="button"><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>
-         <button class="btn btn-brand btn-order" type="button"><i class="bi bi-lightning-charge-fill"></i> অর্ডার নাউ</button>`;
+         <button class="btn btn-brand btn-order" type="button"><i class="bi bi-lightning-charge-fill"></i> অর্ডার নাউ</button>
+         <a class="btn btn-soft btn-view" href="cart.html"><i class="bi bi-bag-check-fill"></i> ভিউ কার্ট</a>`;
     return `<div class="product-card" data-id="${p.id}" data-opt="${lo}">
       ${disc ? `<span class="pc-badge">-${disc}%</span>` : ''}
       <button class="wish ${store.get('hc_wish', []).includes(p.id) ? 'on' : ''}" type="button" aria-label="উইশলিস্ট"><i class="bi bi-heart-fill"></i></button>
@@ -88,7 +89,7 @@
         <div class="pc-rate">${HC.stars(p.rating)} <span class="text-muted">(${p.reviews})</span>${p.sold ? `<span class="pc-sold" title="টোটাল সোল্ড"><i class="bi bi-bag-check-fill"></i> ${HC.soldFmt(p.sold)} বিক্রি</span>` : ''}</div>
         ${opts}
         <div class="pc-price">${priceHtml(o, p)}</div>
-        <div class="pc-actions">${actions}</div>
+        <div class="pc-actions ${p.type !== 'external' && HC.inCart(p.id) ? 'three' : ''}">${actions}</div>
       </div></div>`;
   };
   HC.grid = (sel, list, cols) => {
@@ -294,7 +295,12 @@
     if (!$('body').is('[data-no-modal]')) $('body').append(orderModal());
     HC.renderMini(); HC.renderWish();
 
+    HC.syncCards = () => $('.product-card').each(function () {
+      const $a = $(this).find('.pc-actions');
+      $a.toggleClass('three', !$a.find('.btn-ext').length && HC.inCart($(this).data('id')));
+    });
     $(document).on('cartchange', function () {
+      HC.syncCards();
       HC.renderMini();
       $('[data-summary]').each(function () { HC.renderSummary(this); });
       $('[data-cart-page]').each(function () { if (window.renderCartPage) window.renderCartPage(); });
