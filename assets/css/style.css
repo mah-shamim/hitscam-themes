@@ -125,6 +125,12 @@ img{max-width:100%}
 .pc-actions{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.3rem}
 .pc-actions .btn{font-size:.82rem;padding:.42rem .3rem}
 .pc-actions .btn-ext{grid-column:1/-1}
+/* কার্টে যোগ হলে "ভিউ কার্ট" খোলে — তিনটি বাটন পাশাপাশি */
+.pc-actions .btn-view{display:none}
+.pc-actions.three{grid-template-columns:repeat(3,minmax(0,1fr));gap:.3rem}
+.pc-actions.three .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;font-size:.7rem;line-height:1.15;padding:.4rem .15rem;white-space:normal;text-align:center}
+.pc-actions.three .btn i{font-size:1rem}
+.pc-actions.three .btn-view{display:flex}
 
 /* Qty */
 .qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
