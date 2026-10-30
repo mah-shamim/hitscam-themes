@@ -211,12 +211,33 @@ img{max-width:100%}
 .tl-dot{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);background:#f1f5f9;font-size:1.3rem;flex:none;color:var(--muted)}
 .timeline li.done .tl-dot{border-color:var(--green);background:#e8f8ee;color:var(--green)}
 .timeline li.current .tl-dot{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 0 0 6px rgba(224,49,49,.15)}
+.timeline li.done:before{background:var(--green)}
+.tl-dot{position:relative;z-index:1}
 .timeline li:not(.done):not(.current) h6,.timeline li:not(.done):not(.current) p{opacity:.55}
 .timeline h6{font-weight:700;margin:.2rem 0 0}.timeline p{margin:0;color:var(--muted);font-size:.9rem}
 .status-pill{background:var(--brand);color:#fff;border-radius:50px;padding:.15rem .8rem;font-size:.82rem;font-weight:600}
 
 .sms-bubble{background:#e8f0fe;border-radius:18px 18px 18px 4px;padding:.7rem .95rem;max-width:560px;margin-bottom:.5rem;font-size:.93rem;line-height:1.6}
 .sms-meta{font-size:.72rem;color:var(--muted);margin-top:.25rem}
+/* অর্ডার ট্র্যাক পেজ */
+.track-wrap{max-width:1000px}
+.track-item{display:flex;align-items:center;gap:.8rem;padding:.8rem;margin-bottom:.5rem;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.track-item img{width:60px;height:60px;border-radius:10px;object-fit:cover;flex:none;background:#fff}
+.track-item .ti-name{flex:1;min-width:0;word-break:break-word}
+.track-item .ti-price{flex:none;white-space:nowrap}
+.or-stat{overflow:hidden}.or-stat b{display:block;word-break:break-word}
+/* টাইমলাইন: ডেস্কটপে বাম→ডান, মোবাইলে ওপর→নিচে (আগের মতোই) */
+@media(min-width:768px){
+  .timeline-h{display:flex}
+  .timeline-h li{flex:1 1 0;flex-direction:column;align-items:center;text-align:center;padding:0 .4rem;min-width:0}
+  .timeline-h li:before{left:50%;top:25px;bottom:auto;width:100%;height:2px}
+  .timeline-h li>div:last-child{margin-top:.2rem}
+}
+@media(max-width:575.98px){
+  .track-wrap .panel{padding:1rem}
+  .track-item{flex-wrap:wrap}
+  .track-item .ti-price{margin-left:auto}
+}
 /* Footer */
 .site-footer{background:var(--ink);color:#cbd5e1;padding-top:3rem;margin-top:3rem}
 .site-footer h6{color:#fff;font-weight:700;margin-bottom:1rem}
