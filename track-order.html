@@ -8,24 +8,48 @@
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
+<body data-no-modal>
 <div id="site-header"></div>
-<main class="container" style="max-width:760px">
+<main class="container track-wrap">
   <div class="breadcrumb-bar"><a href="index.html">Home</a> / অর্ডার ট্র্যাক</div>
   <h1 class="page-title mb-2">অর্ডার ট্র্যাক করুন</h1>
   <p class="text-muted">অর্ডার নম্বর ও ফোন নাম্বার দিয়ে আপনার অর্ডারের বর্তমান অবস্থা জানুন।</p>
 
   <form class="panel mb-4" id="trackForm" novalidate>
     <div class="row g-3">
-      <div class="col-md-6"><label class="form-label">অর্ডার নম্বর *</label><input class="form-control" name="id" placeholder="যেমন: 538" required></div>
-      <div class="col-md-6"><label class="form-label">ফোন নাম্বার *</label><input class="form-control" name="phone" type="tel" inputmode="tel" placeholder="01XXXXXXXXX" required></div>
-      <div class="col-12"><button class="btn btn-brand btn-lg w-100"><i class="bi bi-search"></i> ট্র্যাক করুন</button></div></div>
+      <div class="col-12 col-md-5"><label class="form-label">অর্ডার নম্বর *</label><input class="form-control form-control-lg" name="orderId" inputmode="numeric" placeholder="যেমন: 538" required><div class="invalid-feedback">অর্ডার নম্বর লিখুন</div></div>
+      <div class="col-12 col-md-5"><label class="form-label">ফোন নাম্বার *</label><input class="form-control form-control-lg" name="phone" type="tel" inputmode="tel" placeholder="01XXXXXXXXX" required><div class="invalid-feedback">সঠিক ফোন নাম্বার দিন</div></div>
+      <div class="col-12 col-md-2 d-flex align-items-end"><button class="btn btn-brand btn-lg w-100"><i class="bi bi-search"></i> ট্র্যাক</button></div>
+    </div>
   </form>
 
-  <div class="panel mb-5" id="trackResult" style="display:none">
-    <h5 class="fw-bold">অর্ডার <span id="tId"></span></h5>
-    <p>বর্তমান স্ট্যাটাস: <span class="status-pill" id="tStatus"></span></p>
-    <ul class="timeline mt-3" id="tLine"></ul>
+  <div id="trackResult" style="display:none">
+    <div class="alert alert-warning small" id="demoNote" style="display:none">ডেমো: এই অর্ডার নম্বরটি আপনার সংরক্ষিত কোনো অর্ডারের সঙ্গে মেলেনি, তাই নমুনা তথ্য দেখানো হচ্ছে। WooCommerce এ আসল অর্ডার ডাটা বসবে।</div>
+
+    <!-- অর্ডার নং, তারিখ, মোট, পেমেন্ট -->
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-md-3"><div class="or-stat"><small>অর্ডার নং</small><b id="tId"></b></div></div>
+      <div class="col-6 col-md-3"><div class="or-stat"><small>তারিখ</small><b id="tDate"></b></div></div>
+      <div class="col-6 col-md-3"><div class="or-stat"><small>মোট</small><b id="tTotal"></b></div></div>
+      <div class="col-6 col-md-3"><div class="or-stat"><small>পেমেন্ট</small><b id="tPay"></b></div></div>
+    </div>
+
+    <!-- অর্ডার ট্র্যাকিং: ডেস্কটপে বাম থেকে ডানে, মোবাইলে ওপর থেকে নিচে -->
+    <div class="panel mb-3">
+      <h5 class="fw-bold">📍 অর্ডার ট্র্যাকিং</h5>
+      <p class="mb-3">বর্তমান স্ট্যাটাস: <span class="status-pill" id="tStatus"></span></p>
+      <ul class="timeline timeline-h mt-3 mb-0" id="tLine"></ul>
+    </div>
+
+    <!-- আপনার প্রোডাক্ট -->
+    <div class="panel mb-5">
+      <h5 class="fw-bold mb-3">🛍️ আপনার প্রোডাক্ট (<span id="tCount"></span>)</h5>
+      <div id="tItems"></div>
+      <hr style="border-style:dashed">
+      <div class="totals-row"><span>Subtotal:</span><span id="tSub"></span></div>
+      <div class="totals-row"><span>Shipping:</span><span id="tShip"></span></div>
+      <div class="totals-row total"><span>Total:</span><span id="tTotal2" class="text-brand"></span></div>
+    </div>
   </div>
 </main>
 <div id="site-footer"></div>
@@ -36,15 +60,41 @@
 <script src="assets/js/app.js"></script>
 <script>
 $(function () {
+  const B = HC.BDT, PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
+  const norm = x => String(x || '').replace(/[\s-]/g, '').replace(/^\+?88/, '');
   const steps = [['📝', 'অর্ডার গ্রহণ', 'আপনার অর্ডার আমরা পেয়েছি'], ['📞', 'কনফার্মেশন কল', 'আমরা ফোনে কনফার্ম করব'], ['📦', 'প্যাকেজিং', 'প্রোডাক্ট প্যাক করা হবে'], ['🚚', 'কুরিয়ারে পাঠানো', 'আপনার ঠিকানায় পৌঁছাবে'], ['✅', 'ডেলিভারি সম্পন্ন', 'উপভোগ করুন!']];
+
+  function demoOrder(id) {
+    const p = HC.D.products[0], o = HC.minPrice(p);
+    return { id, date: new Date().toISOString(), pay: 'ক্যাশ অন ডেলিভারি', items: [{ name: p.name, img: p.img, sale: o.sale, regular: o.regular, qty: 1, label: '' }], totals: { sub: o.sale, disc: 0, ship: 70, total: o.sale + 70 } };
+  }
+
+  function render(o, isDemo) {
+    const t = o.totals, cur = o.reconfirmed ? 2 : 1;
+    $('#demoNote').toggle(!!isDemo);
+    $('#tId').text('#' + o.id);
+    $('#tDate').text(new Date(o.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
+    $('#tTotal, #tTotal2').text(B(t.total)); $('#tPay').text(o.pay);
+    $('#tStatus').text(o.reconfirmed ? 'Confirmed' : 'Processing');
+    $('#tLine').html(steps.map((s, i) => `<li class="${i < cur ? 'done' : i === cur ? 'current' : ''}"><div class="tl-dot">${i < cur && i > 0 ? '<i class="bi bi-check-lg"></i>' : s[0]}</div><div><h6>${s[1]}</h6><p>${s[2]}</p></div></li>`).join(''));
+    $('#tCount').text(o.items.length);
+    $('#tItems').html(o.items.map(i => `<div class="track-item"><img src="${i.img}" alt=""><div class="ti-name"><div class="fw-semibold">${i.name}${i.label ? ' (' + i.label + ')' : ''}</div><small class="text-muted">পরিমাণ: ${i.qty}</small></div><b class="ti-price">${B(i.sale * i.qty)}</b></div>`).join(''));
+    $('#tSub').text(B(t.sub)); $('#tShip').text(t.ship ? B(t.ship) : 'Free shipping');
+    $('#trackResult').slideDown(200);
+    setTimeout(() => $('#trackResult')[0] && $('#trackResult')[0].scrollIntoView && $('#trackResult')[0].scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
+  }
+
   $('#trackForm').on('submit', function (e) {
-    e.preventDefault(); const id = $.trim(this.id.value).replace('#', ''), ph = $.trim(this.phone.value);
-    if (!id || !ph) { HC.toast('অর্ডার নম্বর ও ফোন দিন'); return; }
-    // ডেমো: ডিজাইন প্রিভিউর জন্য স্ট্যাটাস Confirmation call ধরা হয়েছে। WooCommerce এ আসল অর্ডার স্ট্যাটাস বসবে।
-    const cur = 1;
-    $('#tId').text('#' + id); $('#tStatus').text('Processing');
-    $('#tLine').html(steps.map((s, i) => `<li class="${i < cur ? 'done' : i === cur ? 'current' : ''}"><div class="tl-dot">${s[0]}</div><div><h6>${s[1]}</h6><p>${s[2]}</p></div></li>`).join(''));
-    $('#trackResult').slideDown();
+    e.preventDefault(); const f = this.elements;
+    const id = $.trim(f.orderId.value).replace('#', ''), ph = f.phone.value;
+    const okId = !!id, okPh = PHONE.test(norm(ph));
+    $(f.orderId).toggleClass('is-invalid', !okId); $(f.phone).toggleClass('is-invalid', !okPh);
+    if (!okId || !okPh) return;
+    const saved = HC.store.get('hc_last_order', null);
+    if (saved && String(saved.id) === id) {
+      if (norm(saved.phone) !== norm(ph)) { $(f.phone).addClass('is-invalid'); HC.toast('অর্ডার নম্বর ও ফোন নাম্বার মিলছে না'); return; }
+      render(saved, false);
+    } else render(demoOrder(id), true);
   });
 });
 </script>
