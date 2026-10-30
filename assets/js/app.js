@@ -54,19 +54,18 @@
 
   /* ---------- Product card ---------- */
   const priceHtml = (o, p) => {
-    const hasFrom = (p.type === 'variable' || p.type === 'grouped');
-    return (hasFrom ? '<span class="pc-from">থেকে </span>' : '') + (o.regular > o.sale ? '<del>' + BDT(o.regular) + '</del>' : '') + BDT(o.sale);
+    return (o.regular > o.sale ? '<del>' + BDT(o.regular) + '</del>' : '') + BDT(o.sale);
   };
   HC.card = p => {
     const lo = HC.lowest(p), o = HC.options(p)[lo];
     const disc = o.regular > o.sale ? Math.round((1 - o.sale / o.regular) * 100) : 0;
     let opts = '';
-    if (p.type === 'variable') {
-      opts = '<div class="pc-opts"><select class="form-select form-select-sm opt-select" aria-label="ভ্যারিয়েশন">' +
-        p.variations.map((v, i) => `<option value="${i}" ${i === lo ? 'selected' : ''}>${v.label} — ${BDT(v.sale)}</option>`).join('') + '</select></div>';
-    } else if (p.type === 'grouped') {
-      opts = '<div class="pc-group">' + p.children.map((v, i) =>
-        `<label><span><input type="radio" class="form-check-input opt-radio me-1" name="g${p.id}-${Math.random().toString(36).slice(2, 6)}" value="${i}" ${i === lo ? 'checked' : ''}>${v.label}</span><b>${BDT(v.sale)}</b></label>`).join('') + '</div>';
+    if (p.type === 'variable' || p.type === 'grouped') {
+      // একই কার্ডের সব রেডিওর name এক হতে হবে (না হলে একসাথে একটাই সিলেক্ট হয় না); প্রতিটি কার্ডের জন্য ইউনিক নাম
+      const gname = 'opt-' + p.id + '-' + Math.random().toString(36).slice(2, 8);
+      const list = p.type === 'variable' ? p.variations : p.children;
+      opts = '<div class="pc-group">' + list.map((v, i) =>
+        `<label><span><input type="radio" class="form-check-input opt-radio me-1" name="${gname}" value="${i}" ${i === lo ? 'checked' : ''}>${v.label}</span><b>${BDT(v.sale)}</b></label>`).join('') + '</div>';
     }
     const actions = p.type === 'external'
       ? `<a class="btn btn-brand btn-ext" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`
