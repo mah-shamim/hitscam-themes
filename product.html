@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>প্রোডাক্ট – HitsCam</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main class="container">
+  <div class="breadcrumb-bar"><a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <a id="bcCat" href="#"></a> / <span id="bcName"></span></div>
+
+  <div class="row g-4 mb-4">
+    <!-- ইমেজ: জুম কন্টেইনার + থাম্ব owl-carousel -->
+    <div class="col-lg-6">
+      <div class="zoom-box" id="zoomBox" role="img" aria-label="প্রোডাক্ট ইমেজ"></div>
+      <div class="owl-carousel owl-theme mt-3" id="thumbs"></div>
+    </div>
+
+    <!-- ইনফো -->
+    <div class="col-lg-6">
+      <span class="badge bg-dark mb-2" id="typeBadge"></span>
+      <h1 class="h3 fw-bold" id="pName"></h1>
+      <div class="mb-2" id="pRating"></div>
+      <div class="prod-price mb-2" id="pPrice"></div>
+      <p class="text-muted" id="pShort"></p>
+      <ul class="meta-list">
+        <li><b>SKU:</b> <span id="pSku"></span></li>
+        <li><b>ক্যাটাগরি:</b> <a id="pCat" class="text-brand" href="#"></a></li>
+      </ul>
+
+      <div id="pOptions" class="mb-3"></div>
+
+      <div id="pBuy" class="d-flex flex-wrap gap-2 align-items-center mb-3">
+        <div class="qty" id="pQtyWrap"><button type="button" class="qty-btn" id="qMinus">−</button><input type="number" id="pQty" value="1" min="1"><button type="button" class="qty-btn" id="qPlus">+</button></div>
+        <button class="btn btn-brand-outline btn-lg p-add" type="button"><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>
+        <button class="btn btn-brand btn-lg p-order" type="button"><i class="bi bi-lightning-charge-fill"></i> অর্ডার নাউ</button>
+      </div>
+
+      <!-- Upsells -->
+      <div class="addon-box" id="upsells"></div>
+
+      <!-- Trust -->
+      <div class="row g-2 trust-row mt-1">
+        <div class="col-6"><div class="t-item"><i class="bi bi-truck"></i><b>Fast delivery</b></div></div>
+        <div class="col-6"><div class="t-item"><i class="bi bi-shield-check"></i><b>Secure payment</b></div></div>
+        <div class="col-6"><div class="t-item"><i class="bi bi-arrow-repeat"></i><b>7-day return</b></div></div>
+        <div class="col-6"><div class="t-item"><i class="bi bi-headset"></i><b>Online Support 24/7</b></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ওভারভিউ ও ডিটেলস: ২ কলাম -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-6"><div class="tab-col"><h4>ওভারভিউ</h4><div id="overview"></div></div></div>
+    <div class="col-lg-6"><div class="tab-col"><h4>ডিটেলস</h4>
+      <table class="table table-sm mb-0"><tbody>
+        <tr><th style="width:40%">ভিডিও কোয়ালিটি</th><td>1080p / 2K</td></tr>
+        <tr><th>কানেক্টিভিটি</th><td>WiFi 2.4GHz / 4G SIM</td></tr>
+        <tr><th>পাওয়ার</th><td>12V DC / সোলার</td></tr>
+        <tr><th>স্টোরেজ</th><td>মেমোরি কার্ড (সর্বোচ্চ 256GB)</td></tr>
+        <tr><th>অ্যাপ</th><td>Android / iOS</td></tr>
+        <tr><th>ওয়ারেন্টি</th><td>১ বছর সার্ভিস ওয়ারেন্টি</td></tr>
+        <tr><th>অতিরিক্ত প্রয়োজন</th><td>ইন্টারনেট/সিম, মেমোরি কার্ড (আলাদা)</td></tr></tbody></table></div></div>
+  </div>
+
+  <!-- রিভিউ: ২ কলাম -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-6"><div class="tab-col"><h4>রিভিউ (<span id="rvCount">0</span>)</h4><div id="reviewList"></div></div></div>
+    <div class="col-lg-6"><div class="tab-col"><h4>Add a review</h4>
+      <form id="reviewForm">
+        <div class="mb-2"><label class="form-label d-block">আপনার রেটিং *</label>
+          <div class="rating-input"><input type="radio" name="rate" id="r5" value="5"><label for="r5">★</label><input type="radio" name="rate" id="r4" value="4"><label for="r4">★</label><input type="radio" name="rate" id="r3" value="3"><label for="r3">★</label><input type="radio" name="rate" id="r2" value="2"><label for="r2">★</label><input type="radio" name="rate" id="r1" value="1"><label for="r1">★</label></div></div>
+        <div class="mb-3"><label class="form-label">আপনার রিভিউ *</label><textarea class="form-control" name="text" rows="4" required></textarea></div>
+        <div class="row g-2 mb-3"><div class="col-md-6"><input class="form-control" name="name" placeholder="নাম *" required></div><div class="col-md-6"><input class="form-control" type="email" name="email" placeholder="ই-মেইল (ঐচ্ছিক)"></div></div>
+        <button class="btn btn-brand">রিভিউ জমা দিন</button></form></div></div>
+  </div>
+
+  <!-- ক্রস সেলস -->
+  <div class="section-head"><h2>আপনার পছন্দ হতে পারে</h2></div>
+  <div class="row g-3 mb-4" id="crossSells"></div>
+
+  <!-- Related -->
+  <div class="section-head"><h2>Related Products</h2></div>
+  <div class="row g-3" id="related"></div>
+</main>
+<div id="site-footer"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+$(function () {
+  const id = +(new URLSearchParams(location.search).get('id')) || 1;
+  const p = HC.find(id) || HC.D.products[0], B = HC.BDT, ph = HC.D.ph;
+  const cat = HC.cat(p.cat);
+  let sel = HC.lowest(p);                 // লোয়েস্ট প্রাইসের অপশন ডিফল্ট সিলেক্টেড
+  const grpQty = {}; if (p.type === 'grouped') p.children.forEach((c, i) => grpQty[i] = i === sel ? 1 : 0);
+
+  document.title = p.name + ' – HitsCam';
+  $('#bcCat, #pCat').text(cat.name).attr('href', 'category.html?cat=' + p.cat);
+  $('#bcName').text(p.name.slice(0, 40)); $('#pName').text(p.name);
+  $('#pRating').html(HC.stars(p.rating) + ' <span class="text-muted">(' + p.reviews + ' রিভিউ)</span>');
+  $('#pShort').text(p.desc); $('#pSku').text(p.sku); $('#overview').html('<p>' + p.desc + '</p><ul><li>আসল পণ্য, সিল করা প্যাকেজ</li><li>মোবাইল অ্যাপ থেকে লাইভ ভিউ</li><li>নাইট ভিশন ও মোশন ডিটেকশন</li><li>বাংলা সাপোর্ট</li></ul>');
+  $('#typeBadge').text({ simple: 'Simple Product', variable: 'Variable Product', grouped: 'Grouped Product', external: 'External / Affiliate' }[p.type]);
+
+  // গ্যালারি
+  const imgs = [p.img, ph(p.sku + ' 2', '0f172a'), ph(p.sku + ' 3'), ph(p.sku + ' 4', '0f172a'), ph(p.sku + ' 5')];
+  function show(i) { $('#zoomBox').css('background-image', 'url(' + imgs[i] + ')').css('background-size', 'cover').data('i', i); $('.thumb').removeClass('active').eq(i).addClass('active'); }
+  $('#thumbs').html(imgs.map((s, i) => `<div class="thumb" data-i="${i}"><img src="${s}" alt=""></div>`).join('')).owlCarousel({ margin: 10, dots: false, nav: true, navText: ['‹', '›'], responsive: { 0: { items: 4 }, 576: { items: 5 } } });
+  $(document).on('click', '.thumb', function () { show($(this).data('i')); });
+  show(0);
+  $('#zoomBox').on('mousemove', function (e) {
+    const r = this.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width * 100, y = (e.clientY - r.top) / r.height * 100;
+    $(this).addClass('zooming').css('background-position', x + '% ' + y + '%');
+  }).on('mouseleave', function () { $(this).removeClass('zooming').css('background-position', 'center'); });
+
+  // প্রাইস + অপশন
+  function renderPrice() {
+    let o = HC.options(p)[sel];
+    if (p.type === 'grouped') {
+      const tot = p.children.reduce((s, c, i) => s + c.sale * grpQty[i], 0);
+      $('#pPrice').html('<span class="fs-6 text-muted">থেকে </span>' + B(HC.minPrice(p).sale) + ' <span class="fs-6 text-muted ms-2">| সিলেক্টেড: ' + B(tot) + '</span>');
+    } else $('#pPrice').html((o.regular > o.sale ? '<del>' + B(o.regular) + '</del>' : '') + B(o.sale));
+  }
+  function renderOptions() {
+    if (p.type === 'variable') {
+      $('#pOptions').html('<div class="fw-semibold mb-2">ভ্যারিয়েশন বেছে নিন:</div>' + p.variations.map((v, i) => `<button type="button" class="var-btn ${i === sel ? 'active' : ''}" data-i="${i}">${v.label} <small class="text-muted">${B(v.sale)}</small></button>`).join(''));
+    } else if (p.type === 'grouped') {
+      $('#pOptions').html('<table class="table group-table align-middle"><tbody>' + p.children.map((c, i) => `<tr><td>${c.label}</td><td>${c.regular > c.sale ? '<del class="text-muted small">' + B(c.regular) + '</del> ' : ''}<b class="text-brand">${B(c.sale)}</b></td>
+        <td style="width:120px"><div class="qty"><button type="button" class="qty-btn g-d" data-i="${i}" data-d="-1">−</button><span id="gq${i}">${grpQty[i]}</span><button type="button" class="qty-btn g-d" data-i="${i}" data-d="1">+</button></div></td></tr>`).join('') + '</tbody></table>');
+      $('#pQtyWrap').hide();
+    } else if (p.type === 'external') {
+      $('#pQtyWrap, .p-add, .p-order').hide();
+      $('#pBuy').append(`<a class="btn btn-brand btn-lg" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`);
+      $('#upsells').hide();
+    }
+  }
+  $(document).on('click', '.var-btn', function () { sel = +$(this).data('i'); renderOptions(); renderPrice(); });
+  $(document).on('click', '.g-d', function () { const i = +$(this).data('i'); grpQty[i] = Math.max(0, grpQty[i] + (+$(this).data('d'))); $('#gq' + i).text(grpQty[i]); renderPrice(); });
+  $('#qMinus').on('click', () => $('#pQty').val(Math.max(1, +$('#pQty').val() - 1)));
+  $('#qPlus').on('click', () => $('#pQty').val(+$('#pQty').val() + 1));
+  renderOptions(); renderPrice();
+
+  // Upsells (Frequently bought together)
+  $('#upsells').html('<h6><i class="bi bi-stars text-brand"></i> Frequently bought together</h6>' + HC.D.addons.map(a => { const x = HC.find(a.id); return `<label class="addon-item"><input type="checkbox" class="form-check-input up-chk" data-id="${x.id}"><span class="grow">${x.name}<small>${a.note}</small></span><b>${B(x.sale)}</b></label>`; }).join(''));
+
+  function addMain() {
+    if (p.type === 'grouped') {
+      let any = false; p.children.forEach((c, i) => { if (grpQty[i] > 0) { HC.add(p.id, i, grpQty[i]); any = true; } });
+      if (!any) { HC.toast('অন্তত একটি আইটেম বেছে নিন'); return false; }
+    } else HC.add(p.id, sel, Math.max(1, +$('#pQty').val() || 1));
+    $('.up-chk:checked').each(function () { HC.add(+$(this).data('id'), 0, 1); });
+    return true;
+  }
+  $('.p-add').on('click', () => { if (addMain()) HC.toast('কার্টে যোগ হয়েছে ✓'); });
+  $('.p-order').on('click', () => { if (addMain()) HC.openOrder(); });
+
+  // রিভিউ
+  const reviews = JSON.parse(localStorage.getItem('hc_rv_' + p.id) || 'null') || [
+    { n: 'রাকিব হাসান', r: 5, t: 'দারুণ প্রোডাক্ট! কোয়ালিটি আশানুরূপ।', d: '২৮ অক্টোবর, ২০২৬' },
+    { n: 'সুমাইয়া আক্তার', r: 4, t: 'ডেলিভারি দ্রুত ছিল। ইন্সটলেশন সহজ।', d: '২২ অক্টোবর, ২০২৬' }];
+  function renderReviews() { $('#rvCount').text(reviews.length); $('#reviewList').html(reviews.map(r => `<div class="review-item"><div class="d-flex justify-content-between"><b>${r.n}</b><small class="text-muted">${r.d}</small></div>${HC.stars(r.r)}<p class="mb-0 mt-1">${r.t}</p></div>`).join('')); }
+  renderReviews();
+  $('#reviewForm').on('submit', function (e) {
+    e.preventDefault(); const f = this; const rate = +($(f).find('[name=rate]:checked').val() || 0);
+    if (!rate) { HC.toast('রেটিং দিন'); return; }
+    reviews.unshift({ n: f.name.value, r: rate, t: f.text.value, d: 'এইমাত্র' });
+    try { localStorage.setItem('hc_rv_' + p.id, JSON.stringify(reviews)); } catch (x) {}
+    renderReviews(); f.reset(); HC.toast('ধন্যবাদ! রিভিউ যোগ হয়েছে');
+  });
+
+  // ক্রস সেলস + রিলেটেড
+  const others = HC.D.products.filter(x => x.id !== p.id);
+  $('#crossSells').html(others.filter(x => x.cat !== p.cat).slice(0, 4).map(x => `<div class="col-6 col-md-3"><a class="top-sell flex-column text-center h-100" href="product.html?id=${x.id}"><img src="${x.img}" alt=""><div class="small fw-semibold">${x.name.slice(0, 38)}</div><b class="text-brand">${B(HC.minPrice(x).sale)}</b></a></div>`).join(''));
+  const rel = others.filter(x => x.cat === p.cat).concat(others.filter(x => x.cat !== p.cat)).slice(0, 4);
+  HC.grid('#related', rel);
+});
+</script>
+</body>
+</html>
