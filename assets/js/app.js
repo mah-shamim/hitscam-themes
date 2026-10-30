@@ -203,26 +203,33 @@
   };
 
   /* ---------- Layout injection ---------- */
-  const NAV = [['index.html', 'হোম'], ['shop.html', 'সব প্রোডাক্ট'], ['category.html?cat=security', 'ক্যাটাগরি'], ['track-order.html', 'অর্ডার ট্র্যাক'], ['contact.html', 'যোগাযোগ'], ['faq.html', 'FAQ']];
+  const NAV = [['index.html', 'হোম'], ['shop.html', 'সব প্রোডাক্ট', true], ['track-order.html', 'অর্ডার ট্র্যাক'], ['contact.html', 'যোগাযোগ'], ['faq.html', 'FAQ']];
   const catOpts = '<option value="">সকল ক্যাটাগরি</option>' + D.categories.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
   const header = () => {
     const here = location.pathname.split('/').pop() || 'index.html';
+    const navItem = n => n[2]
+      ? `<li class="nav-item has-sub d-flex align-items-center"><a class="nav-link text-nowrap pe-1 ${here === 'shop.html' || here === 'category.html' ? 'active' : ''}" href="${n[0]}">${n[1]}</a><button class="sub-toggle" type="button" aria-label="সাব মেনু" aria-expanded="false"><i class="bi bi-chevron-down"></i></button></li>`
+      : `<li class="nav-item"><a class="nav-link text-nowrap ${here === n[0] ? 'active' : ''}" href="${n[0]}">${n[1]}</a></li>`;
+    const sub = D.categories.map(c => `<a class="sub-item" href="category.html?cat=${c.slug}"><img src="${c.img}" alt=""><span>${c.name}<small>${c.count}টি পণ্য</small></span></a>`).join('') +
+      '<a class="sub-item sub-all" href="shop.html"><i class="bi bi-grid-fill"></i><span>সব প্রোডাক্ট দেখুন</span></a>';
     return `<div class="topbar"><div class="container d-flex justify-content-between flex-wrap gap-1">
         <span><i class="bi bi-truck"></i> ৳5,000+ অর্ডারে ফ্রি ডেলিভারি</span>
-        <span><a href="tel:+8801614747054"><i class="bi bi-telephone"></i> +880 1614-747054</a> &nbsp;|&nbsp; <a href="track-order.html">অর্ডার ট্র্যাক</a></span></div></div>
+        <span><a href="tel:+8801614747054"><i class="bi bi-telephone"></i> +880 1614-747054</a></span></div></div>
       <header class="site-header sticky-top"><div class="container">
         <div class="header-main d-flex align-items-center gap-3">
           <a class="brand" href="index.html"><span class="brand-mark"><i class="bi bi-camera-video-fill"></i></span><span>HITS<b>Cam</b></span></a>
           <form class="search-box flex-grow-1 d-none d-md-flex" action="shop.html"><select name="cat" aria-label="ক্যাটাগরি">${catOpts}</select>
             <input class="form-control" name="q" placeholder="আইপি ক্যামেরা, সিসি ক্যামেরা, মেমোরি কার্ড, মিনি ইউপিএস খুঁজুন..."><button aria-label="সার্চ"><i class="bi bi-search"></i></button></form>
           <div class="header-icons">
-            <button class="icon-btn" id="wishBtn" aria-label="উইশলিস্ট"><i class="bi bi-heart"></i></button>
-            <button class="icon-btn" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-label="কার্ট"><i class="bi bi-cart3"></i><span class="badge-count cart-count">0</span></button>
-            <a class="icon-btn" href="track-order.html" aria-label="অ্যাকাউন্ট"><i class="bi bi-person"></i></a>
+            <button class="icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniWish" aria-label="উইশলিস্ট"><i class="bi bi-heart"></i><span class="badge-count wish-count">0</span></button>
+            <button class="icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-label="কার্ট"><i class="bi bi-cart3"></i><span class="badge-count cart-count">0</span></button>
+            <a class="icon-btn" href="track-order.html" aria-label="অর্ডার ট্র্যাক" title="অর্ডার ট্র্যাক"><i class="bi bi-truck"></i></a>
+            <a class="icon-btn" href="login.html" aria-label="লগইন / অ্যাকাউন্ট" title="লগইন / অ্যাকাউন্ট"><i class="bi bi-person"></i></a>
           </div></div>
         <form class="search-box d-flex d-md-none mobile-search mb-2" action="shop.html"><input class="form-control" name="q" placeholder="প্রোডাক্ট খুঁজুন..."><button aria-label="সার্চ"><i class="bi bi-search"></i></button></form>
       </div>
-      <nav class="main-nav"><div class="container"><ul class="nav flex-nowrap overflow-auto">${NAV.map(n => `<li class="nav-item"><a class="nav-link text-nowrap ${here === n[0].split('?')[0] ? 'active' : ''}" href="${n[0]}">${n[1]}</a></li>`).join('')}</ul></div></nav></header>`;
+      <nav class="main-nav"><div class="container nav-wrap"><ul class="nav flex-nowrap overflow-auto">${NAV.map(navItem).join('')}</ul>
+        <div class="submenu" id="navSub">${sub}</div></div></nav></header>`;
   };
   const footer = () => `<footer class="site-footer"><div class="container"><div class="row g-4">
       <div class="col-lg-4"><div class="brand text-white mb-2"><span class="brand-mark"><i class="bi bi-camera-video-fill"></i></span><span>HITS<b>Cam</b></span></div>
@@ -245,6 +252,8 @@
   };
   const miniCart = () => `<div class="offcanvas offcanvas-end" tabindex="-1" id="miniCart"><div class="offcanvas-header border-bottom"><h5 class="offcanvas-title fw-bold">Your Cart (<span class="cart-count">0</span>)</h5><button class="btn-close" data-bs-dismiss="offcanvas" aria-label="বন্ধ"></button></div>
       <div class="offcanvas-body d-flex flex-column"><div id="miniCartBody" class="flex-grow-1"></div></div></div>`;
+  const miniWish = () => `<div class="offcanvas offcanvas-end" tabindex="-1" id="miniWish"><div class="offcanvas-header border-bottom"><h5 class="offcanvas-title fw-bold"><i class="bi bi-heart-fill text-brand"></i> Wishlist (<span class="wish-count">0</span>)</h5><button class="btn-close" data-bs-dismiss="offcanvas" aria-label="বন্ধ"></button></div>
+      <div class="offcanvas-body d-flex flex-column"><div id="miniWishBody" class="flex-grow-1"></div></div></div>`;
   const orderModal = () => `<div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-lg-down"><div class="modal-content">
       <div class="modal-header"><h5 class="modal-title fw-bold"><i class="bi bi-lightning-charge-fill text-brand"></i> ইন্সট্যান্ট অর্ডার</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="বন্ধ"></button></div>
       <div class="modal-body bg-light" id="orderRoot"></div></div></div></div>`;
@@ -256,6 +265,22 @@
       <div class="d-grid gap-2 mt-3"><a class="btn btn-brand" href="checkout.html">Proceed to Checkout</a><a class="btn btn-soft" href="cart.html">কার্ট দেখুন</a></div>` : HC.emptyCart);
     $('.cart-count').text(t.count);
   };
+  HC.wish = () => store.get('hc_wish', []);
+  HC.renderWish = () => {
+    const ids = HC.wish().filter(id => HC.find(id));
+    $('.wish-count').text(ids.length);
+    if (!ids.length) { $('#miniWishBody').html('<div class="text-center text-muted py-5"><i class="bi bi-heart fs-1"></i><p class="mt-2">আপনার উইশলিস্ট খালি</p><a href="shop.html" class="btn btn-brand">প্রোডাক্ট দেখুন</a></div>'); return; }
+    $('#miniWishBody').html(ids.map(id => {
+      const p = HC.find(id), o = HC.minPrice(p);
+      const act = p.type === 'external'
+        ? `<a class="btn btn-sm btn-brand" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`
+        : `<button class="btn btn-sm btn-brand wl-add" type="button" data-id="${p.id}"><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>`;
+      return `<div class="cart-line"><a href="product.html?id=${p.id}"><img src="${p.img}" alt=""></a>
+        <div class="flex-grow-1"><a class="nm d-block" href="product.html?id=${p.id}">${p.name}</a>
+          <div class="pr">${o.regular > o.sale ? '<del>' + BDT(o.regular) + '</del>' : ''}<b>${BDT(o.sale)}</b></div>
+          <div class="mt-1 d-flex align-items-center gap-2">${act}<button class="rm-btn wl-rm" type="button" data-id="${p.id}" aria-label="মুছুন"><i class="bi bi-trash3"></i></button></div></div></div>`;
+    }).join('') + `<div class="d-grid gap-2 mt-3"><button class="btn btn-brand wl-add-all" type="button">সব কার্টে যোগ করুন</button><a class="btn btn-soft" href="shop.html">কেনাকাটা চালিয়ে যান</a></div>`);
+  };
   HC.openOrder = () => {
     HC.renderCheckout('#orderRoot');
     bootstrap.Modal.getOrCreateInstance(document.getElementById('orderModal')).show();
@@ -265,9 +290,9 @@
     $('body').prepend('<div class="toast-wrap"></div>');
     $('#site-header').replaceWith(header());
     $('#site-footer').replaceWith(footer());
-    $('body').append(miniCart()).append(mobileDock());
+    $('body').append(miniCart()).append(miniWish()).append(mobileDock());
     if (!$('body').is('[data-no-modal]')) $('body').append(orderModal());
-    HC.renderMini();
+    HC.renderMini(); HC.renderWish();
 
     $(document).on('cartchange', function () {
       HC.renderMini();
@@ -289,9 +314,26 @@
       if ($('#orderModal').length) HC.openOrder(); else location.href = 'checkout.html';
     });
     $(document).on('click', '.wish', function () {
-      const id = +$(this).closest('.product-card').data('id'); let w = store.get('hc_wish', []);
-      w = w.includes(id) ? w.filter(x => x !== id) : w.concat(id); store.set('hc_wish', w); $(this).toggleClass('on'); HC.toast(w.includes(id) ? 'উইশলিস্টে যোগ হয়েছে' : 'উইশলিস্ট থেকে সরানো হয়েছে');
+      const id = +$(this).closest('.product-card').data('id'); let w = HC.wish(); const had = w.includes(id);
+      w = had ? w.filter(x => x !== id) : w.concat(id); store.set('hc_wish', w); $(document).trigger('wishchange');
+      HC.toast(had ? 'উইশলিস্ট থেকে সরানো হয়েছে' : 'উইশলিস্টে যোগ হয়েছে ♥');
     });
+    $(document).on('wishchange', function () {
+      HC.renderWish(); const w = HC.wish();
+      $('.product-card').each(function () { $(this).find('.wish').toggleClass('on', w.includes(+$(this).data('id'))); });
+    });
+    $(document).on('click', '.wl-add', function () { const p = HC.find($(this).data('id')); HC.add(p.id, HC.lowest(p), 1); HC.toast('কার্টে যোগ হয়েছে ✓'); });
+    $(document).on('click', '.wl-rm', function () { store.set('hc_wish', HC.wish().filter(x => x !== +$(this).data('id'))); $(document).trigger('wishchange'); });
+    $(document).on('click', '.wl-add-all', function () { HC.wish().map(HC.find).filter(p => p && p.type !== 'external').forEach(p => HC.add(p.id, HC.lowest(p), 1)); HC.toast('উইশলিস্টের সব পণ্য কার্টে যোগ হয়েছে ✓'); });
+
+    // ---- "সব প্রোডাক্ট" সাব মেনু: ডেস্কটপে হোভার, মোবাইলে ট্যাপ
+    const subSet = open => { $('#navSub').toggleClass('open', open); $('.sub-toggle').attr('aria-expanded', open).toggleClass('on', open); };
+    $(document).on('click', '.sub-toggle', function (e) { e.stopPropagation(); subSet(!$('#navSub').hasClass('open')); });
+    $(document).on('click', function (e) { if (!$(e.target).closest('.nav-wrap').length) subSet(false); });
+    $(document).on('keydown', function (e) { if (e.key === 'Escape') subSet(false); });
+    if (window.matchMedia && matchMedia('(hover:hover)').matches) {
+      $(document).on('mouseenter', '.has-sub', () => subSet(true)).on('mouseleave', '.nav-wrap', () => subSet(false));
+    }
 
     // ---- cart interactions (mini cart, modal, cart page) ----
     $(document).on('click', '.qty-btn', function () {
@@ -320,6 +362,5 @@
       $p.append(/^image\//.test(fl.type) ? $('<img class="rounded-3 border" style="max-height:120px">').attr('src', URL.createObjectURL(fl)) : $('<span class="badge bg-secondary"></span>').text(fl.name));
     });
     $(document).on('submit', '#orderForm', function (e) { e.preventDefault(); HC.placeOrder(this); });
-    $(document).on('click', '#wishBtn', function () { HC.toast('উইশলিস্ট: ' + store.get('hc_wish', []).length + 'টি পণ্য'); });
   });
 })(jQuery);
