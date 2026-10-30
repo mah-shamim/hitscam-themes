@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>সোশ্যাল মিডিয়া অ্যাপ কম্পেটিবিলিটি – HitsCam</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main class="container content-page" style="max-width:960px">
+  <div class="breadcrumb-bar"><a href="index.html">Home</a> / সোশ্যাল মিডিয়া অ্যাপ কম্পেটিবিলিটি</div>
+  <h1 class="page-title mb-3">সোশ্যাল মিডিয়া অ্যাপ, ব্রাউজার ও ডিভাইস কম্পেটিবিলিটি</h1>
+  <p>ফেসবুক/ইনস্টাগ্রাম অ্যাড থেকে আসা ভিজিটররা সাধারণত অ্যাপের <b>ইন-অ্যাপ ব্রাউজারে</b> সাইট খোলেন। এগুলোর আচরণ সাধারণ ব্রাউজার থেকে আলাদা, তাই আলাদা করে টেস্ট করা জরুরি।</p>
+
+  <div id="env"></div>
+
+  <h3>ইন-অ্যাপ ব্রাউজার চেকলিস্ট</h3>
+  <div class="table-responsive"><table class="table table-bordered compat-table bg-white">
+    <thead class="table-light"><tr><th>অ্যাপ</th><th>ইঞ্জিন</th><th>টেস্ট করার বিষয়</th></tr></thead>
+    <tbody>
+      <tr><td><i class="bi bi-facebook text-primary"></i> Facebook</td><td>Android WebView / WKWebView</td><td>অর্ডার ফর্ম সাবমিট, <code>tel:</code> কল বাটন, localStorage কার্ট</td></tr>
+      <tr><td><i class="bi bi-instagram text-danger"></i> Instagram</td><td>WebView</td><td>পপআপ মোডাল স্ক্রল, কীবোর্ড ওপেনে ফর্ম ফিল্ড ঢেকে যাওয়া</td></tr>
+      <tr><td><i class="bi bi-messenger text-primary"></i> Messenger</td><td>WebView</td><td>বাহ্যিক লিংক (<code>target=_blank</code>) ও অ্যাফিলিয়েট বাটন</td></tr>
+      <tr><td><i class="bi bi-whatsapp text-success"></i> WhatsApp</td><td>Chrome Custom Tabs / SFSafariViewController</td><td>WhatsApp চ্যাট বাটন (<code>wa.me</code>), শেয়ার লিংক</td></tr>
+      <tr><td><i class="bi bi-tiktok"></i> TikTok</td><td>WebView</td><td>ইমেজ লোডিং, ফিক্সড হেডার</td></tr>
+      <tr><td><i class="bi bi-telegram text-info"></i> Telegram</td><td>WebView</td><td>লিংক প্রিভিউ, ফর্ম অটোফিল</td></tr>
+      <tr><td><i class="bi bi-youtube text-danger"></i> YouTube</td><td>Chrome Custom Tabs</td><td>ভিডিও বর্ণনার লিংক থেকে ল্যান্ডিং</td></tr></tbody></table></div>
+
+  <h3>এই টেমপ্লেটে যা করা হয়েছে</h3>
+  <ul>
+    <li><code>localStorage</code> ব্লক থাকলে কার্ট মেমোরিতে চলে (পেজ রিফ্রেশে কার্ট হারাতে পারে)।</li>
+    <li>ইন-অ্যাপ ব্রাউজার ডিটেক্ট হলে "Open in Browser" পরামর্শ দেখানোর ব্যবস্থা (উপরের বক্স দেখুন)।</li>
+    <li>অর্ডার ফর্মে ফোন ফিল্ডে <code>inputmode="tel"</code>, ইমেইলে <code>type="email"</code> — মোবাইল কীবোর্ড ঠিকমতো আসে।</li>
+    <li>অ্যাফিলিয়েট লিংকে <code>rel="sponsored noopener"</code>।</li>
+    <li>মোডাল মোবাইলে ফুলস্ক্রিন (<code>modal-fullscreen-lg-down</code>) যাতে কীবোর্ডে কাটা না পড়ে।</li>
+  </ul>
+  <div class="alert alert-info">এটি একটি স্ট্যাটিক টেমপ্লেট। লাইভ করার আগে বাস্তব ফোনে Facebook, Instagram, Messenger ও WhatsApp থেকে লিংক খুলে সম্পূর্ণ অর্ডার ফ্লো টেস্ট করুন।</div>
+</main>
+<div id="site-footer"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/compat.js"></script>
+<script>$(function () { renderEnv('#env'); });</script>
+</body>
+</html>

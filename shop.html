@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>শপ – HitsCam</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main class="container">
+  <div class="breadcrumb-bar"><a href="index.html">Home</a> / Shop</div>
+
+  <div class="page-banner mb-4"><h1 class="page-title mb-1">সব প্রোডাক্ট</h1><p class="mb-0 opacity-75">সিসিটিভি, আইপি ক্যামেরা, মেমোরি কার্ড, মিনি ইউপিএস ও আরও অনেক কিছু।</p></div>
+
+  <!-- ক্যাটাগরি লিস্ট উইথ ইমেজ -->
+  <div class="owl-carousel owl-theme cat-owl mb-4" id="catList"></div>
+
+  <div class="row g-4">
+    <aside class="col-lg-3">
+      <button class="btn btn-soft w-100 d-lg-none mb-2" data-bs-toggle="collapse" data-bs-target="#filters"><i class="bi bi-funnel"></i> ফিল্টার</button>
+      <div id="filters" class="collapse d-lg-block"></div>
+    </aside>
+    <section class="col-lg-9">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <span class="text-muted" id="resultCount"></span>
+        <select id="sortBy" class="form-select form-select-sm w-auto"><option value="pop">জনপ্রিয়তা</option><option value="low">দাম: কম থেকে বেশি</option><option value="high">দাম: বেশি থেকে কম</option><option value="rating">রেটিং</option></select>
+      </div>
+      <div class="row g-3" id="productList"></div>
+    </section>
+  </div>
+</main>
+<div id="site-footer"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/shop.js"></script>
+<script>
+$(function () {
+  $('#catList').html(HC.D.categories.map(c => `<a class="cat-card" href="category.html?cat=${c.slug}"><img src="${c.img}" alt=""><span>${c.name}</span><small>${c.count}টি পণ্য</small></a>`).join(''));
+  $('#catList').owlCarousel({ margin: 12, dots: false, nav: false, responsive: { 0: { items: 3 }, 576: { items: 4 }, 992: { items: 6 }, 1200: { items: 8 } } });
+  initShopFilters();
+});
+</script>
+</body>
+</html>
