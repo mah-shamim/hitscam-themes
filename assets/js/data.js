@@ -82,5 +82,26 @@
     { id: 7, note: 'ক্যামেরা চালু রাখুন সবসময়' }
   ];
 
+  // ভ্যারিয়েশন/গ্রুপ আইটেম নেই এমন (Simple / External) কার্ডে দেখানোর Additional information (Bootstrap Icons)
+  // WooCommerce এ এগুলো ACF/মেটা ফিল্ড বা প্রোডাক্ট অ্যাট্রিবিউট থেকে আসবে। প্রোডাক্ট নিজের `info` দিলে সেটাই, নইলে ক্যাটাগরির ডিফল্ট।
+  const infoByCat = {
+    'ip-camera':   [['bi-camera-video', '1080p / 2K ভিডিও'], ['bi-wifi', 'WiFi / 4G সাপোর্ট'], ['bi-moon-stars', 'নাইট ভিশন'], ['bi-shield-check', '১ বছর ওয়ারেন্টি']],
+    'cc-camera':   [['bi-camera-video', 'HD ভিডিও'], ['bi-hdd-network', 'DVR/NVR সাপোর্ট'], ['bi-moon-stars', 'নাইট ভিশন'], ['bi-shield-check', 'ওয়ারেন্টি সহ']],
+    'security':    [['bi-phone', 'মোবাইল লাইভ ভিউ'], ['bi-bell', 'মোশন অ্যালার্ট'], ['bi-moon-stars', 'নাইট ভিশন'], ['bi-shield-check', 'ওয়ারেন্টি সহ']],
+    'memory-card': [['bi-sd-card', 'হাই-স্পিড Class 10'], ['bi-camera-video', 'ক্যামেরা রেডি'], ['bi-patch-check', 'আসল পণ্য'], ['bi-shield-check', 'ওয়ারেন্টি সহ']],
+    'mini-ups':    [['bi-battery-charging', '12V আউটপুট'], ['bi-lightning-charge', 'অটো ব্যাকআপ'], ['bi-router', 'রাউটার/ক্যামেরা সাপোর্ট'], ['bi-shield-check', 'ওয়ারেন্টি সহ']],
+    'smartphone':  [['bi-phone', 'অ্যান্ড্রয়েড / iOS'], ['bi-battery-charging', 'দীর্ঘ ব্যাটারি'], ['bi-patch-check', 'আসল পণ্য'], ['bi-shield-check', 'ওয়ারেন্টি সহ']],
+    'laptop':      [['bi-cpu', 'দ্রুত প্রসেসর'], ['bi-memory', 'RAM / SSD'], ['bi-battery-charging', 'ব্যাকআপ ব্যাটারি'], ['bi-shield-check', 'ওয়ারেন্টি সহ']],
+    'accessories': [['bi-patch-check', 'আসল পণ্য'], ['bi-tools', 'সহজ ইন্সটলেশন'], ['bi-box-seam', 'সিল প্যাকেজ'], ['bi-shield-check', 'ওয়ারেন্টি সহ']]
+  };
+  // নির্দিষ্ট প্রোডাক্টের নিজস্ব তথ্য (ক্যাটাগরির ডিফল্ট ওভাররাইড করে)
+  const infoById = {
+    1: [['bi-camera-video', '4MP Full HD'], ['bi-sim', '4G সিম সাপোর্ট'], ['bi-arrows-move', '৩৬০° PTZ ঘোরে'], ['bi-moon-stars', 'কালার নাইট ভিশন']],
+    5: [['bi-sd-card', '64GB'], ['bi-speedometer2', 'Class 10 স্পিড'], ['bi-camera-video', 'ক্যামেরা রেডি'], ['bi-patch-check', 'আসল পণ্য']],
+    6: [['bi-house-door', 'ওয়াল / সিলিং'], ['bi-arrows-angle-expand', '৩৬০° অ্যাডজাস্টেবল'], ['bi-tools', 'সহজ ইন্সটলেশন'], ['bi-cloud-rain', 'আউটডোর রেডি']],
+    7: [['bi-sun', '১০W সোলার'], ['bi-battery-charging', '5V/12V চার্জ'], ['bi-cloud-rain', 'ওয়াটারপ্রুফ'], ['bi-camera-video', 'ক্যামেরা সাপোর্ট']]
+  };
+  products.forEach(p => { p.info = p.info || infoById[p.id] || infoByCat[p.cat] || []; });
+
   window.HC_DATA = { categories, products, addons, ph };
 })();

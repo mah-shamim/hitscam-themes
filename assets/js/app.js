@@ -67,6 +67,10 @@
       opts = `<div class="pc-group" style="--n:${Math.min(list.length, 3)}">` + list.map((v, i) =>
         `<label><span><input type="radio" class="form-check-input opt-radio me-1" name="${gname}" value="${i}" ${i === lo ? 'checked' : ''}>${v.label}</span><b>${BDT(v.sale)}</b></label>`).join('') + '</div>';
     }
+    // ভ্যারিয়েশন/গ্রুপ না থাকলে ইম্পর্টেন্ট Additional information আইকনসহ
+    if (!opts && p.info && p.info.length) {
+      opts = '<ul class="pc-info">' + p.info.slice(0, 4).map(x => `<li><i class="bi ${x[0]}"></i><span>${x[1]}</span></li>`).join('') + '</ul>';
+    }
     const actions = p.type === 'external'
       ? `<a class="btn btn-brand btn-ext" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`
       : `<button class="btn btn-brand-outline btn-add" type="button"><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>

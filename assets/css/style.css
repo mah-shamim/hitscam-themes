@@ -90,6 +90,11 @@ img{max-width:100%}
 .pc-title{font-weight:600;font-size:.98rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
 .pc-title:hover{color:var(--brand)}
 .pc-opts .form-select{font-size:.85rem}
+/* Simple/External কার্ডের Additional information (২ কলাম, আইকনসহ) */
+.pc-info{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.3rem .4rem}
+.pc-info li{display:flex;align-items:center;gap:.35rem;font-size:.74rem;line-height:1.2;color:#334155;background:var(--bg);border-radius:8px;padding:.3rem .4rem;min-width:0}
+.pc-info i{color:var(--brand);font-size:.95rem;flex:none}
+.pc-info span{min-width:0;word-break:break-word}
 /* অপশন রেডিও: ১–৩টি = এক সারি (সমান কলাম), ৪–৬টি = ৩ কলামে দুই সারি */
 .pc-group{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:.35rem}
 .pc-group label{display:flex;flex-direction:column;justify-content:space-between;gap:.15rem;font-size:.74rem;line-height:1.25;border:1px solid var(--line);border-radius:10px;padding:.4rem .4rem;cursor:pointer;min-width:0;word-break:break-word}
