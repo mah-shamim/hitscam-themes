@@ -214,6 +214,15 @@ img{max-width:100%}
   body{padding-bottom:84px}
   .toast-wrap{bottom:92px}
 }
+/* মোবাইলে সোয়াইপ স্লাইডার (scroll-snap): trust-row, Featured categories, টপ সেলিং */
+@media(max-width:767.98px){
+  .m-slider{flex-wrap:nowrap!important;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:.4rem}
+  .m-slider::-webkit-scrollbar{display:none}
+  .m-slider>*{flex:0 0 auto!important;width:72%!important;scroll-snap-align:start}
+  .m-slider.s-sm>*{width:40%!important}
+  .m-slider .t-item{white-space:nowrap}
+}
+@media(max-width:575.98px){.pc-img{aspect-ratio:4/3}}
 @media(max-width:767px){
   .hero-slide{padding:1.6rem;min-height:300px}
   .section{padding:1.5rem 0}

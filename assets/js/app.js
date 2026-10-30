@@ -92,7 +92,7 @@
       </div></div>`;
   };
   HC.grid = (sel, list, cols) => {
-    const c = cols || 'col-6 col-md-4 col-lg-3';
+    const c = cols || 'col-12 col-sm-6 col-md-4 col-lg-3';
     $(sel).html(list.length ? list.map(p => `<div class="${c}">${HC.card(p)}</div>`).join('') : '<div class="col-12 text-center text-muted py-5">কোনো প্রোডাক্ট পাওয়া যায়নি।</div>');
   };
   HC.section = (sel, tag, n) => HC.grid(sel, D.products.filter(p => p.tags.includes(tag)).slice(0, n || 4));

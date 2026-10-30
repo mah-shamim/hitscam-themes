@@ -32,7 +32,7 @@
       const s = $('#sortBy').val();
       list.sort((a, b) => s === 'low' ? HC.minPrice(a).sale - HC.minPrice(b).sale : s === 'high' ? HC.minPrice(b).sale - HC.minPrice(a).sale : s === 'rating' ? b.rating - a.rating : b.reviews - a.reviews);
       $('#resultCount').text(list.length + 'টি পণ্য পাওয়া গেছে');
-      HC.grid('#productList', list, 'col-6 col-md-4');
+      HC.grid('#productList', list, 'col-12 col-sm-6 col-md-4');
     }
     $(document).on('change input', '#filters input, #filters select, #sortBy', apply);
     $('#fReset').on('click', function () { $('#filters input[type=checkbox]').prop('checked', false); $('#filters input[type=number], #fQ').val(''); $('#fRate').val(0); apply(); });
