@@ -101,6 +101,9 @@
     6: [['bi-house-door', 'ওয়াল / সিলিং'], ['bi-arrows-angle-expand', '৩৬০° অ্যাডজাস্টেবল'], ['bi-tools', 'সহজ ইন্সটলেশন'], ['bi-cloud-rain', 'আউটডোর রেডি']],
     7: [['bi-sun', '১০W সোলার'], ['bi-battery-charging', '5V/12V চার্জ'], ['bi-cloud-rain', 'ওয়াটারপ্রুফ'], ['bi-camera-video', 'ক্যামেরা সাপোর্ট']]
   };
+  // টোটাল সোল্ড (WooCommerce এ total_sales মেটা)
+  const soldById = { 1: 1240, 2: 2310, 3: 486, 4: 215, 5: 3680, 6: 940, 7: 512, 8: 1175, 9: 398, 10: 604, 11: 1890, 12: 143 };
+  products.forEach(p => { p.sold = p.sold != null ? p.sold : (soldById[p.id] || 0); });
   products.forEach(p => { p.info = p.info || infoById[p.id] || infoByCat[p.cat] || []; });
 
   window.HC_DATA = { categories, products, addons, ph };
