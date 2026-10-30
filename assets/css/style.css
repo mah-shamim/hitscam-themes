@@ -90,7 +90,11 @@ img{max-width:100%}
 .pc-title{font-weight:600;font-size:.98rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
 .pc-title:hover{color:var(--brand)}
 .pc-opts .form-select{font-size:.85rem}
-.pc-group label{display:flex;justify-content:space-between;gap:.4rem;font-size:.82rem;border:1px solid var(--line);border-radius:10px;padding:.3rem .55rem;margin-bottom:.3rem;cursor:pointer}
+/* অপশন রেডিও: ১–৩টি = এক সারি (সমান কলাম), ৪–৬টি = ৩ কলামে দুই সারি */
+.pc-group{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:.35rem}
+.pc-group label{display:flex;flex-direction:column;justify-content:space-between;gap:.15rem;font-size:.74rem;line-height:1.25;border:1px solid var(--line);border-radius:10px;padding:.4rem .4rem;cursor:pointer;min-width:0;word-break:break-word}
+.pc-group label b{color:var(--brand);font-size:.8rem}
+.pc-group .form-check-input{width:.85em;height:.85em;margin-top:.15em;float:none}
 .pc-group input:checked + span,.pc-group label:has(input:checked){border-color:var(--brand);background:var(--brand-soft)}
 .pc-price{margin-top:auto;font-weight:800;font-size:1.1rem;color:var(--brand)}
 .pc-price del{font-weight:400;color:var(--muted);font-size:.85rem;margin-right:.35rem}
