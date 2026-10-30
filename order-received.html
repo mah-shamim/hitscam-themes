@@ -30,14 +30,26 @@
   <!-- কনফার্মেশন কল -->
   <div class="call-alert mb-3">
     <i class="ph bi bi-telephone-fill"></i>
-    <div class="flex-grow-1"><b>কনফার্মেশন কলের অপেক্ষায়</b><br>আমাদের টিম<br><b>+8801614747054</b><br><span>নাম্বারে কল করে অর্ডার কনফার্ম করবে। দয়া করে ফোন কাছে রাখুন।</span></div>
+    <div class="flex-grow-1"><b id="alertTitle">কনফার্মেশন কলের অপেক্ষায়</b><br>আমাদের টিম<br><b>+8801614747054</b><br><span>নাম্বারে কল করে অর্ডার কনফার্ম করবে। দয়া করে ফোন কাছে রাখুন।</span></div>
     <a href="tel:+8801614747054" class="btn btn-amber">সাহায্য চাই</a>
+  </div>
+
+  <!-- রিকনফার্ম + SMS -->
+  <div class="panel mb-3" id="reconfirmPanel">
+    <h5 class="fw-bold">🔁 অর্ডার রিকনফার্ম</h5>
+    <p class="text-muted mb-3">অর্ডারের তথ্য ঠিক থাকলে রিকনফার্ম করুন। আপনার মোবাইল <b id="smsPhone" class="text-dark"></b> নাম্বারে নিচের SMS পাঠানো হয়েছে।</p>
+    <div class="sms-thread mb-3" id="smsThread" aria-live="polite"></div>
+    <div class="d-flex flex-wrap gap-2">
+      <button type="button" class="btn btn-brand btn-lg rounded-pill flex-fill" id="reconfirmBtn"><i class="bi bi-patch-check-fill"></i> অর্ডার রিকনফার্ম করুন</button>
+      <button type="button" class="btn btn-soft btn-lg rounded-pill flex-fill" id="resendSms"><i class="bi bi-chat-dots"></i> আবার SMS পাঠান</button>
+    </div>
+    <p class="small text-muted mt-2 mb-0">ডেমো: SMS এখানে প্রিভিউ আকারে দেখানো হচ্ছে। আসল SMS পাঠাতে WooCommerce এ একটি SMS গেটওয়ে যুক্ত করতে হবে।</p>
   </div>
 
   <!-- ট্র্যাকিং -->
   <div class="panel mb-3">
     <h5 class="fw-bold">📍 অর্ডার ট্র্যাকিং</h5>
-    <p>বর্তমান স্ট্যাটাস: <span class="status-pill">Processing</span></p>
+    <p>বর্তমান স্ট্যাটাস: <span class="status-pill" id="statusPill">Processing</span></p>
     <ul class="timeline mt-3">
       <li class="done"><div class="tl-dot">📝</div><div><h6>অর্ডার গ্রহণ</h6><p>আপনার অর্ডার আমরা পেয়েছি</p></div></li>
       <li class="current"><div class="tl-dot"><i class="bi bi-telephone-fill"></i></div><div><h6>কনফার্মেশন কল</h6><p>আমরা ফোনে কনফার্ম করব</p></div></li>
@@ -99,6 +111,30 @@ $(function () {
   $('#oShip').text(t.ship ? B(t.ship) : 'Free shipping');
   if (o.txn) { $('#oTxnRow').show(); $('#oTxn').text(o.txn); } if (o.slipName) { $('#oSlipRow').show(); $('#oSlip').text(o.slipName + ' ✓ আপলোড হয়েছে'); }
   $('#oAddr').text(o.address); $('#oPhone').html('<i class="bi bi-telephone"></i> ' + o.phone); if (o.email) $('#oEmail').html('<i class="bi bi-envelope"></i> ' + o.email);
+
+  // ---- রিকনফার্ম বাটন + মোবাইলে SMS (ডেমো প্রিভিউ) ----
+  const isReal = !!HC.store.get('hc_last_order', null);
+  const clock = () => new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const smsOrder = `HitsCam: প্রিয় ${o.name}, আপনার অর্ডার #${o.id} (মোট ${B(t.total)}) গ্রহণ করা হয়েছে। আমাদের প্রতিনিধি কল করবেন। তথ্য ঠিক থাকলে রিকনফার্ম করুন। সাপোর্ট: +8801614747054`;
+  const smsDone = `HitsCam: ধন্যবাদ ${o.name}! আপনার অর্ডার #${o.id} রিকনফার্ম হয়েছে। শীঘ্রই প্যাকেজিং শুরু হবে।`;
+  const bubble = txt => $('#smsThread').append($('<div class="sms-bubble"></div>').append($('<div></div>').text(txt), $('<div class="sms-meta"></div>').text('প্রাপক: ' + o.phone + ' · ' + clock())));
+  const markDone = () => {
+    $('#statusPill').text('Confirmed'); $('#alertTitle').text('অর্ডার রিকনফার্ম হয়েছে ✓');
+    $('.timeline li').eq(1).removeClass('current').addClass('done').find('.tl-dot').html('<i class="bi bi-check-lg"></i>');
+    $('.timeline li').eq(2).addClass('current');
+    $('#reconfirmBtn').prop('disabled', true).removeClass('btn-brand').addClass('btn-success').html('<i class="bi bi-check-circle-fill"></i> রিকনফার্ম করা হয়েছে');
+  };
+  $('#smsPhone').text(o.phone); bubble(smsOrder);
+  if (o.reconfirmed) { bubble(smsDone); markDone(); }
+  $('#reconfirmBtn').on('click', function () {
+    if (o.reconfirmed) return; o.reconfirmed = true;
+    if (isReal) HC.store.set('hc_last_order', o);
+    markDone(); bubble(smsDone); HC.toast('অর্ডার রিকনফার্ম হয়েছে ✓ — SMS পাঠানো হয়েছে');
+  });
+  $('#resendSms').on('click', function () {
+    const $b = $(this).prop('disabled', true); bubble(o.reconfirmed ? smsDone : smsOrder); HC.toast('আপনার মোবাইলে আবার SMS পাঠানো হয়েছে');
+    setTimeout(() => $b.prop('disabled', false), 15000);
+  });
 });
 </script>
 </body>

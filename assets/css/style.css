@@ -215,6 +215,8 @@ img{max-width:100%}
 .timeline h6{font-weight:700;margin:.2rem 0 0}.timeline p{margin:0;color:var(--muted);font-size:.9rem}
 .status-pill{background:var(--brand);color:#fff;border-radius:50px;padding:.15rem .8rem;font-size:.82rem;font-weight:600}
 
+.sms-bubble{background:#e8f0fe;border-radius:18px 18px 18px 4px;padding:.7rem .95rem;max-width:560px;margin-bottom:.5rem;font-size:.93rem;line-height:1.6}
+.sms-meta{font-size:.72rem;color:var(--muted);margin-top:.25rem}
 /* Footer */
 .site-footer{background:var(--ink);color:#cbd5e1;padding-top:3rem;margin-top:3rem}
 .site-footer h6{color:#fff;font-weight:700;margin-bottom:1rem}
