@@ -57,6 +57,8 @@
     <div class="totals-row"><span>Shipping:</span><span id="oShip"></span></div>
     <div class="totals-row total"><span>Total:</span><span id="oTotal2"></span></div>
     <div class="totals-row"><span>Payment method:</span><b id="oPay2"></b></div>
+    <div class="totals-row" id="oTxnRow" style="display:none"><span>Transaction ID:</span><b id="oTxn"></b></div>
+    <div class="totals-row" id="oSlipRow" style="display:none"><span>পেমেন্ট স্লিপ:</span><b id="oSlip"></b></div>
   </div>
 
   <div class="row g-3 mb-4">
@@ -95,6 +97,7 @@ $(function () {
     <img src="${i.img}" width="64" height="64" class="rounded-3" alt=""><div class="flex-grow-1"><div class="fw-semibold">${i.name}${i.label ? ' (' + i.label + ')' : ''}</div><small>পরিমাণ: ${i.qty}</small></div><b>${B(i.sale * i.qty)}</b></div>`).join(''));
   $('#oSub').text(B(t.sub)); if (t.disc) { $('#oDiscRow').show(); $('#oDisc').text('-' + B(t.disc)); }
   $('#oShip').text(t.ship ? B(t.ship) : 'Free shipping');
+  if (o.txn) { $('#oTxnRow').show(); $('#oTxn').text(o.txn); } if (o.slipName) { $('#oSlipRow').show(); $('#oSlip').text(o.slipName + ' ✓ আপলোড হয়েছে'); }
   $('#oAddr').text(o.address); $('#oPhone').html('<i class="bi bi-telephone"></i> ' + o.phone); if (o.email) $('#oEmail').html('<i class="bi bi-envelope"></i> ' + o.email);
 });
 </script>

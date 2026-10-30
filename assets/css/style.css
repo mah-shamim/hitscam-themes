@@ -138,6 +138,7 @@ img{max-width:100%}
 .pay-opt,.ship-opt{display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;margin-bottom:.45rem;cursor:pointer}
 .pay-opt:has(input:checked),.ship-opt:has(input:checked){border-color:var(--brand);background:var(--brand-soft)}
 .pay-opt span,.ship-opt span{flex:1}
+.pay-extra{border:1px dashed #f3b4b4;background:var(--brand-soft);border-radius:12px;padding:.8rem;margin-top:.5rem}
 .offcanvas-end{width:min(420px,100vw)}
 
 /* Shop filters */
