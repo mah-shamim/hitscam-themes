@@ -211,6 +211,17 @@
       <div class="col-6 col-lg-3"><h6>পলিসি</h6><a href="terms.html">শর্তাবলী</a><a href="returns.html">রিটার্ন, রিফান্ড ও ওয়ারেন্টি</a><a href="shipping.html">শিপিং তথ্য</a><a href="track-order.html">অর্ডার ট্র্যাক</a></div>
       <div class="col-lg-3"><h6>কম্পেটিবিলিটি</h6><a href="device-compatibility.html">ডিভাইস ও ব্রাউজার</a><a href="social-compatibility.html">সোশ্যাল মিডিয়া অ্যাপ ব্রাউজার</a><a href="minicart.html">মিনি কার্ট</a></div></div>
       <div class="footer-bottom d-flex justify-content-between flex-wrap gap-2"><span>© 2026 HitsCam. সর্বস্বত্ব সংরক্ষিত।</span><span>পেমেন্ট: ক্যাশ অন ডেলিভারি · বিকাশ · নগদ</span></div></div></footer>`;
+  // মোবাইল ভিউতে নিচে ফিক্সড গোল আইকন মেনু (ডেস্কটপে CSS দিয়ে লুকানো)
+  const mobileDock = () => {
+    const here = location.pathname.split('/').pop() || 'index.html';
+    const a = f => (here === f ? 'active' : '');
+    return `<nav class="mobile-dock" aria-label="মোবাইল মেনু">
+      <a class="dock-btn ${a('index.html')}" href="index.html" aria-label="হোম"><i class="bi bi-house-door-fill"></i></a>
+      <a class="dock-btn ${a('shop.html')}" href="shop.html" aria-label="শপ"><i class="bi bi-grid-fill"></i></a>
+      <button class="dock-btn ${a('cart.html')}" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-label="কার্ট"><i class="bi bi-cart3"></i><span class="badge-count cart-count">0</span></button>
+      <a class="dock-btn ${a('track-order.html')}" href="track-order.html" aria-label="অর্ডার ট্র্যাক"><i class="bi bi-geo-alt-fill"></i></a>
+      <a class="dock-btn call" href="tel:+8801614747054" aria-label="কল করুন"><i class="bi bi-telephone-fill"></i></a></nav>`;
+  };
   const miniCart = () => `<div class="offcanvas offcanvas-end" tabindex="-1" id="miniCart"><div class="offcanvas-header border-bottom"><h5 class="offcanvas-title fw-bold">Your Cart (<span class="cart-count">0</span>)</h5><button class="btn-close" data-bs-dismiss="offcanvas" aria-label="বন্ধ"></button></div>
       <div class="offcanvas-body d-flex flex-column"><div id="miniCartBody" class="flex-grow-1"></div></div></div>`;
   const orderModal = () => `<div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-lg-down"><div class="modal-content">
@@ -233,7 +244,7 @@
     $('body').prepend('<div class="toast-wrap"></div>');
     $('#site-header').replaceWith(header());
     $('#site-footer').replaceWith(footer());
-    $('body').append(miniCart());
+    $('body').append(miniCart()).append(mobileDock());
     if (!$('body').is('[data-no-modal]')) $('body').append(orderModal());
     HC.renderMini();
 
