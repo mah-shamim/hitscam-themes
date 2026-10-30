@@ -36,10 +36,14 @@
 
       <div id="pOptions" class="mb-3"></div>
 
-      <div id="pBuy" class="d-flex flex-wrap gap-2 align-items-center mb-3">
-        <div class="qty" id="pQtyWrap"><button type="button" class="qty-btn" id="qMinus">−</button><input type="number" id="pQty" value="1" min="1"><button type="button" class="qty-btn" id="qPlus">+</button></div>
-        <button class="btn btn-brand-outline btn-lg p-add" type="button"><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>
-        <button class="btn btn-brand btn-lg p-order" type="button"><i class="bi bi-lightning-charge-fill"></i> অর্ডার নাউ</button>
+      <div id="pBuy" class="mb-3">
+        <!-- কোয়ান্টিটি: পুরো প্রস্থ জুড়ে -->
+        <div class="qty qty-block mb-2" id="pQtyWrap"><button type="button" class="qty-btn" id="qMinus" aria-label="কমান">−</button><input type="number" id="pQty" value="1" min="1" aria-label="পরিমাণ"><button type="button" class="qty-btn" id="qPlus" aria-label="বাড়ান">+</button></div>
+        <!-- গোল বাটন পাশাপাশি -->
+        <div class="buy-btns d-flex gap-2">
+          <button class="btn btn-brand-outline btn-lg rounded-pill flex-fill p-add" type="button"><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>
+          <button class="btn btn-brand btn-lg rounded-pill flex-fill p-order" type="button"><i class="bi bi-lightning-charge-fill"></i> অর্ডার নাউ</button>
+        </div>
       </div>
 
       <!-- Upsells -->
@@ -139,7 +143,7 @@ $(function () {
       $('#pQtyWrap').hide();
     } else if (p.type === 'external') {
       $('#pQtyWrap, .p-add, .p-order').hide();
-      $('#pBuy').append(`<a class="btn btn-brand btn-lg" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`);
+      $('#pBuy .buy-btns').append(`<a class="btn btn-brand btn-lg rounded-pill flex-fill" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`);
       $('#upsells').hide();
     }
   }
