@@ -101,6 +101,9 @@ img{max-width:100%}
 .pc-group label b{color:var(--brand);font-size:.8rem}
 .pc-group .form-check-input{width:.85em;height:.85em;margin-top:.15em;float:none}
 .pc-group input:checked + span,.pc-group label:has(input:checked){border-color:var(--brand);background:var(--brand-soft)}
+.pc-rate{display:flex;align-items:center;flex-wrap:wrap;gap:.25rem .4rem;font-size:.82rem}
+.pc-sold{margin-left:auto;font-size:.74rem;font-weight:600;color:var(--green);background:#e8f8ee;border-radius:50px;padding:.05rem .5rem;white-space:nowrap}
+.pc-sold i{font-size:.7rem}
 .pc-price{margin-top:auto;font-weight:800;font-size:1.1rem;color:var(--brand)}
 .pc-price del{font-weight:400;color:var(--muted);font-size:.85rem;margin-right:.35rem}
 .pc-from{font-size:.72rem;color:var(--muted);font-weight:400}

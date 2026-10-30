@@ -20,6 +20,7 @@
   HC.options = p => p.type === 'variable' ? p.variations : p.type === 'grouped' ? p.children : [{ label: '', regular: p.regular, sale: p.sale }];
   HC.lowest = p => { const o = HC.options(p); let b = 0; o.forEach((x, i) => { if (x.sale < o[b].sale) b = i; }); return b; };
   HC.minPrice = p => HC.options(p)[HC.lowest(p)];
+  HC.soldFmt = n => n >= 1000 ? (Math.round(n / 100) / 10).toString().replace(/\.0$/, '') + 'k' : String(n);
   HC.stars = r => { let s = ''; for (let i = 1; i <= 5; i++) s += i <= Math.round(r) ? '★' : '☆'; return '<span class="stars">' + s + '</span>'; };
 
   /* ---------- Cart ---------- */
@@ -82,7 +83,7 @@
       <div class="pc-body">
         <div class="pc-cat">${HC.cat(p.cat).name} · <span class="text-muted">${TYPE_LABEL[p.type]}</span></div>
         <a class="pc-title" href="product.html?id=${p.id}">${p.name}</a>
-        <div class="small">${HC.stars(p.rating)} <span class="text-muted">(${p.reviews})</span></div>
+        <div class="pc-rate">${HC.stars(p.rating)} <span class="text-muted">(${p.reviews})</span>${p.sold ? `<span class="pc-sold" title="টোটাল সোল্ড"><i class="bi bi-bag-check-fill"></i> ${HC.soldFmt(p.sold)} বিক্রি</span>` : ''}</div>
         ${opts}
         <div class="pc-price">${priceHtml(o, p)}</div>
         <div class="pc-actions">${actions}</div>
