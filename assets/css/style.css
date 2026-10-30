@@ -197,6 +197,19 @@ img{max-width:100%}
 .content-page p,.content-page li{color:#334155;line-height:1.85}
 .compat-table td,.compat-table th{vertical-align:middle}
 
+/* মোবাইল ফিক্সড গোল আইকন মেনু */
+.mobile-dock{display:none}
+@media(max-width:767.98px){
+  .mobile-dock{display:flex;position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);gap:.55rem;padding:.45rem .6rem;background:#fff;border:1px solid var(--line);border-radius:50px;box-shadow:0 8px 28px rgba(15,23,42,.18);z-index:1040}
+  .dock-btn{position:relative;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--bg);color:var(--ink);font-size:1.25rem;border:0;padding:0;transition:.2s}
+  .dock-btn:hover,.dock-btn:active{background:var(--brand-soft);color:var(--brand)}
+  .dock-btn.active{background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(224,49,49,.35)}
+  .dock-btn.call{background:var(--green);color:#fff}
+  .dock-btn .badge-count{position:absolute;top:-3px;right:-3px;background:var(--ink);color:#fff;border-radius:50px;font-size:.66rem;min-width:18px;height:18px;display:grid;place-items:center;padding:0 4px;font-weight:700;border:2px solid #fff}
+  .dock-btn.active .badge-count{background:#fff;color:var(--brand);border-color:var(--brand)}
+  body{padding-bottom:84px}
+  .toast-wrap{bottom:92px}
+}
 @media(max-width:767px){
   .hero-slide{padding:1.6rem;min-height:300px}
   .section{padding:1.5rem 0}
