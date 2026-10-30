@@ -64,7 +64,7 @@
       // একই কার্ডের সব রেডিওর name এক হতে হবে (না হলে একসাথে একটাই সিলেক্ট হয় না); প্রতিটি কার্ডের জন্য ইউনিক নাম
       const gname = 'opt-' + p.id + '-' + Math.random().toString(36).slice(2, 8);
       const list = p.type === 'variable' ? p.variations : p.children;
-      opts = '<div class="pc-group">' + list.map((v, i) =>
+      opts = `<div class="pc-group" style="--n:${Math.min(list.length, 3)}">` + list.map((v, i) =>
         `<label><span><input type="radio" class="form-check-input opt-radio me-1" name="${gname}" value="${i}" ${i === lo ? 'checked' : ''}>${v.label}</span><b>${BDT(v.sale)}</b></label>`).join('') + '</div>';
     }
     const actions = p.type === 'external'
