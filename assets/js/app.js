@@ -5,6 +5,8 @@
   const BDT = n => '৳' + Math.round(n).toLocaleString('en-IN');
   const FREE_SHIP = 5000;
   const COUPONS = { HITS10: { type: 'pct', v: 10, label: '১০% ছাড়' }, WELCOME100: { type: 'flat', v: 100, label: '৳১০০ ছাড়' } };
+  // মোবাইল ব্যাংকিং নাম্বার — আপনার আসল পার্সোনাল নাম্বার দিয়ে বদলে নিন
+  const PAY_NUMBERS = { 'বিকাশ': '01XXXXXXXXX', 'নগদ': '01XXXXXXXXX' };
   const TYPE_LABEL = { simple: 'Simple', variable: 'Variable', grouped: 'Grouped', external: 'Affiliate' };
 
   const store = {
@@ -13,7 +15,7 @@
   };
   let memCart = null; // storage না চললে fallback
 
-  const HC = window.HC = { BDT, FREE_SHIP, store, D };
+  const HC = window.HC = { BDT, FREE_SHIP, store, D, PAY_NUMBERS };
 
   HC.find = id => D.products.find(p => p.id === +id);
   HC.cat = slug => D.categories.find(c => c.slug === slug) || { name: slug, slug };
@@ -146,6 +148,14 @@
       <label class="pay-opt"><input type="radio" class="form-check-input" name="pay" value="ক্যাশ অন ডেলিভারি" checked><span><i class="bi bi-cash-coin text-success"></i> ক্যাশ অন ডেলিভারি</span></label>
       <label class="pay-opt"><input type="radio" class="form-check-input" name="pay" value="বিকাশ"><span><i class="bi bi-wallet2 text-danger"></i> বিকাশ (পার্সোনাল)</span></label>
       <label class="pay-opt"><input type="radio" class="form-check-input" name="pay" value="নগদ"><span><i class="bi bi-wallet2 text-warning"></i> নগদ (পার্সোনাল)</span></label>
+      <div class="pay-extra" id="payExtra" style="display:none">
+        <div class="small mb-2" id="payHint"></div>
+        <div class="mb-2"><label class="form-label mb-1">ট্রানজেকশন আইডি (TrxID) *</label>
+          <input class="form-control" name="txn" autocomplete="off" autocapitalize="characters" placeholder="যেমন: 8N7A6B5C4D"><div class="invalid-feedback">সঠিক TrxID দিন (৬–২০ অক্ষর/সংখ্যা)</div></div>
+        <div><label class="form-label mb-1">ট্রানজেকশন স্লিপ / স্ক্রিনশট আপলোড *</label>
+          <input class="form-control" type="file" name="slip" accept="image/*,application/pdf"><div class="invalid-feedback" id="slipErr">স্লিপের ছবি বা PDF আপলোড করুন (সর্বোচ্চ ৫MB)</div>
+          <div id="slipPreview" class="mt-2"></div></div>
+      </div>
     </div></form>`;
 
   HC.renderSummary = el => {
@@ -165,18 +175,28 @@
       <div class="col-lg-6"><div class="panel" data-summary></div></div></div>`);
     HC.renderSummary($(el).find('[data-summary]'));
   };
+  // স্লিপ ফাইল যাচাই: ছবি/PDF, সর্বোচ্চ ৫MB (WooCommerce এ ফাইল multipart ফর্মে সার্ভারে যাবে)
+  const slipOk = f => (/^image\//.test(f.type) || f.type === 'application/pdf') && f.size <= 5 * 1024 * 1024;
   const BD_PHONE = /^(?:\+?88)?01[3-9]\d{8}$/;
   HC.placeOrder = form => {
     const f = form, v = n => $.trim($(f).find('[name=' + n + ']').val());
     let ok = true;
     $(f).find('[name=name],[name=address]').each(function () { const bad = !$.trim(this.value); $(this).toggleClass('is-invalid', bad); if (bad) ok = false; });
     const ph = $(f).find('[name=phone]'); const badp = !BD_PHONE.test(ph.val().replace(/[\s-]/g, '')); ph.toggleClass('is-invalid', badp); if (badp) ok = false;
+    const pay = $(f).find('[name=pay]:checked').val(), mobile = !!PAY_NUMBERS[pay];
+    let txn = '', slipName = '';
+    if (mobile) {
+      const tx = $(f).find('[name=txn]'); txn = $.trim(tx.val()).toUpperCase();
+      const badt = !/^[A-Z0-9]{6,20}$/.test(txn); tx.toggleClass('is-invalid', badt); if (badt) ok = false;
+      const fl = $(f).find('[name=slip]')[0].files[0]; const bads = !fl || !slipOk(fl);
+      $(f).find('[name=slip]').toggleClass('is-invalid', bads); if (bads) ok = false; else slipName = fl.name;
+    }
     if (!HC.cart().length) { HC.toast('কার্ট খালি!'); return; }
     if (!ok) { HC.toast('অনুগ্রহ করে লাল ঘরগুলো ঠিক করুন'); return; }
     const t = HC.totals();
     store.set('hc_last_order', {
       id: 500 + Math.floor(Math.random() * 400), date: new Date().toISOString(), items: HC.cart(), totals: t,
-      name: v('name'), address: v('address'), phone: v('phone'), email: v('email'), notes: v('notes'), pay: $(f).find('[name=pay]:checked').val()
+      name: v('name'), address: v('address'), phone: v('phone'), email: v('email'), notes: v('notes'), pay, txn, slipName
     });
     memCart = []; store.set('hc_cart', []); store.set('hc_coupon', null);
     location.href = 'order-received.html';
@@ -287,6 +307,18 @@
       $(document).trigger('cartchange');
     });
     $(document).on('change', '.ship-radio', function () { store.set('hc_ship', +this.value); $(document).trigger('cartchange'); });
+    // বিকাশ/নগদ বেছে নিলে TrxID ও স্লিপ আপলোড ফিল্ড দেখানো
+    $(document).on('change', '#orderForm [name=pay]', function () {
+      const v = $('#orderForm [name=pay]:checked').val(), num = PAY_NUMBERS[v];
+      $('#payExtra').toggle(!!num);
+      if (num) $('#payHint').html(`<b>${v}</b> পার্সোনাল নাম্বার <b class="text-brand user-select-all">${num}</b> এ <b>Send Money</b> করে নিচে TrxID ও স্লিপ দিন। মোট: <b>${BDT(HC.totals().total)}</b>`);
+    });
+    $(document).on('change', '#orderForm [name=slip]', function () {
+      const fl = this.files[0], $p = $('#slipPreview').empty(); $(this).removeClass('is-invalid');
+      if (!fl) return;
+      if (!slipOk(fl)) { $(this).addClass('is-invalid'); this.value = ''; return; }
+      $p.append(/^image\//.test(fl.type) ? $('<img class="rounded-3 border" style="max-height:120px">').attr('src', URL.createObjectURL(fl)) : $('<span class="badge bg-secondary"></span>').text(fl.name));
+    });
     $(document).on('submit', '#orderForm', function (e) { e.preventDefault(); HC.placeOrder(this); });
     $(document).on('click', '#wishBtn', function () { HC.toast('উইশলিস্ট: ' + store.get('hc_wish', []).length + 'টি পণ্য'); });
   });
