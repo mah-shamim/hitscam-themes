@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build zip and publish GitHub release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Static checks
+        run: node tests/lint.js
+      - name: Build theme zip (without tests / dev files)
+        run: |
+          zip -r "hitscam-themes-${GITHUB_REF_NAME}.zip" . \
+            -x ".git/*" ".github/*" "node_modules/*" "tests/*" "test-results/*" "playwright-report/*" \
+               "package.json" "package-lock.json" "playwright.config.js" ".gitignore" "*.zip"
+      - name: Create (or update) release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "hitscam-themes-${GITHUB_REF_NAME}.zip" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "hitscam-themes-${GITHUB_REF_NAME}.zip" --generate-notes --verify-tag --title "$GITHUB_REF_NAME"
+          fi

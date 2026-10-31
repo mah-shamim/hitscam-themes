@@ -1,0 +1,127 @@
+name: CI — device & browser compatibility
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 3 * * 1'        # প্রতি সোমবার ০৩:০০ UTC (ঢাকা সকাল ৯টা) — CDN/ব্রাউজার আপডেটে কিছু ভাঙল কিনা ধরতে
+  workflow_dispatch:
+    inputs:
+      live_cdn:
+        description: 'আসল CDN (jsDelivr/cdnjs/jQuery) থেকে লাইব্রেরি লোড করে টেস্ট চালান'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # সাধারণ রানে লাইব্রেরি npm থেকে সার্ভ হয় (স্থিতিশীল); শিডিউল/ম্যানুয়াল রানে আসল CDN
+  LIVE_CDN: ${{ (github.event_name == 'schedule' || inputs.live_cdn) && '1' || '' }}
+
+jobs:
+  # ───────────────────────── ১) স্ট্যাটিক চেক ─────────────────────────
+  lint:
+    name: Static checks (JS syntax, links, HTML, alt, duplicate ids)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/lint.js
+
+  # ───────────── ২) ব্রাউজার ইঞ্জিন × ডিভাইস ভিউপোর্ট ম্যাট্রিক্স ─────────────
+  browsers:
+    name: ${{ matrix.name }}
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ডেস্কটপ ব্রাউজার
+          - { name: 'Chrome — desktop 1280px',           project: chromium,   install: chromium }
+          - { name: 'Firefox — desktop 1280px',          project: firefox,    install: firefox }
+          - { name: 'Safari (WebKit) — desktop 1280px',  project: webkit,     install: webkit }
+          - { name: 'Edge — desktop 1280px',             project: edge,       install: msedge }
+          # মোবাইল
+          - { name: 'Android Chrome — Pixel 7 (412px)',  project: pixel-7,    install: chromium }
+          - { name: 'Android small — Galaxy S9+ (320px)', project: galaxy-s9, install: chromium }
+          - { name: 'iPhone 14 Safari (390px)',          project: iphone-14,  install: webkit }
+          - { name: 'iPhone SE Safari (320px)',          project: iphone-se,  install: webkit }
+          # ট্যাবলেট
+          - { name: 'iPad (810px)',                      project: ipad,       install: webkit }
+          - { name: 'Android tablet — Galaxy Tab (712px)', project: galaxy-tab, install: chromium }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install browser (${{ matrix.install }})
+        run: npx playwright install --with-deps ${{ matrix.install }}
+      - name: Run tests (${{ matrix.project }})
+        run: npx playwright test --project=${{ matrix.project }}
+      - name: Upload HTML report + page screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ matrix.project }}
+          path: playwright-report/
+          retention-days: 14
+      - name: Upload traces of failed tests
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-${{ matrix.project }}
+          path: test-results/
+          retention-days: 7
+
+  # ───────── ৩) অপারেটিং সিস্টেম ভেদে ডেস্কটপ ব্রাউজার (Windows, macOS) ─────────
+  cross-os:
+    name: ${{ matrix.os }} · ${{ matrix.browser }}
+    needs: lint
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Run all tests on this OS
+        run: npx playwright test --project=${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: report-${{ matrix.os }}-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 7
+
+  # ─────── ৪) একটি মাত্র "required check" (Branch protection এ এটাই দিন) ───────
+  compat-gate:
+    name: Compatibility gate
+    if: ${{ always() }}
+    needs: [lint, browsers, cross-os]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any compatibility job failed
+        run: |
+          echo "lint=${{ needs.lint.result }} browsers=${{ needs.browsers.result }} cross-os=${{ needs.cross-os.result }}"
+          [ "${{ needs.lint.result }}" = "success" ] && [ "${{ needs.browsers.result }}" = "success" ] && [ "${{ needs.cross-os.result }}" = "success" ]
