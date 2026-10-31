@@ -270,6 +270,11 @@
       <a class="dock-btn ${a('track-order.html')}" href="track-order.html" aria-label="অর্ডার ট্র্যাক"><i class="bi bi-geo-alt-fill"></i></a>
       <a class="dock-btn call" href="tel:+8801614747054" aria-label="কল করুন"><i class="bi bi-telephone-fill"></i></a></nav>`;
   };
+  // ভাসমান বাটন: WhatsApp চ্যাট + ব্যাক-টু-টপ
+  const WA_NUM = '8801614747054';
+  const floatStack = () => `<div class="float-stack">
+      <button class="fl-btn fl-top" id="toTop" type="button" aria-label="উপরে যান"><i class="bi bi-arrow-up"></i></button>
+      <a class="fl-btn fl-wa" id="waChat" target="_blank" rel="noopener" href="https://wa.me/${WA_NUM}?text=${encodeURIComponent('আসসালামু আলাইকুম, HitsCam থেকে কিছু জানতে চাই।')}" aria-label="WhatsApp এ চ্যাট করুন" title="WhatsApp এ চ্যাট করুন"><i class="bi bi-whatsapp"></i></a></div>`;
   const miniCart = () => `<div class="offcanvas offcanvas-end" tabindex="-1" id="miniCart"><div class="offcanvas-header border-bottom"><h5 class="offcanvas-title fw-bold">Your Cart (<span class="cart-count">0</span>)</h5><button class="btn-close" data-bs-dismiss="offcanvas" aria-label="বন্ধ"></button></div>
       <div class="offcanvas-body d-flex flex-column"><div id="miniCartBody" class="flex-grow-1"></div></div></div>`;
   const miniWish = () => `<div class="offcanvas offcanvas-end" tabindex="-1" id="miniWish"><div class="offcanvas-header border-bottom"><h5 class="offcanvas-title fw-bold"><i class="bi bi-heart-fill text-brand"></i> Wishlist (<span class="wish-count">0</span>)</h5><button class="btn-close" data-bs-dismiss="offcanvas" aria-label="বন্ধ"></button></div>
@@ -310,7 +315,7 @@
     $('body').prepend('<div class="toast-wrap"></div>');
     $('#site-header').replaceWith(header());
     $('#site-footer').replaceWith(footer());
-    $('body').append(miniCart()).append(miniWish()).append(mobileDock());
+    $('body').append(miniCart()).append(miniWish()).append(mobileDock()).append(floatStack());
     if (!$('body').is('[data-no-modal]')) $('body').append(orderModal());
     HC.renderMini(); HC.renderWish();
 
@@ -377,6 +382,10 @@
     $(document).on('input', '.search-box input[name=q]', function () { suggest($(this)); });
     $(document).on('click', function (e) { if (!$(e.target).closest('.search-box').length) $('.sugg').remove(); });
     $(document).on('keydown', '.search-box input[name=q]', function (e) { if (e.key === 'Escape') $('.sugg').remove(); });
+
+    $(document).on('click', '#toTop', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    const topSync = () => $('#toTop').toggleClass('show', (window.pageYOffset || document.documentElement.scrollTop) > 400);
+    $(window).on('scroll', topSync); topSync();
 
     // ---- cart interactions (mini cart, modal, cart page) ----
     $(document).on('click', '.qty-btn', function () {
