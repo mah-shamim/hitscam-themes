@@ -19,9 +19,10 @@ const CT = { '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2
 async function prepare(page) {
   const problems = [];
   page.on('pageerror', e => problems.push('pageerror: ' + e.message));
-  page.on('console', m => { if (m.type() === 'error') problems.push('console.error: ' + m.text()); });
-  page.on('requestfailed', r => { if (r.url().startsWith('http://127.0.0.1')) problems.push('request failed: ' + r.url()); });
-  page.on('response', r => { if (r.url().startsWith('http://127.0.0.1') && r.status() >= 400) problems.push(r.status() + ' ' + r.url()); });
+  page.on('console', m => { if (m.type() === 'error' && !/favicon/i.test(m.text() + (m.location().url || ''))) problems.push('console.error: ' + m.text() + ' @ ' + (m.location().url || '')); });
+  const ours = u => u.startsWith('http://127.0.0.1') && !/\/favicon\.ico(\?|$)/.test(u);   // WebKit/Firefox অনুরোধ করে; আইকন নিজেই inline দেওয়া আছে
+  page.on('requestfailed', r => { if (ours(r.url())) problems.push('request failed: ' + r.url()); });
+  page.on('response', r => { if (ours(r.url()) && r.status() >= 400) problems.push(r.status() + ' ' + r.url()); });
 
   if (!LIVE) {
     await page.route(/^https?:\/\/(?!127\.0\.0\.1)/, async route => {
