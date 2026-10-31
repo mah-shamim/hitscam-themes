@@ -33,6 +33,12 @@
   HC.options = p => p.type === 'variable' ? p.variations : p.type === 'grouped' ? p.children : [{ label: '', regular: p.regular, sale: p.sale }];
   HC.lowest = p => { const o = HC.options(p); let b = 0; o.forEach((x, i) => { if (x.sale < o[b].sale) b = i; }); return b; };
   HC.minPrice = p => HC.options(p)[HC.lowest(p)];
+  HC.LOW_STOCK = 10;
+  HC.stockHtml = (p, big) => p.stock <= 0
+    ? `<div class="stock out"><i class="bi bi-x-circle-fill"></i> স্টক আউট</div>`
+    : p.stock <= HC.LOW_STOCK
+      ? `<div class="stock low"><i class="bi bi-fire"></i> মাত্র ${p.stock}টি বাকি!</div>`
+      : (big ? `<div class="stock ok"><i class="bi bi-check-circle-fill"></i> স্টকে আছে</div>` : '');
   HC.soldFmt = n => n >= 1000 ? (Math.round(n / 100) / 10).toString().replace(/\.0$/, '') + 'k' : String(n);
   HC.stars = r => { let s = ''; for (let i = 1; i <= 5; i++) s += i <= Math.round(r) ? '★' : '☆'; return '<span class="stars">' + s + '</span>'; };
 
@@ -87,8 +93,8 @@
     }
     const actions = p.type === 'external'
       ? `<a class="btn btn-brand btn-ext" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`
-      : `<button class="btn btn-brand btn-add" type="button">অ্যাড টু কার্ট</button>
-         <button class="btn btn-brand-outline btn-order" type="button">অর্ডার নাউ</button>
+      : `<button class="btn btn-brand btn-add" type="button" ${p.stock <= 0 ? 'disabled' : ''}>অ্যাড টু কার্ট</button>
+         <button class="btn btn-brand-outline btn-order" type="button" ${p.stock <= 0 ? 'disabled' : ''}>অর্ডার নাউ</button>
          <a class="btn btn-brand btn-view" href="cart.html">ভিউ কার্ট</a>`;
     return `<div class="product-card" data-id="${p.id}" data-opt="${lo}">
       ${disc ? `<span class="pc-badge">-${disc}%</span>` : ''}
@@ -99,6 +105,7 @@
         <a class="pc-title" href="product.html?id=${p.id}">${p.name}</a>
         <div class="pc-rate">${HC.stars(p.rating)} <span class="text-muted">(${p.reviews})</span>${p.sold ? `<span class="pc-sold" title="টোটাল সোল্ড"><i class="bi bi-bag-check-fill"></i> ${HC.soldFmt(p.sold)} বিক্রি</span>` : ''}</div>
         ${opts}
+        ${HC.stockHtml(p, false)}
         <div class="pc-price">${priceHtml(o, p)}</div>
         <div class="pc-actions ${p.type !== 'external' && HC.inCart(p.id) ? 'three' : ''}">${actions}</div>
       </div></div>`;

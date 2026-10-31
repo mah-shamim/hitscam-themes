@@ -103,6 +103,9 @@
   };
   // টোটাল সোল্ড (WooCommerce এ total_sales মেটা)
   const soldById = { 1: 1240, 2: 2310, 3: 486, 4: 215, 5: 3680, 6: 940, 7: 512, 8: 1175, 9: 398, 10: 604, 11: 1890, 12: 143 };
+  // স্টক (WooCommerce এ stock_quantity)। ১০ বা কম হলে "মাত্র N টি বাকি" সতর্কতা
+  const stockById = { 1: 24, 2: 7, 3: 15, 4: 40, 5: 120, 6: 5, 7: 3, 8: 18, 9: 9, 10: 12, 11: 60, 12: 0 };
+  products.forEach(p => { p.stock = p.stock != null ? p.stock : (stockById[p.id] != null ? stockById[p.id] : 20); });
   products.forEach(p => { p.sold = p.sold != null ? p.sold : (soldById[p.id] || 0); });
   products.forEach(p => { p.info = p.info || infoById[p.id] || infoByCat[p.cat] || []; });
 
