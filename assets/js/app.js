@@ -20,6 +20,14 @@
 
   const HC = window.HC = { BDT, FREE_SHIP, store, D, PAY_NUMBERS };
 
+  // সম্প্রতি দেখা পণ্য (সর্বোচ্চ ৮টি, নতুনটা আগে)
+  HC.recent = () => store.get('hc_recent', []).filter(id => HC.find(id));
+  HC.pushRecent = id => store.set('hc_recent', [+id].concat(store.get('hc_recent', []).filter(x => x !== +id)).slice(0, 8));
+  HC.renderRecent = (sel, excludeId, max) => {
+    const list = HC.recent().filter(id => id !== +excludeId).slice(0, max || 4).map(HC.find);
+    const $w = $(sel).closest('.recent-wrap'); $w.toggle(list.length > 0);
+    if (list.length) HC.grid(sel, list);
+  };
   HC.find = id => D.products.find(p => p.id === +id);
   HC.cat = slug => D.categories.find(c => c.slug === slug) || { name: slug, slug };
   HC.options = p => p.type === 'variable' ? p.variations : p.type === 'grouped' ? p.children : [{ label: '', regular: p.regular, sale: p.sale }];

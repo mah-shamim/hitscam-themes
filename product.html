@@ -89,6 +89,12 @@
   <div class="section-head"><h2>আপনার পছন্দ হতে পারে</h2></div>
   <div class="row g-3 mb-4" id="crossSells"></div>
 
+  <!-- সম্প্রতি দেখা পণ্য -->
+  <div class="recent-wrap mb-4" style="display:none">
+    <div class="section-head"><h2>সম্প্রতি দেখা পণ্য</h2></div>
+    <div class="row g-3" id="secRecent"></div>
+  </div>
+
   <!-- Related -->
   <div class="section-head"><h2>Related Products</h2></div>
   <div class="row g-3" id="related"></div>
@@ -186,6 +192,8 @@ $(function () {
   $('#crossSells').html(others.filter(x => x.cat !== p.cat).slice(0, 4).map(x => `<div class="col-6 col-md-3"><a class="top-sell flex-column text-center h-100" href="product.html?id=${x.id}"><img src="${x.img}" alt=""><div class="small fw-semibold">${x.name.slice(0, 38)}</div><b class="text-brand">${B(HC.minPrice(x).sale)}</b></a></div>`).join(''));
   const rel = others.filter(x => x.cat === p.cat).concat(others.filter(x => x.cat !== p.cat)).slice(0, 4);
   HC.grid('#related', rel);
+  HC.renderRecent('#secRecent', p.id, 4);   // বর্তমান পণ্য বাদে
+  HC.pushRecent(p.id);
 });
 </script>
 </body>
