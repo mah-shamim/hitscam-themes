@@ -36,6 +36,13 @@ for (const url of PAGES) {
     expect(ov.sw, `অনুভূমিক স্ক্রল (${ov.sw}px > ${ov.vw}px)। সম্ভাব্য কারণ: ${ov.offenders.join(' | ')}`).toBeLessThanOrEqual(ov.vw + 1);
 
     expect(problems, 'কনসোল/নেটওয়ার্ক সমস্যা').toEqual([]);
-    await testInfo.attach('screenshot', { body: await page.screenshot({ fullPage: true, type: 'jpeg', quality: 55 }), contentType: 'image/jpeg' });
+    // স্ক্রিনশট শুধু রিপোর্টের জন্য — এটি ব্যর্থ হলেও লেআউট টেস্ট ফেইল করবে না।
+    // scale:'css' → ডিভাইস পিক্সেল রেশিও (iPhone এ ৩x) গুণ হয় না; WebKit এর ৩২৭৬৭px সীমা এড়ায়।
+    try {
+      await testInfo.attach('screenshot', { body: await page.screenshot({ fullPage: true, type: 'jpeg', quality: 55, scale: 'css' }), contentType: 'image/jpeg' });
+    } catch (e) {
+      await testInfo.attach('screenshot-viewport', { body: await page.screenshot({ type: 'jpeg', quality: 55, scale: 'css' }), contentType: 'image/jpeg' });
+      await testInfo.attach('screenshot-note', { body: `ফুল-পেজ স্ক্রিনশট সম্ভব হয়নি: ${e.message}`, contentType: 'text/plain' });
+    }
   });
 }
