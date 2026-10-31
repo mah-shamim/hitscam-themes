@@ -190,6 +190,9 @@ $(function () {
   $('.p-add').on('click', () => { if (addMain()) HC.toast('কার্টে যোগ হয়েছে ✓'); });
   $('.p-order').on('click', () => { if (addMain()) HC.openOrder(); });
 
+  // WhatsApp চ্যাটে পণ্যের নাম ও লিংক যোগ (app.js এর ভাসমান বাটন)
+  $('#waChat').attr('href', $('#waChat').attr('href').split('?')[0] + '?text=' + encodeURIComponent('আসসালামু আলাইকুম, এই পণ্যটি সম্পর্কে জানতে চাই: ' + p.name + ' ' + location.href.split('#')[0]));
+
   // শেয়ার
   const pageUrl = location.href.split('#')[0], enc = encodeURIComponent;
   $('#shFb').attr('href', 'https://www.facebook.com/sharer/sharer.php?u=' + enc(pageUrl));

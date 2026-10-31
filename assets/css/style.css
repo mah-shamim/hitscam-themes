@@ -281,6 +281,17 @@ img{max-width:100%}
   .bb-price{font-weight:800;color:var(--brand);font-size:1.05rem}
   .bb-btn{flex:none;padding:.55rem 1.1rem;font-weight:700}
 }
+.float-stack{position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:.6rem;z-index:1035}
+.fl-btn{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;border:0;color:#fff;font-size:1.45rem;box-shadow:0 8px 22px rgba(15,23,42,.28);transition:transform .2s}
+.fl-btn:hover{transform:translateY(-2px);color:#fff}
+.fl-wa{background:#25d366}
+.fl-top{background:var(--navy);font-size:1.15rem;width:42px;height:42px;align-self:center;opacity:0;pointer-events:none;transform:translateY(8px)}
+.fl-top.show{opacity:1;pointer-events:auto;transform:none}
+@media(max-width:767.98px){
+  .float-stack{right:10px;bottom:92px}
+  .fl-btn{width:46px;height:46px}
+  body:has(.buybar.show) .float-stack{bottom:156px}
+}
 /* Footer */
 .site-footer{background:var(--navy);color:#cbd5e1;padding-top:3rem;margin-top:3rem}
 .site-footer h6{color:#fff;font-weight:700;margin-bottom:1rem}
