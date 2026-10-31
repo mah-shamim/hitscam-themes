@@ -210,12 +210,15 @@ $(function () {
   $('#bbBtn').text(ext ? p.btn : out ? 'স্টক আউট' : 'অর্ডার নাউ').prop('disabled', out);
   $('#bbBtn').on('click', function () { if (ext) window.open(p.url, '_blank', 'noopener'); else $('.p-order').trigger('click'); });
   bbSync(); $(document).on('click', '.var-btn, .g-d', () => setTimeout(bbSync, 0));
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(es => es.forEach(e => $('#buyBar').toggleClass('show', !e.isIntersecting && e.boundingClientRect.top < 0)), { threshold: 0 }).observe(document.getElementById('pBuy'));
-  }
+  // মূল বাটন স্ক্রিনের ওপরে চলে গেলে বার দেখায় (scroll-ভিত্তিক: পেজ রিস্টোর/লাফ দিয়ে নামলেও ঠিক থাকে)
+  const bbCheck = () => $('#buyBar').toggleClass('show', document.getElementById('pBuy').getBoundingClientRect().bottom < 0);
+  let bbTick = false;
+  window.addEventListener('scroll', () => { if (!bbTick) { bbTick = true; requestAnimationFrame(() => { bbTick = false; bbCheck(); }); } }, { passive: true });
+  window.addEventListener('resize', bbCheck); bbCheck();
 
   // রিভিউ
-  const reviews = JSON.parse(localStorage.getItem('hc_rv_' + p.id) || 'null') || [
+  let saved = null; try { saved = JSON.parse(localStorage.getItem('hc_rv_' + p.id) || 'null'); } catch (x) { /* storage বন্ধ */ }
+  const reviews = saved || [
     { n: 'রাকিব হাসান', r: 5, t: 'দারুণ প্রোডাক্ট! কোয়ালিটি আশানুরূপ।', d: '২৮ অক্টোবর, ২০২৬' },
     { n: 'সুমাইয়া আক্তার', r: 4, t: 'ডেলিভারি দ্রুত ছিল। ইন্সটলেশন সহজ।', d: '২২ অক্টোবর, ২০২৬' }];
   function renderReviews() { $('#rvCount').text(reviews.length); $('#reviewList').html(reviews.map(r => `<div class="review-item"><div class="d-flex justify-content-between"><b>${r.n}</b><small class="text-muted">${r.d}</small></div>${HC.stars(r.r)}<p class="mb-0 mt-1">${r.t}</p></div>`).join('')); }

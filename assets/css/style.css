@@ -21,6 +21,8 @@
 [data-theme=dark] .text-dark{color:var(--ink)!important}
 [data-theme=dark] .table,[data-theme=dark] .table-light{--bs-table-bg:var(--card);--bs-table-color:var(--ink);--bs-table-border-color:var(--line)}
 html{scroll-behavior:smooth}
+/* যাদের ডিভাইসে "মোশন কমান" চালু, তাদের জন্য অ্যানিমেশন/স্মুথ স্ক্রল বন্ধ */
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 body{font-family:'Hind Siliguri','Inter',system-ui,sans-serif;color:var(--ink);background:var(--card);-webkit-text-size-adjust:100%}
 a{color:inherit;text-decoration:none}
 img{max-width:100%}
@@ -101,7 +103,7 @@ img{max-width:100%}
 .owl-nav button.owl-prev,.owl-nav button.owl-next{width:38px;height:38px;border-radius:50%!important;background:var(--card)!important;box-shadow:var(--shadow);font-size:1.2rem!important}
 
 /* Sections */
-.section{padding:2.2rem 0}
+.section{padding-top:2.2rem;padding-bottom:2.2rem}
 .section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:1.2rem;gap:1rem}
 .section-head h2{font-weight:800;font-size:1.6rem;margin:0}
 .section-head h2:before{content:"";display:inline-block;width:6px;height:1.4rem;background:var(--brand);border-radius:4px;margin-right:.55rem;vertical-align:-3px}
@@ -329,7 +331,7 @@ img{max-width:100%}
 @media(max-width:575.98px){.pc-img{aspect-ratio:4/3}.icon-btn{width:38px;height:38px}.header-icons{gap:.1rem}.header-main{gap:.5rem!important}.brand{font-size:1.1rem}}
 @media(max-width:767px){
   .hero-slide{padding:1.6rem;min-height:300px}
-  .section{padding:1.5rem 0}
+  .section{padding-top:1.5rem;padding-bottom:1.5rem}
   .pc-body{padding:.65rem}
   .or-hero{padding:1.3rem}
 }
