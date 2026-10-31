@@ -47,6 +47,15 @@
         </div>
       </div>
 
+      <!-- শেয়ার -->
+      <div class="share-row mb-3">
+        <span class="text-muted small">শেয়ার করুন:</span>
+        <a class="share-btn" id="shFb" target="_blank" rel="noopener" aria-label="Facebook এ শেয়ার"><i class="bi bi-facebook"></i></a>
+        <a class="share-btn" id="shWa" target="_blank" rel="noopener" aria-label="WhatsApp এ শেয়ার"><i class="bi bi-whatsapp"></i></a>
+        <a class="share-btn" id="shMs" target="_blank" rel="noopener" aria-label="Messenger এ শেয়ার"><i class="bi bi-messenger"></i></a>
+        <button class="share-btn" id="shCopy" type="button" aria-label="লিংক কপি"><i class="bi bi-link-45deg"></i></button>
+      </div>
+
       <!-- Upsells -->
       <div class="addon-box" id="upsells"></div>
 
@@ -100,6 +109,11 @@
   <div class="section-head"><h2>Related Products</h2></div>
   <div class="row g-3" id="related"></div>
 </main>
+<!-- মোবাইল স্টিকি বাই-বার: মূল বাটন স্ক্রিনের বাইরে গেলে নিচে ভেসে ওঠে -->
+<div class="buybar" id="buyBar" aria-hidden="true">
+  <div class="bb-info"><div class="bb-name" id="bbName"></div><div class="bb-price" id="bbPrice"></div></div>
+  <button class="btn btn-brand rounded-pill bb-btn" id="bbBtn" type="button">অর্ডার নাউ</button>
+</div>
 <div id="site-footer"></div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -175,6 +189,27 @@ $(function () {
   }
   $('.p-add').on('click', () => { if (addMain()) HC.toast('কার্টে যোগ হয়েছে ✓'); });
   $('.p-order').on('click', () => { if (addMain()) HC.openOrder(); });
+
+  // শেয়ার
+  const pageUrl = location.href.split('#')[0], enc = encodeURIComponent;
+  $('#shFb').attr('href', 'https://www.facebook.com/sharer/sharer.php?u=' + enc(pageUrl));
+  $('#shWa').attr('href', 'https://wa.me/?text=' + enc(p.name + ' ' + pageUrl));
+  $('#shMs').attr('href', 'https://www.facebook.com/dialog/send?link=' + enc(pageUrl) + '&redirect_uri=' + enc(pageUrl));
+  $('#shCopy').on('click', function () {
+    const done = () => HC.toast('লিংক কপি হয়েছে ✓');
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(pageUrl).then(done, () => HC.toast(pageUrl)); else HC.toast(pageUrl);
+  });
+
+  // স্টিকি বাই-বার (শুধু মোবাইলে CSS দিয়ে দেখায়)
+  $('#bbName').text(p.name);
+  const bbSync = () => $('#bbPrice').text($('#pPrice').text().replace(/\s+/g, ' ').trim());
+  const ext = p.type === 'external', out = p.stock <= 0 && !ext;
+  $('#bbBtn').text(ext ? p.btn : out ? 'স্টক আউট' : 'অর্ডার নাউ').prop('disabled', out);
+  $('#bbBtn').on('click', function () { if (ext) window.open(p.url, '_blank', 'noopener'); else $('.p-order').trigger('click'); });
+  bbSync(); $(document).on('click', '.var-btn, .g-d', () => setTimeout(bbSync, 0));
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(es => es.forEach(e => $('#buyBar').toggleClass('show', !e.isIntersecting && e.boundingClientRect.top < 0)), { threshold: 0 }).observe(document.getElementById('pBuy'));
+  }
 
   // রিভিউ
   const reviews = JSON.parse(localStorage.getItem('hc_rv_' + p.id) || 'null') || [
