@@ -269,6 +269,18 @@ img{max-width:100%}
   .track-item{flex-wrap:wrap}
   .track-item .ti-price{margin-left:auto}
 }
+.share-row{display:flex;align-items:center;gap:.5rem}
+.share-btn{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:1.05rem;padding:0;transition:.2s}
+.share-btn:hover{background:var(--brand);border-color:var(--brand);color:#fff}
+.buybar{display:none}
+@media(max-width:767.98px){
+  .buybar{display:flex;align-items:center;gap:.7rem;position:fixed;left:10px;right:10px;bottom:82px;z-index:1039;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:.55rem .6rem .55rem .9rem;box-shadow:0 10px 30px rgba(15,23,42,.2);transform:translateY(140%);transition:transform .25s}
+  .buybar.show{transform:none}
+  .bb-info{flex:1;min-width:0}
+  .bb-name{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bb-price{font-weight:800;color:var(--brand);font-size:1.05rem}
+  .bb-btn{flex:none;padding:.55rem 1.1rem;font-weight:700}
+}
 /* Footer */
 .site-footer{background:var(--navy);color:#cbd5e1;padding-top:3rem;margin-top:3rem}
 .site-footer h6{color:#fff;font-weight:700;margin-bottom:1rem}
