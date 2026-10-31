@@ -32,6 +32,7 @@
       <ul class="meta-list">
         <li><b>SKU:</b> <span id="pSku"></span></li>
         <li><b>ক্যাটাগরি:</b> <a id="pCat" class="text-brand" href="#"></a></li>
+        <li id="pStock"></li>
       </ul>
 
       <div id="pOptions" class="mb-3"></div>
@@ -118,6 +119,7 @@ $(function () {
   $('#bcCat, #pCat').text(cat.name).attr('href', 'category.html?cat=' + p.cat);
   $('#bcName').text(p.name.slice(0, 40)); $('#pName').text(p.name);
   $('#pRating').html(HC.stars(p.rating) + ' <span class="text-muted">(' + p.reviews + ' রিভিউ)</span>');
+  $('#pStock').html(HC.stockHtml(p, true));
   $('#pShort').text(p.desc); $('#pSku').text(p.sku); $('#overview').html('<p>' + p.desc + '</p><ul><li>আসল পণ্য, সিল করা প্যাকেজ</li><li>মোবাইল অ্যাপ থেকে লাইভ ভিউ</li><li>নাইট ভিশন ও মোশন ডিটেকশন</li><li>বাংলা সাপোর্ট</li></ul>');
   $('#typeBadge').text({ simple: 'Simple Product', variable: 'Variable Product', grouped: 'Grouped Product', external: 'External / Affiliate' }[p.type]);
 
@@ -162,6 +164,7 @@ $(function () {
   // Upsells (Frequently bought together)
   $('#upsells').html('<h6><i class="bi bi-stars text-brand"></i> Frequently bought together</h6>' + HC.D.addons.map(a => { const x = HC.find(a.id); return `<label class="addon-item"><input type="checkbox" class="form-check-input up-chk" data-id="${x.id}"><span class="grow">${x.name}<small>${a.note}</small></span><b>${B(x.sale)}</b></label>`; }).join(''));
 
+  if (p.stock <= 0 && p.type !== 'external') $('.p-add, .p-order').prop('disabled', true).addClass('disabled');
   function addMain() {
     if (p.type === 'grouped') {
       let any = false; p.children.forEach((c, i) => { if (grpQty[i] > 0) { HC.add(p.id, i, grpQty[i]); any = true; } });
