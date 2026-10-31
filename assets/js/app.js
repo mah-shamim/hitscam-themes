@@ -350,6 +350,19 @@
       applyTheme(next); store.set('hc_theme', next); HC.toast(next === 'dark' ? 'ডার্ক মোড চালু' : 'লাইট মোড চালু');
     });
 
+    // ---- লাইভ সার্চ সাজেশন (হেডারের দুই সার্চ বক্সেই)
+    const suggest = $input => {
+      const q = $.trim($input.val()).toLowerCase(), $box = $input.closest('.search-box');
+      $box.find('.sugg').remove(); if (q.length < 2) return;
+      const cat = $box.find('select').val();
+      const hits = D.products.filter(p => (!cat || p.cat === cat) && (p.name.toLowerCase().includes(q) || HC.cat(p.cat).name.includes(q) || p.sku.toLowerCase().includes(q))).slice(0, 6);
+      const rows = hits.map(p => `<a class="sugg-item" href="product.html?id=${p.id}"><img src="${p.img}" alt=""><span class="sg-name">${p.name}</span><b class="sg-price">${BDT(HC.minPrice(p).sale)}</b></a>`).join('');
+      $box.append(`<div class="sugg" role="listbox">${rows || '<div class="sugg-empty">কোনো প্রোডাক্ট পাওয়া যায়নি</div>'}<a class="sugg-all" href="shop.html?q=${encodeURIComponent($.trim($input.val()))}">সব ফলাফল দেখুন →</a></div>`);
+    };
+    $(document).on('input', '.search-box input[name=q]', function () { suggest($(this)); });
+    $(document).on('click', function (e) { if (!$(e.target).closest('.search-box').length) $('.sugg').remove(); });
+    $(document).on('keydown', '.search-box input[name=q]', function (e) { if (e.key === 'Escape') $('.sugg').remove(); });
+
     // ---- cart interactions (mini cart, modal, cart page) ----
     $(document).on('click', '.qty-btn', function () {
       const k = $(this).data('key'), it = HC.cart().find(i => i.key === k); if (it) HC.setQty(k, it.qty + (+$(this).data('d')));
