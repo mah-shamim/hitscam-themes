@@ -413,7 +413,7 @@
       const fl = this.files[0], $p = $('#slipPreview').empty(); $(this).removeClass('is-invalid');
       if (!fl) return;
       if (!slipOk(fl)) { $(this).addClass('is-invalid'); this.value = ''; return; }
-      $p.append(/^image\//.test(fl.type) ? $('<img class="rounded-3 border" style="max-height:120px">').attr('src', URL.createObjectURL(fl)) : $('<span class="badge bg-secondary"></span>').text(fl.name));
+      $p.append(/^image\//.test(fl.type) ? $('<img class="rounded-3 border" style="max-height:120px" alt="পেমেন্ট স্লিপের প্রিভিউ">').attr('src', URL.createObjectURL(fl)) : $('<span class="badge bg-secondary"></span>').text(fl.name));
     });
     $(document).on('submit', '#orderForm', function (e) { e.preventDefault(); HC.placeOrder(this); });
   });
