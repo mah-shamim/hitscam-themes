@@ -123,14 +123,14 @@ img{max-width:100%}
 .pc-price del{font-weight:400;color:var(--muted);font-size:.85rem;margin-right:.35rem}
 .pc-from{font-size:.72rem;color:var(--muted);font-weight:400}
 .pc-actions{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.3rem}
-.pc-actions .btn{font-size:.82rem;padding:.42rem .3rem}
 .pc-actions .btn-ext{grid-column:1/-1}
-/* কার্টে যোগ হলে "ভিউ কার্ট" খোলে — তিনটি বাটন পাশাপাশি */
-.pc-actions .btn-view{display:none}
-.pc-actions.three{grid-template-columns:repeat(3,minmax(0,1fr));gap:.3rem}
-.pc-actions.three .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;font-size:.7rem;line-height:1.15;padding:.4rem .15rem;white-space:normal;text-align:center}
-.pc-actions.three .btn i{font-size:1rem}
-.pc-actions.three .btn-view{display:flex}
+/* বাটন: Add to Cart ও View Cart সলিড লাল পাশাপাশি; Order Now নিচে পুরো প্রস্থে লাল আউটলাইন */
+.pc-actions .btn{font-size:.92rem;font-weight:700;padding:.62rem .5rem;border-radius:.4rem;line-height:1.2;white-space:nowrap}
+.pc-actions .btn-add{order:1}
+.pc-actions .btn-view{display:none;order:2}
+.pc-actions .btn-order{order:3}
+.pc-actions.three .btn-view{display:block}
+.pc-actions.three .btn-order{grid-column:1/-1}
 
 /* Qty */
 .qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
@@ -277,6 +277,5 @@ img{max-width:100%}
   .hero-slide{padding:1.6rem;min-height:300px}
   .section{padding:1.5rem 0}
   .pc-body{padding:.65rem}
-  .pc-actions .btn{font-size:.75rem}
   .or-hero{padding:1.3rem}
 }

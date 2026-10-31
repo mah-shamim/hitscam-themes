@@ -76,9 +76,9 @@
     }
     const actions = p.type === 'external'
       ? `<a class="btn btn-brand btn-ext" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`
-      : `<button class="btn btn-brand-outline btn-add" type="button"><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>
-         <button class="btn btn-brand btn-order" type="button"><i class="bi bi-lightning-charge-fill"></i> অর্ডার নাউ</button>
-         <a class="btn btn-soft btn-view" href="cart.html"><i class="bi bi-bag-check-fill"></i> ভিউ কার্ট</a>`;
+      : `<button class="btn btn-brand btn-add" type="button">অ্যাড টু কার্ট</button>
+         <button class="btn btn-brand-outline btn-order" type="button">অর্ডার নাউ</button>
+         <a class="btn btn-brand btn-view" href="cart.html">ভিউ কার্ট</a>`;
     return `<div class="product-card" data-id="${p.id}" data-opt="${lo}">
       ${disc ? `<span class="pc-badge">-${disc}%</span>` : ''}
       <button class="wish ${store.get('hc_wish', []).includes(p.id) ? 'on' : ''}" type="button" aria-label="উইশলিস্ট"><i class="bi bi-heart-fill"></i></button>
