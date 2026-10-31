@@ -38,6 +38,19 @@
       <tr><td>ট্যাবলেট</td><td>768–991px</td><td>প্রোডাক্ট ৩ কলাম, ডেস্কটপ সার্চ বার</td></tr>
       <tr><td>ল্যাপটপ / ডেস্কটপ</td><td>992px+</td><td>সাইডবার ফিল্টার + ৩–৪ কলাম গ্রিড, মোডাল ২ কলাম</td></tr></tbody></table></div>
 
+  <h3>অটোমেটেড টেস্ট (CI)</h3>
+  <p>প্রতিটি পরিবর্তনে GitHub Actions এ নিচের ম্যাট্রিক্সে সব পেজ ও মূল ফ্লো স্বয়ংক্রিয়ভাবে পরীক্ষা হয়।</p>
+  <div class="table-responsive"><table class="table table-bordered compat-table bg-white">
+    <thead class="table-light"><tr><th>প্রজেক্ট</th><th>ইঞ্জিন</th><th>ভিউপোর্ট</th></tr></thead>
+    <tbody>
+      <tr><td>Chrome / Edge</td><td>Chromium</td><td>1280px ডেস্কটপ</td></tr>
+      <tr><td>Firefox</td><td>Gecko</td><td>1280px ডেস্কটপ</td></tr>
+      <tr><td>Safari</td><td>WebKit</td><td>1280px ডেস্কটপ</td></tr>
+      <tr><td>Pixel 7 · Galaxy S9+</td><td>Chromium (Android)</td><td>412px · 320px</td></tr>
+      <tr><td>iPhone 14 · iPhone SE</td><td>WebKit (iOS)</td><td>390px · 320px</td></tr>
+      <tr><td>iPad · Galaxy Tab</td><td>WebKit · Chromium</td><td>810px · 712px</td></tr>
+      <tr><td>Windows · macOS</td><td>Chromium, Firefox, WebKit</td><td>1280px ডেস্কটপ</td></tr></tbody></table></div>
+
   <h3>ফিচার চেকলিস্ট</h3>
   <ul>
     <li><b>কার্ট সংরক্ষণ:</b> <code>localStorage</code> ব্যবহার করা হয়েছে; বন্ধ থাকলে (যেমন প্রাইভেট মোড) মেমোরিতে ফলব্যাক চলে।</li>

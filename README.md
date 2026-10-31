@@ -42,6 +42,35 @@ WooCommerce শপের জন্য স্ট্যাটিক HTML টেম
 - **প্রোডাক্ট পেজ:** শেয়ার বাটন (Facebook, WhatsApp, Messenger, কপি) ও মোবাইলে স্টিকি বাই-বার।
 - **ভাসমান বাটন:** WhatsApp চ্যাট (নাম্বার `assets/js/app.js` এর `WA_NUM`) ও ব্যাক-টু-টপ।
 
+## টেস্ট ও CI (ডিভাইস + ব্রাউজার কম্পেটিবিলিটি)
+প্রতিটি push / pull request এ এবং প্রতি সোমবার GitHub Actions (`.github/workflows/ci.yml`) চলে:
+
+| ধাপ | কী চেক করে |
+|---|---|
+| **Static checks** | JS সিনট্যাক্স, ভাঙা লিংক, `<title>/viewport/lang`, ডুপ্লিকেট id, alt ছাড়া ছবি, http (mixed content) |
+| **Browsers (১০টি)** | Chrome, Firefox, Safari(WebKit), Edge · Pixel 7, Galaxy S9+ (320px), iPhone 14, iPhone SE (320px) · iPad, Galaxy Tab |
+| **Cross-OS** | Windows ও macOS এ Chromium / Firefox / WebKit |
+| **Compatibility gate** | সবগুলো পাশ না করলে ফেইল — Branch protection এ এই একটিকেই required check দিন |
+
+প্রতিটি ব্রাউজার/ডিভাইসে যা পরীক্ষা হয়: ২২টি পেজ ক্লিন লোড (কনসোল/নেটওয়ার্ক এরর নেই), **অনুভূমিক স্ক্রল নেই**, কার্ডের রেডিও/কার্ট/অর্ডার মোডাল/বিকাশ TrxID, ডার্ক মোড, সার্চ, উইশলিস্ট, ট্র্যাক অর্ডার, মোবাইল ডক ও স্টিকি বার, `localStorage` ব্লক থাকলে (ইন-অ্যাপ ব্রাউজার) কার্ট, এবং Facebook/Instagram/WhatsApp ইন-অ্যাপ ব্রাউজার ডিটেকশন।
+
+- রিপোর্ট ও প্রতিটি পেজের স্ক্রিনশট: Actions রানের **Artifacts** এ `report-<প্রজেক্ট>` (ডাউনলোড করে `index.html` খুলুন)। ফেইল হলে `traces-<প্রজেক্ট>` ও থাকে।
+- সাপ্তাহিক/ম্যানুয়াল রান আসল CDN থেকে লাইব্রেরি লোড করে (Run workflow → `live_cdn`); বাকি রান npm থেকে, তাই স্থিতিশীল।
+- ট্যাগ (`v*`) পুশ করলে `.github/workflows/release.yml` নিজে থেকে zip বানিয়ে GitHub Release তৈরি করে।
+
+**লোকাল টেস্ট**
+```bash
+npm ci
+npx playwright install --with-deps          # সব ব্রাউজার (একবার)
+npm run lint                                # স্ট্যাটিক চেক
+npm test                                    # সব ডিভাইস/ব্রাউজার
+npx playwright test --project=iphone-se     # একটি ডিভাইস
+PW_FORCE_CHROMIUM=1 npm test                # শুধু Chromium ইনস্টল থাকলে (সব ভিউপোর্ট Chromium এ)
+npm run serve                               # http://127.0.0.1:4173 এ প্রিভিউ
+```
+
+> সীমাবদ্ধতা: Playwright এর WebKit আসল iOS Safari নয় (একই ইঞ্জিন), আর Samsung Internet/UC Browser/Opera Mini আলাদা করে চলে না (Chromium ভিত্তিক Galaxy প্রজেক্ট কাছাকাছি)। লাইভ করার আগে আসল ফোনে একবার দেখে নিন।
+
 ## ডেমো ডাটা
 `assets/js/data.js` এ প্রোডাক্ট, ক্যাটাগরি ও upsell আইটেম। কার্ট `localStorage` এ থাকে। কুপন ডেমো: `HITS10`, `WELCOME100`।
 
