@@ -15,6 +15,9 @@
   };
   let memCart = null; // storage না চললে fallback
 
+  const applyTheme = t => { const r = document.documentElement; r.setAttribute('data-theme', t); r.setAttribute('data-bs-theme', t); };
+  (function () { let t = null; try { t = JSON.parse(localStorage.getItem('hc_theme')); } catch (e) {} applyTheme(t === 'dark' ? 'dark' : 'light'); })();
+
   const HC = window.HC = { BDT, FREE_SHIP, store, D, PAY_NUMBERS };
 
   HC.find = id => D.products.find(p => p.id === +id);
@@ -222,6 +225,7 @@
           <form class="search-box flex-grow-1 d-none d-md-flex" action="shop.html"><select name="cat" aria-label="ক্যাটাগরি">${catOpts}</select>
             <input class="form-control" name="q" placeholder="আইপি ক্যামেরা, সিসি ক্যামেরা, মেমোরি কার্ড, মিনি ইউপিএস খুঁজুন..."><button aria-label="সার্চ"><i class="bi bi-search"></i></button></form>
           <div class="header-icons">
+            <button class="icon-btn" id="themeBtn" type="button" aria-label="থিম বদলান" title="ডার্ক / লাইট মোড"><i class="bi bi-sun sun"></i><i class="bi bi-moon-stars-fill moon"></i></button>
             <button class="icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniWish" aria-label="উইশলিস্ট"><i class="bi bi-heart"></i><span class="badge-count wish-count">0</span></button>
             <button class="icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-label="কার্ট"><i class="bi bi-cart3"></i><span class="badge-count cart-count">0</span></button>
             <a class="icon-btn" href="track-order.html" aria-label="অর্ডার ট্র্যাক" title="অর্ডার ট্র্যাক"><i class="bi bi-truck"></i></a>
@@ -340,6 +344,11 @@
     if (window.matchMedia && matchMedia('(hover:hover)').matches) {
       $(document).on('mouseenter', '.has-sub', () => subSet(true)).on('mouseleave', '.nav-wrap', () => subSet(false));
     }
+
+    $(document).on('click', '#themeBtn', function () {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next); store.set('hc_theme', next); HC.toast(next === 'dark' ? 'ডার্ক মোড চালু' : 'লাইট মোড চালু');
+    });
 
     // ---- cart interactions (mini cart, modal, cart page) ----
     $(document).on('click', '.qty-btn', function () {
