@@ -242,8 +242,8 @@
           <div class="header-icons">
             <button class="icon-btn" id="themeBtn" type="button" aria-label="থিম বদলান" title="ডার্ক / লাইট মোড"><i class="bi bi-sun sun"></i><i class="bi bi-moon-stars-fill moon"></i></button>
             <button class="icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniWish" aria-label="উইশলিস্ট"><i class="bi bi-heart"></i><span class="badge-count wish-count">0</span></button>
-            <button class="icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-label="কার্ট"><i class="bi bi-cart3"></i><span class="badge-count cart-count">0</span></button>
-            <a class="icon-btn" href="track-order.html" aria-label="অর্ডার ট্র্যাক" title="অর্ডার ট্র্যাক"><i class="bi bi-truck"></i></a>
+            <button class="icon-btn d-none d-sm-grid" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-label="কার্ট"><i class="bi bi-cart3"></i><span class="badge-count cart-count">0</span></button>
+            <a class="icon-btn d-none d-sm-grid" href="track-order.html" aria-label="অর্ডার ট্র্যাক" title="অর্ডার ট্র্যাক"><i class="bi bi-truck"></i></a>
             <a class="icon-btn" href="login.html" aria-label="লগইন / অ্যাকাউন্ট" title="লগইন / অ্যাকাউন্ট"><i class="bi bi-person"></i></a>
           </div></div>
         <form class="search-box d-flex d-md-none mobile-search mb-2" action="shop.html"><input class="form-control" name="q" placeholder="প্রোডাক্ট খুঁজুন..."><button aria-label="সার্চ"><i class="bi bi-search"></i></button></form>
@@ -358,7 +358,9 @@
 
     // ---- "সব প্রোডাক্ট" সাব মেনু: ডেস্কটপে হোভার, মোবাইলে ট্যাপ
     const subSet = open => { $('#navSub').toggleClass('open', open); $('.sub-toggle').attr('aria-expanded', open).toggleClass('on', open); };
-    $(document).on('click', '.sub-toggle', function (e) { e.stopPropagation(); subSet(!$('#navSub').hasClass('open')); });
+    const canHover = () => window.matchMedia && matchMedia('(hover:hover)').matches;
+    // মাউস হোভার ডিভাইসে ক্লিক শুধু খোলে (হোভার আগেই খুলেছে, টগল করলে বন্ধ হয়ে যেত); টাচ/কীবোর্ডে টগল
+    $(document).on('click', '.sub-toggle', function (e) { e.stopPropagation(); (canHover() && e.detail > 0) ? subSet(true) : subSet(!$('#navSub').hasClass('open')); });
     $(document).on('click', function (e) { if (!$(e.target).closest('.nav-wrap').length) subSet(false); });
     $(document).on('keydown', function (e) { if (e.key === 'Escape') subSet(false); });
     if (window.matchMedia && matchMedia('(hover:hover)').matches) {
