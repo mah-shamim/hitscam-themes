@@ -73,6 +73,12 @@
     <div class="row g-3" id="secNew"></div>
   </section>
 
+  <!-- সম্প্রতি দেখা পণ্য -->
+  <section class="container section recent-wrap" style="display:none">
+    <div class="section-head"><h2>সম্প্রতি দেখা পণ্য</h2></div>
+    <div class="row g-3" id="secRecent"></div>
+  </section>
+
   <!-- কাস্টমার রিভিউ -->
   <section class="container section">
     <div class="section-head"><h2>কাস্টমার রিভিউ</h2></div>
@@ -106,6 +112,7 @@ $(function () {
   HC.section('#secFlash', 'flash', 4);
   HC.section('#secBest', 'best', 4);
   HC.section('#secNew', 'new', 4);
+  HC.renderRecent('#secRecent', 0, 4);
 
   $('.hero-owl').owlCarousel({ items: 1, loop: true, autoplay: true, autoplayTimeout: 5000, dots: true, nav: false });
   $('.review-owl').owlCarousel({ loop: true, margin: 16, autoplay: true, dots: true, nav: false, responsive: { 0: { items: 1 }, 768: { items: 2 }, 1100: { items: 3 } } });
