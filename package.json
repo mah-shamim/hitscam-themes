@@ -1,0 +1,21 @@
+{
+  "name": "hitscam-themes",
+  "version": "1.4.0",
+  "private": true,
+  "description": "HitsCam WooCommerce HTML template (Bootstrap 5 + jQuery) with cross-browser / cross-device tests",
+  "scripts": {
+    "serve": "node tests/server.js",
+    "lint": "node tests/lint.js",
+    "test": "playwright test",
+    "test:desktop": "playwright test --project=chromium --project=firefox --project=webkit",
+    "test:mobile": "playwright test --project=pixel-7 --project=iphone-14 --project=iphone-se",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "bootstrap": "5.3.3",
+    "bootstrap-icons": "1.11.3",
+    "jquery": "3.7.1",
+    "owl.carousel": "2.3.4"
+  }
+}

@@ -1,3 +1,9 @@
 .idea
 .vscode
 .qodo
+
+# tests / node
+node_modules/
+playwright-report/
+test-results/
+*.zip
