@@ -408,6 +408,21 @@
     $(document).on('click', '.cmp-clear', function () { store.set('hc_cmp', []); HC.renderCmpBar(); $(document).trigger('cmpchange'); });
     HC.renderCmpBar();
 
+    // ---- অ্যাক্সেসিবিলিটি: স্কিপ লিংক + মূল কনটেন্ট ল্যান্ডমার্ক
+    const $main = $('main').first();
+    if ($main.length) {
+      if (!$main.attr('id')) $main.attr('id', 'main-content');
+      $main.attr('tabindex', '-1');
+      $('body').prepend('<a class="skip-link" href="#' + $main.attr('id') + '">মূল কনটেন্টে যান</a>');
+      $(document).on('click', '.skip-link', function (e) { e.preventDefault(); $main[0].focus(); $main[0].scrollIntoView(); });
+    }
+
+    // ---- PWA: সার্ভিস ওয়ার্কার (শুধু http/https এ; file:// এ চলে না)
+    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+      const reg = () => { try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) {} };
+      if (document.readyState === 'complete') reg(); else window.addEventListener('load', reg);
+    }
+
     // ---- "সব প্রোডাক্ট" সাব মেনু: ডেস্কটপে হোভার, মোবাইলে ট্যাপ
     const subSet = open => { $('#navSub').toggleClass('open', open); $('.sub-toggle').attr('aria-expanded', open).toggleClass('on', open); };
     const canHover = () => window.matchMedia && matchMedia('(hover:hover)').matches;

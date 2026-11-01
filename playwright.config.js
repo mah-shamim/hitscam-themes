@@ -24,6 +24,7 @@ module.exports = defineConfig({
     baseURL: 'http://127.0.0.1:4173',
     locale: 'bn-BD',
     timezoneId: 'Asia/Dhaka',
+    serviceWorkers: 'block',     // সার্ভিস ওয়ার্কার শুধু PWA টেস্টে চালু (tests/pwa.spec.js)
     reducedMotion: 'reduce',   // স্মুথ স্ক্রল/অ্যানিমেশনে ক্লিক "not stable" হওয়া ঠেকায়
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',

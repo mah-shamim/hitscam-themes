@@ -1,0 +1,22 @@
+{
+  "name": "HitsCam – ক্যামেরা ও স্মার্ট গ্যাজেট শপ",
+  "short_name": "HitsCam",
+  "description": "সিসিটিভি, আইপি ক্যামেরা ও স্মার্ট গ্যাজেটের বিশ্বস্ত অনলাইন শপ",
+  "lang": "bn",
+  "dir": "ltr",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#e03131",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "shortcuts": [
+    { "name": "অর্ডার ট্র্যাক", "url": "track-order.html" },
+    { "name": "কার্ট", "url": "cart.html" }
+  ]
+}
