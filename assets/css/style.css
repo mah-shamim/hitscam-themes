@@ -346,3 +346,24 @@ img{max-width:100%}
 @media(max-width:767.98px){.m-slider.s-sm>*{width:44%!important}}
 /* স্টিকি বাই-বার: একটাই দাম */
 .bb-price{line-height:1.2}
+
+/* কার্ড টুল (কুইক ভিউ / তুলনা) */
+.pc-tools{position:absolute;top:48px;right:8px;z-index:2;display:flex;flex-direction:column;gap:6px}
+.pc-tool{width:34px;height:34px;border-radius:50%;border:0;background:var(--card);box-shadow:var(--shadow);color:var(--muted);display:grid;place-items:center;font-size:.95rem;transition:.2s}
+.pc-tool:hover,.pc-tool.on{background:var(--brand);color:#fff}
+@media(hover:hover){.pc-tools{opacity:0;transform:translateX(6px);transition:.2s}.product-card:hover .pc-tools,.pc-tools:focus-within{opacity:1;transform:none}}
+.qv-img{width:100%;border-radius:16px;background:var(--bg);aspect-ratio:1;object-fit:cover}
+.qv-qty{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line);border-radius:50px;padding:.15rem .4rem}
+.qv-qty button{width:30px;height:30px;border:0;border-radius:50%;background:var(--bg);font-weight:700}
+.qv-qty span{min-width:1.6rem;text-align:center;font-weight:700}
+/* তুলনা বার */
+.cmp-bar{position:fixed;left:50%;bottom:20px;transform:translate(-50%,160%);z-index:1038;display:flex;align-items:center;gap:.6rem;background:var(--card);border:1px solid var(--line);border-radius:50px;padding:.45rem .6rem .45rem .8rem;box-shadow:0 10px 30px rgba(15,23,42,.22);transition:transform .25s;max-width:calc(100vw - 20px)}
+.cmp-bar.show{transform:translate(-50%,0)}
+.cmp-thumbs{display:flex}.cmp-thumbs img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--card);margin-left:-8px;background:var(--bg)}.cmp-thumbs img:first-child{margin-left:0}
+@media(max-width:767.98px){.cmp-bar{bottom:96px}body:has(.buybar.show) .cmp-bar{bottom:156px}}
+.cmp-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.cmp-table th,.cmp-table td{padding:.8rem 1rem;border-bottom:1px solid var(--line);vertical-align:top;min-width:150px}
+.cmp-table th{width:140px;min-width:110px;background:var(--bg);font-weight:600;position:sticky;left:0}
+.cmp-table tr:last-child>*{border-bottom:0}
+.cmp-table img{width:100%;max-width:160px;border-radius:12px;background:var(--bg)}
+.cmp-best{color:#198754;font-weight:700}

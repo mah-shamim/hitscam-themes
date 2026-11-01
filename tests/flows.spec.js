@@ -232,3 +232,35 @@ test('প্রোডাক্ট পেজ: ট্রাস্ট ব্যা�
     expect((txt.match(/৳/g) || []).length, 'স্টিকি বারে একাধিক দাম: ' + txt).toBe(1);
   }
 });
+
+test('কুইক ভিউ: খোলে, অপশন বদলালে দাম বদলায়, কার্টে যোগ হয়', async ({ page }) => {
+  await page.goto('/index.html');
+  const c = card(page, 2);
+  await c.locator('.qv-btn').dispatchEvent('click');
+  const m = page.locator('#qvModal');
+  await expect(m).toBeVisible();
+  await expect(m.locator('#qvTitle')).toContainText('Solar');
+  await m.locator('.qv-opt').nth(2).check();
+  await expect(m.locator('#qvPrice')).toContainText('14,200');
+  await m.locator('.qv-q[data-d="1"]').click();
+  await m.locator('#qvAdd').click();
+  await expect(m).toBeHidden();
+  await expect(cartCount(page)).toHaveText('2');
+});
+
+test('তুলনা: সর্বোচ্চ ৩টি, বার দেখায়, compare পেজে টেবিল ও সরানো', async ({ page }) => {
+  await page.goto('/index.html');
+  const btn = id => card(page, id).locator('.cmp-btn');
+  const ids = await page.locator('#secTrending .product-card').evaluateAll(els => els.map(e => +e.dataset.id));
+  expect(ids.length).toBeGreaterThanOrEqual(4);
+  for (const id of ids.slice(0, 3)) await btn(id).dispatchEvent('click');
+  await expect(page.locator('#cmpBar')).toHaveClass(/show/);
+  await btn(ids[3]).dispatchEvent('click');                       // ৪র্থটা যোগ হবে না
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('hc_cmp')).length)).toBe(3);
+  await page.locator('#cmpBar a').click();
+  await expect(page).toHaveURL(/compare\.html/);
+  await expect(page.locator('#cmpTable th[scope=row]').first()).toBeVisible();
+  await expect(page.locator('#cmpTable .cmp-rm')).toHaveCount(3);
+  await page.locator('.cmp-rm').first().click();
+  await expect(page.locator('#cmpTable .cmp-rm')).toHaveCount(2);
+});
