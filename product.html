@@ -60,14 +60,15 @@
       <!-- Upsells -->
       <div class="addon-box" id="upsells"></div>
 
-      <!-- Trust -->
-      <div class="row g-2 trust-row mt-1 m-slider s-md">
-        <div class="col-6"><div class="t-item"><i class="bi bi-truck"></i><b>Fast delivery</b></div></div>
-        <div class="col-6"><div class="t-item"><i class="bi bi-shield-check"></i><b>Secure payment</b></div></div>
-        <div class="col-6"><div class="t-item"><i class="bi bi-arrow-repeat"></i><b>7-day return</b></div></div>
-        <div class="col-6"><div class="t-item"><i class="bi bi-headset"></i><b>Online Support 24/7</b></div></div>
-      </div>
     </div>
+  </div>
+
+  <!-- Trust: পুরো প্রস্থে (ডেস্কটপে ৪ কলাম, মোবাইলে অটো-স্লাইড) -->
+  <div class="row g-3 trust-row mb-4 m-slider s-md" data-autoslide>
+    <div class="col-6 col-lg-3"><div class="t-item"><i class="bi bi-truck"></i><div><b>Fast delivery</b><br><small class="text-muted">সারা দেশে</small></div></div></div>
+    <div class="col-6 col-lg-3"><div class="t-item"><i class="bi bi-shield-check"></i><div><b>Secure payment</b><br><small class="text-muted">১০০% নিরাপদ</small></div></div></div>
+    <div class="col-6 col-lg-3"><div class="t-item"><i class="bi bi-arrow-repeat"></i><div><b>7-day return</b><br><small class="text-muted">সহজ রিটার্ন</small></div></div></div>
+    <div class="col-6 col-lg-3"><div class="t-item"><i class="bi bi-headset"></i><div><b>Online Support 24/7</b><br><small class="text-muted">সবসময় পাশে</small></div></div></div>
   </div>
 
   <!-- ওভারভিউ ও ডিটেলস: ২ কলাম -->
@@ -155,7 +156,8 @@ $(function () {
     if (p.type === 'grouped') {
       const tot = p.children.reduce((s, c, i) => s + c.sale * grpQty[i], 0);
       $('#pPrice').html('<span class="fs-6 text-muted">থেকে </span>' + B(HC.minPrice(p).sale) + ' <span class="fs-6 text-muted ms-2">| সিলেক্টেড: ' + B(tot) + '</span>');
-    } else $('#pPrice').html((o.regular > o.sale ? '<del>' + B(o.regular) + '</del>' : '') + B(o.sale));
+      $('#pPrice').data('buy', tot || HC.minPrice(p).sale);
+    } else { $('#pPrice').html((o.regular > o.sale ? '<del>' + B(o.regular) + '</del>' : '') + B(o.sale)); $('#pPrice').data('buy', o.sale); }
   }
   function renderOptions() {
     if (p.type === 'variable') {
@@ -206,7 +208,8 @@ $(function () {
 
   // স্টিকি বাই-বার (শুধু মোবাইলে CSS দিয়ে দেখায়)
   $('#bbName').text(p.name);
-  const bbSync = () => $('#bbPrice').text($('#pPrice').text().replace(/\s+/g, ' ').trim());
+  // স্টিকি বারে শুধু বর্তমান (সেল) দাম — পুরোনো দাম ও "থেকে" লেখা বাদ
+  const bbSync = () => $('#bbPrice').text(B($('#pPrice').data('buy') || 0));
   const ext = p.type === 'external', out = p.stock <= 0 && !ext;
   $('#bbBtn').text(ext ? p.btn : out ? 'স্টক আউট' : 'অর্ডার নাউ').prop('disabled', out);
   $('#bbBtn').on('click', function () { if (ext) window.open(p.url, '_blank', 'noopener'); else $('.p-order').trigger('click'); });

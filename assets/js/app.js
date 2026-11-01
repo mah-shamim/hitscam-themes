@@ -236,14 +236,14 @@
         <span><a href="tel:+8801614747054"><i class="bi bi-telephone"></i> +880 1614-747054</a></span></div></div>
       <header class="site-header sticky-top"><div class="container">
         <div class="header-main d-flex align-items-center gap-3">
-          <a class="brand" href="index.html"><span class="brand-mark"><i class="bi bi-camera-video-fill"></i></span><span>HITS<b>Cam</b></span></a>
+          <a class="brand" href="index.html"><span class="brand-mark"><i class="bi bi-camera-video-fill"></i></span><span class="brand-text">HITS<b>Cam</b></span></a>
           <form class="search-box flex-grow-1 d-none d-md-flex" action="shop.html"><select name="cat" aria-label="ক্যাটাগরি">${catOpts}</select>
             <input class="form-control" name="q" placeholder="আইপি ক্যামেরা, সিসি ক্যামেরা, মেমোরি কার্ড, মিনি ইউপিএস খুঁজুন..."><button aria-label="সার্চ"><i class="bi bi-search"></i></button></form>
           <div class="header-icons">
             <button class="icon-btn" id="themeBtn" type="button" aria-label="থিম বদলান" title="ডার্ক / লাইট মোড"><i class="bi bi-sun sun"></i><i class="bi bi-moon-stars-fill moon"></i></button>
             <button class="icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniWish" aria-label="উইশলিস্ট"><i class="bi bi-heart"></i><span class="badge-count wish-count">0</span></button>
-            <button class="icon-btn d-none d-sm-grid" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-label="কার্ট"><i class="bi bi-cart3"></i><span class="badge-count cart-count">0</span></button>
-            <a class="icon-btn d-none d-sm-grid" href="track-order.html" aria-label="অর্ডার ট্র্যাক" title="অর্ডার ট্র্যাক"><i class="bi bi-truck"></i></a>
+            <button class="icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-label="কার্ট"><i class="bi bi-cart3"></i><span class="badge-count cart-count">0</span></button>
+            <a class="icon-btn" href="track-order.html" aria-label="অর্ডার ট্র্যাক" title="অর্ডার ট্র্যাক"><i class="bi bi-truck"></i></a>
             <a class="icon-btn" href="login.html" aria-label="লগইন / অ্যাকাউন্ট" title="লগইন / অ্যাকাউন্ট"><i class="bi bi-person"></i></a>
           </div></div>
         <form class="search-box d-flex d-md-none mobile-search mb-2" action="shop.html"><input class="form-control" name="q" placeholder="প্রোডাক্ট খুঁজুন..."><button aria-label="সার্চ"><i class="bi bi-search"></i></button></form>
@@ -417,4 +417,27 @@
     });
     $(document).on('submit', '#orderForm', function (e) { e.preventDefault(); HC.placeOrder(this); });
   });
+  // মোবাইলে [data-autoslide] স্লাইডার নিজে নিজে স্লাইড করে (ছোঁয়া/রিডিউসড-মোশনে থামে)
+  (function () {
+    const mq = window.matchMedia ? window.matchMedia('(max-width:767.98px)') : { matches: false };
+    const calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (calm) return;
+    const timers = new WeakMap();
+    function tick(el) {
+      if (!mq.matches || el.dataset.hold === '1' || !el.children.length) return;
+      const kids = [...el.children], x = el.scrollLeft + 4;
+      let i = kids.findIndex(k => k.offsetLeft >= x); if (i < 0) i = kids.length - 1;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+      const next = atEnd ? kids[0] : kids[Math.min(i + (kids[i].offsetLeft - x < 8 && kids[i].offsetLeft + 4 >= x ? 1 : 0), kids.length - 1)];
+      el.scrollTo({ left: next.offsetLeft - kids[0].offsetLeft, behavior: 'smooth' });
+    }
+    function start(el) {
+      if (timers.has(el)) return;
+      const pause = () => { el.dataset.hold = '1'; clearTimeout(el._rs); el._rs = setTimeout(() => { el.dataset.hold = '0'; }, 6000); };
+      ['touchstart', 'pointerdown', 'wheel'].forEach(ev => el.addEventListener(ev, pause, { passive: true }));
+      timers.set(el, setInterval(() => tick(el), 3200));
+    }
+    const scan = () => document.querySelectorAll('[data-autoslide]').forEach(start);
+    scan(); setTimeout(scan, 600);
+  })();
 })(jQuery);
