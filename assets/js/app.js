@@ -76,6 +76,8 @@
   const priceHtml = (o, p) => {
     return (o.regular > o.sale ? '<del>' + BDT(o.regular) + '</del>' : '') + BDT(o.sale);
   };
+  HC.cmp = () => store.get('hc_cmp', []).filter(id => HC.find(id));
+  HC.CMP_MAX = 3;
   HC.card = p => {
     const lo = HC.lowest(p), o = HC.options(p)[lo];
     const disc = o.regular > o.sale ? Math.round((1 - o.sale / o.regular) * 100) : 0;
@@ -99,6 +101,7 @@
     return `<div class="product-card" data-id="${p.id}" data-opt="${lo}">
       ${disc ? `<span class="pc-badge">-${disc}%</span>` : ''}
       <button class="wish ${store.get('hc_wish', []).includes(p.id) ? 'on' : ''}" type="button" aria-label="উইশলিস্ট"><i class="bi bi-heart-fill"></i></button>
+      <div class="pc-tools"><button class="pc-tool qv-btn" type="button" aria-label="কুইক ভিউ" title="কুইক ভিউ"><i class="bi bi-eye"></i></button><button class="pc-tool cmp-btn ${HC.cmp().includes(p.id) ? 'on' : ''}" type="button" aria-label="তুলনা করুন" title="তুলনা করুন"><i class="bi bi-arrow-left-right"></i></button></div>
       <a class="pc-img" href="product.html?id=${p.id}"><img loading="lazy" src="${p.img}" alt="${p.name}"></a>
       <div class="pc-body">
         <div class="pc-cat">${HC.cat(p.cat).name} · <span class="text-muted">${TYPE_LABEL[p.type]}</span></div>
@@ -255,7 +258,7 @@
       <div class="col-lg-4"><div class="brand text-white mb-2"><span class="brand-mark"><i class="bi bi-camera-video-fill"></i></span><span>HITS<b>Cam</b></span></div>
         <p>সিসিটিভি, আইপি ক্যামেরা ও স্মার্ট গ্যাজেটের বিশ্বস্ত অনলাইন শপ। অরিজিনাল পণ্য, দ্রুত ডেলিভারি, বিক্রয়োত্তর সাপোর্ট।</p>
         <p class="mb-0"><i class="bi bi-telephone"></i> +880 1614-747054<br><i class="bi bi-envelope"></i> support@hitscam.com</p></div>
-      <div class="col-6 col-lg-2"><h6>কোম্পানি</h6><a href="index.html">হোম</a><a href="shop.html">শপ</a><a href="contact.html">যোগাযোগ</a><a href="faq.html">FAQ</a></div>
+      <div class="col-6 col-lg-2"><h6>কোম্পানি</h6><a href="index.html">হোম</a><a href="shop.html">শপ</a><a href="contact.html">যোগাযোগ</a><a href="faq.html">FAQ</a><a href="compare.html">পণ্য তুলনা</a></div>
       <div class="col-6 col-lg-3"><h6>পলিসি</h6><a href="terms.html">শর্তাবলী</a><a href="returns.html">রিটার্ন, রিফান্ড ও ওয়ারেন্টি</a><a href="shipping.html">শিপিং তথ্য</a><a href="track-order.html">অর্ডার ট্র্যাক</a></div>
       <div class="col-lg-3"><h6>কম্পেটিবিলিটি</h6><a href="device-compatibility.html">ডিভাইস ও ব্রাউজার</a><a href="social-compatibility.html">সোশ্যাল মিডিয়া অ্যাপ ব্রাউজার</a><a href="minicart.html">মিনি কার্ট</a></div></div>
       <div class="footer-bottom d-flex justify-content-between flex-wrap gap-2"><span>© 2026 HitsCam. সর্বস্বত্ব সংরক্ষিত।</span><span>পেমেন্ট: ক্যাশ অন ডেলিভারি · বিকাশ · নগদ</span></div></div></footer>`;
@@ -355,6 +358,55 @@
     $(document).on('click', '.wl-add', function () { const p = HC.find($(this).data('id')); HC.add(p.id, HC.lowest(p), 1); HC.toast('কার্টে যোগ হয়েছে ✓'); });
     $(document).on('click', '.wl-rm', function () { store.set('hc_wish', HC.wish().filter(x => x !== +$(this).data('id'))); $(document).trigger('wishchange'); });
     $(document).on('click', '.wl-add-all', function () { HC.wish().map(HC.find).filter(p => p && p.type !== 'external').forEach(p => HC.add(p.id, HC.lowest(p), 1)); HC.toast('উইশলিস্টের সব পণ্য কার্টে যোগ হয়েছে ✓'); });
+
+    /* ---------- Quick View ---------- */
+    function qvHtml(p) {
+      const opts = HC.options(p), lo = HC.lowest(p), o = opts[lo], ext = p.type === 'external', out = p.stock <= 0 && !ext;
+      const radios = p.type === 'variable' || p.type === 'grouped'
+        ? '<div class="pc-group mb-3" style="--n:' + Math.min(opts.length, 3) + '">' + opts.map((v, i) => `<label><span><input type="radio" class="form-check-input qv-opt me-1" name="qvopt" value="${i}" ${i === lo ? 'checked' : ''}>${v.label}</span><b>${BDT(v.sale)}</b></label>`).join('') + '</div>' : '';
+      const act = ext ? `<a class="btn btn-brand rounded-pill flex-grow-1" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`
+        : `<div class="qty qv-qty"><button type="button" class="qv-q" data-d="-1" aria-label="কমান">−</button><span id="qvQty">1</span><button type="button" class="qv-q" data-d="1" aria-label="বাড়ান">+</button></div>
+           <button class="btn btn-brand rounded-pill flex-grow-1" id="qvAdd" type="button" ${out ? 'disabled' : ''}><i class="bi bi-cart-plus"></i> ${out ? 'স্টক আউট' : 'অ্যাড টু কার্ট'}</button>`;
+      return `<div class="row g-3 align-items-center"><div class="col-md-5"><img class="qv-img" src="${p.img}" alt="${p.name}"></div>
+        <div class="col-md-7"><div class="small text-muted">${HC.cat(p.cat).name} · SKU: ${p.sku || '—'}</div>
+          <h2 class="h5 fw-bold my-1" id="qvTitle">${p.name}</h2>
+          <div class="mb-2">${HC.stars(p.rating)} <span class="text-muted small">(${p.reviews} রিভিউ)</span></div>
+          <div class="prod-price mb-2" id="qvPrice">${priceHtml(o, p)}</div>
+          ${HC.stockHtml(p, true)}
+          <p class="text-muted small qv-desc">${(p.desc || '').slice(0, 160)}</p>${radios}
+          <div class="d-flex gap-2 align-items-center mb-2">${act}</div>
+          <a class="text-brand small fw-semibold" href="product.html?id=${p.id}">পূর্ণ বিবরণ দেখুন →</a></div></div>`;
+    }
+    $(document).on('click', '.qv-btn', function () {
+      const p = HC.find($(this).closest('.product-card').data('id'));
+      if (!$('#qvModal').length) $('body').append('<div class="modal fade" id="qvModal" tabindex="-1" aria-labelledby="qvTitle" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-header border-0 pb-0"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="বন্ধ করুন"></button></div><div class="modal-body pt-0" id="qvBody"></div></div></div></div>');
+      $('#qvBody').html(qvHtml(p)).data('id', p.id);
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('qvModal')).show();
+    });
+    $(document).on('change', '.qv-opt', function () { const p = HC.find($('#qvBody').data('id')); $('#qvPrice').html(priceHtml(HC.options(p)[+this.value], p)); });
+    $(document).on('click', '.qv-q', function () { const n = Math.max(1, Math.min(99, (+$('#qvQty').text() || 1) + +$(this).data('d'))); $('#qvQty').text(n); });
+    $(document).on('click', '#qvAdd', function () {
+      HC.add($('#qvBody').data('id'), +($('.qv-opt:checked').val() || HC.lowest(HC.find($('#qvBody').data('id')))), +$('#qvQty').text() || 1);
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('qvModal')).hide(); HC.toast('কার্টে যোগ হয়েছে ✓');
+    });
+
+    /* ---------- Compare (সর্বোচ্চ ৩টি) ---------- */
+    HC.renderCmpBar = () => {
+      const ids = HC.cmp(); $('.product-card').each(function () { $(this).find('.cmp-btn').toggleClass('on', ids.includes(+$(this).data('id'))); });
+      if (!$('#cmpBar').length) $('body').append('<div class="cmp-bar" id="cmpBar" role="region" aria-label="তুলনা"><div class="cmp-thumbs"></div><a class="btn btn-brand btn-sm rounded-pill" href="compare.html">তুলনা করুন <span class="cmp-n"></span></a><button class="btn btn-sm btn-soft rounded-pill cmp-clear" type="button">মুছুন</button></div>');
+      $('#cmpBar').toggleClass('show', ids.length > 0 && !/compare\.html/.test(location.pathname));
+      $('#cmpBar .cmp-thumbs').html(ids.map(id => `<img src="${HC.find(id).img}" alt="${HC.find(id).name}">`).join(''));
+      $('#cmpBar .cmp-n').text('(' + ids.length + ')');
+    };
+    $(document).on('click', '.cmp-btn', function () {
+      const id = +$(this).closest('.product-card').data('id'); let c = HC.cmp();
+      if (c.includes(id)) c = c.filter(x => x !== id);
+      else if (c.length >= HC.CMP_MAX) { HC.toast('সর্বোচ্চ ' + HC.CMP_MAX + 'টি পণ্য তুলনা করা যায়'); return; }
+      else c = c.concat(id);
+      store.set('hc_cmp', c); HC.renderCmpBar(); $(document).trigger('cmpchange');
+    });
+    $(document).on('click', '.cmp-clear', function () { store.set('hc_cmp', []); HC.renderCmpBar(); $(document).trigger('cmpchange'); });
+    HC.renderCmpBar();
 
     // ---- "সব প্রোডাক্ট" সাব মেনু: ডেস্কটপে হোভার, মোবাইলে ট্যাপ
     const subSet = open => { $('#navSub').toggleClass('open', open); $('.sub-toggle').attr('aria-expanded', open).toggleClass('on', open); };
