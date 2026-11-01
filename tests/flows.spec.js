@@ -201,3 +201,34 @@ test.describe('সোশ্যাল ইন-অ্যাপ ব্রাউজ�
     });
   }
 });
+
+test('হেডারে সব আইকন (থিম, উইশ, কার্ট, ট্র্যাক, ইউজার) সব স্ক্রিনে দেখা যায়, ওভারফ্লো নেই', async ({ page }) => {
+  for (const url of ['/index.html', '/login.html']) {
+    await page.goto(url);
+    for (const sel of ['#themeBtn', '[data-bs-target="#miniWish"]', '.header-icons [data-bs-target="#miniCart"]', '.header-icons a[href="track-order.html"]', '.header-icons a[href="login.html"]'])
+      await expect(page.locator(sel), `${url} ${sel}`).toBeVisible();
+    const r = await page.evaluate(() => { const h = document.querySelector('.header-icons').getBoundingClientRect(); return { right: h.right, w: document.documentElement.clientWidth, sw: document.documentElement.scrollWidth }; });
+    expect(r.right, 'আইকন স্ক্রিনের বাইরে').toBeLessThanOrEqual(r.w + 0.5);
+    expect(r.sw).toBeLessThanOrEqual(r.w);
+  }
+});
+
+test('Featured categories: সব কার্ড একই সাইজ', async ({ page }) => {
+  await page.goto('/index.html');
+  const hs = await page.locator('#featCats .cat-card').evaluateAll(els => els.map(e => [Math.round(e.getBoundingClientRect().height), Math.round(e.getBoundingClientRect().width)]));
+  expect(hs.length).toBeGreaterThan(3);
+  expect(new Set(hs.map(x => x[0])).size, 'কার্ডের উচ্চতা ভিন্ন: ' + JSON.stringify(hs)).toBe(1);
+  expect(new Set(hs.map(x => x[1])).size, 'কার্ডের প্রস্থ ভিন্ন').toBe(1);
+});
+
+test('প্রোডাক্ট পেজ: ট্রাস্ট ব্যাজ পুরো প্রস্থে, স্টিকি বারে একটাই দাম', async ({ page }) => {
+  await page.goto('/product.html?id=2');
+  const t = await page.locator('.trust-row').boundingBox(), c = await page.locator('main .container, .container').first().boundingBox();
+  expect(t.x, 'ট্রাস্ট রো ডানে সরে আছে').toBeLessThan(c.x + 40);
+  if (vw(page) < 768) {
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
+    await expect(page.locator('#buyBar')).toHaveClass(/show/);
+    const txt = await page.locator('#bbPrice').innerText();
+    expect((txt.match(/৳/g) || []).length, 'স্টিকি বারে একাধিক দাম: ' + txt).toBe(1);
+  }
+});
