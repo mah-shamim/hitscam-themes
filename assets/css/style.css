@@ -367,3 +367,21 @@ img{max-width:100%}
 .cmp-table tr:last-child>*{border-bottom:0}
 .cmp-table img{width:100%;max-width:160px;border-radius:12px;background:var(--bg)}
 .cmp-best{color:#198754;font-weight:700}
+
+/* অ্যাক্সেসিবিলিটি */
+.skip-link{position:fixed;left:12px;top:-60px;z-index:3000;background:var(--navy);color:#fff;padding:.6rem 1rem;border-radius:10px;font-weight:600;transition:top .15s}
+.skip-link:focus{top:12px;color:#fff;outline:3px solid var(--amber)}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+main:focus{outline:none}
+/* 404 */
+.nf-code{font-size:clamp(5rem,22vw,9rem);font-weight:800;line-height:1;color:var(--brand);letter-spacing:-4px}
+/* প্রিন্ট / ইনভয়েস */
+.print-only{display:none}
+@media print{
+  .topbar,.site-header,.site-footer,.mobile-dock,.float-stack,.toast-wrap,.cmp-bar,.buybar,.skip-link,.no-print,.breadcrumb-bar,.offcanvas,.modal,#reconfirmPanel,.call-alert,.timeline,.page-title{display:none!important}
+  body{padding:0!important;background:#fff!important;color:#000!important}
+  .print-only{display:block!important}
+  .panel,.or-hero{border:1px solid #ccc!important;box-shadow:none!important;break-inside:avoid;background:#fff!important}
+  a{color:#000!important;text-decoration:none!important}
+  .container{max-width:100%!important}
+}

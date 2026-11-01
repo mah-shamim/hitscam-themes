@@ -15,6 +15,8 @@ WooCommerce শপের জন্য স্ট্যাটিক HTML টেম
 | `cart.html`, `checkout.html`, `order-received.html`, `track-order.html` | কার্ট থেকে অর্ডার ট্র্যাকিং পর্যন্ত |
 | `terms.html`, `returns.html`, `shipping.html`, `contact.html`, `faq.html` | তথ্য পেজ |
 | `login.html` | লগইন / নতুন অ্যাকাউন্ট (ডেমো UI) |
+| `compare.html` | পণ্য তুলনা টেবিল (সর্বোচ্চ ৩টি; কম দাম/ভালো রেটিং হাইলাইট) |
+| `404.html` | কাস্টম 404 (সার্চ + জনপ্রিয় পণ্য) |
 | `minicart.html` | মিনি কার্টের স্ট্যান্ডঅ্যালোন ভার্সন |
 | `device-compatibility.html`, `social-compatibility.html` | ব্রাউজার/ডিভাইস/ইন-অ্যাপ ব্রাউজার কম্পেটিবিলিটি |
 
@@ -41,6 +43,15 @@ WooCommerce শপের জন্য স্ট্যাটিক HTML টেম
 - **স্টক:** `data.js` এর `stock`; ১০ বা কম হলে "মাত্র N টি বাকি!", ০ হলে স্টক আউট (বাটন বন্ধ)।
 - **প্রোডাক্ট পেজ:** শেয়ার বাটন (Facebook, WhatsApp, Messenger, কপি) ও মোবাইলে স্টিকি বাই-বার।
 - **ভাসমান বাটন:** WhatsApp চ্যাট (নাম্বার `assets/js/app.js` এর `WA_NUM`) ও ব্যাক-টু-টপ।
+
+## প্রফেশনাল ফিচার (v1.6.0)
+- **কুইক ভিউ:** কার্ডের 👁 বাটনে মোডাল — ভ্যারিয়েশন, পরিমাণ, অ্যাড টু কার্ট।
+- **প্রোডাক্ট কম্পেয়ার:** কার্ডের ⇄ বাটন; ভাসমান বার; `compare.html` এ পাশাপাশি টেবিল।
+- **PWA:** `manifest.webmanifest` + `sw.js` (পেজ network-first, স্ট্যাটিক stale-while-revalidate, অফলাইনে ক্যাশ করা পেজ খোলে); হোম স্ক্রিনে ইনস্টল করা যায়। আইকন `assets/icons/`। ক্যাশ বদলাতে `sw.js` এর `VERSION` বাড়ান।
+- **SEO:** প্রতি পেজে description, Open Graph, theme-color; হোমে Organization + WebSite (SearchAction) JSON-LD; প্রোডাক্ট পেজে Product + BreadcrumbList JSON-LD (দাম, স্টক, রেটিং); `robots.txt`, `sitemap.xml`। **ডিপ্লয়ের আগে** `example.com` বদলে আসল ডোমেইন বসান (robots.txt, sitemap.xml, index.html এর JSON-LD)।
+- **অ্যাক্সেসিবিলিটি:** স্কিপ লিংক, `:focus-visible` আউটলাইন, মোডালে `aria-labelledby`।
+- **ইনভয়েস প্রিন্ট:** order-received এ "ইনভয়েস প্রিন্ট" (প্রিন্টে হেডার/ফুটার/বাটন লুকানো)।
+- **টেস্ট:** `tests/pwa.spec.js` (ম্যানিফেস্ট, SEO/JSON-LD, 404, স্কিপ লিংক, অফলাইন SW, প্রিন্ট)। অন্য টেস্টে SW বন্ধ (`serviceWorkers: 'block'`)।
 
 ## টেস্ট ও CI (ডিভাইস + ব্রাউজার কম্পেটিবিলিটি)
 প্রতিটি push / pull request এ এবং প্রতি সোমবার GitHub Actions (`.github/workflows/ci.yml`) চলে:

@@ -29,8 +29,11 @@ const htmlFiles = walk(ROOT, '.html'), jsFiles = walk(ROOT, '.js');
 // 1) JS ফাইল ও ইনলাইন স্ক্রিপ্ট
 for (const f of jsFiles) syntax(read(f), f);
 for (const f of htmlFiles) {
-  const re = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi; let m;
-  while ((m = re.exec(read(f)))) if (m[1].trim()) syntax(m[1], f + ' (inline script)');
+  const re = /<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/gi; let m;
+  while ((m = re.exec(read(f)))) {
+    if (/type=["']application\/ld\+json/i.test(m[1])) { try { JSON.parse(m[2]); } catch (e) { err(f, 'JSON-LD অবৈধ: ' + e.message); } continue; }
+    if (m[2].trim()) syntax(m[2], f + ' (inline script)');
+  }
 }
 
 // 2) HTML বেসিক + লিংক + id + alt + CDN
