@@ -167,7 +167,9 @@ $(function () {
     } else { $('#pPrice').html((o.regular > o.sale ? '<del>' + B(o.regular) + '</del>' : '') + B(o.sale)); $('#pPrice').data('buy', o.sale); }
   }
   function renderOptions() {
-    if (p.type === 'variable') {
+    if (p.type === 'variable' && HC.attrs(p)) {
+      $('#pOptions').html('<div class="fw-semibold mb-2">অপশন বেছে নিন:</div>' + HC.attrHtml(p, sel, 'pp'));
+    } else if (p.type === 'variable') {
       $('#pOptions').html('<div class="fw-semibold mb-2">ভ্যারিয়েশন বেছে নিন:</div>' + p.variations.map((v, i) => `<button type="button" class="var-btn ${i === sel ? 'active' : ''}" data-i="${i}">${v.label} <small class="text-muted">${B(v.sale)}</small></button>`).join(''));
     } else if (p.type === 'grouped') {
       $('#pOptions').html('<table class="table group-table align-middle"><tbody>' + p.children.map((c, i) => `<tr><td>${c.label}</td><td>${c.regular > c.sale ? '<del class="text-muted small">' + B(c.regular) + '</del> ' : ''}<b class="text-brand">${B(c.sale)}</b></td>
@@ -179,6 +181,7 @@ $(function () {
       $('#upsells').hide();
     }
   }
+  $(document).on('varchange', '#pOptions .attr-ui', (e, idx) => { sel = idx; renderPrice(); bbSync(); });
   $(document).on('click', '.var-btn', function () { sel = +$(this).data('i'); renderOptions(); renderPrice(); });
   $(document).on('click', '.g-d', function () { const i = +$(this).data('i'); grpQty[i] = Math.max(0, grpQty[i] + (+$(this).data('d'))); $('#gq' + i).text(grpQty[i]); renderPrice(); });
   $('#qMinus').on('click', () => $('#pQty').val(Math.max(1, +$('#pQty').val() - 1)));

@@ -76,17 +76,46 @@
   const priceHtml = (o, p) => {
     return (o.regular > o.sale ? '<del>' + BDT(o.regular) + '</del>' : '') + BDT(o.sale);
   };
+  // ---------- একাধিক অ্যাট্রিবিউট (রং, কানেকশন …) ----------
+  HC.attrs = p => (p.type === 'variable' && p.attributes) || null;
+  const avName = x => typeof x === 'string' ? x : x.v;
+  HC.vkey = (p, at) => p.variations.findIndex(v => p.attributes.every(a => v.attrs[a.key] === at[a.key]));
+  // একটা মান বাছলে: বর্তমান বাকি মানগুলোর সাথে মিললে সেটা, নাহলে ওই মানের সবচেয়ে কম দামের কম্বিনেশন
+  HC.pickVar = (p, idx, key, val) => {
+    const i = HC.vkey(p, Object.assign({}, p.variations[idx].attrs, { [key]: val })); if (i >= 0) return i;
+    let b = -1; p.variations.forEach((v, j) => { if (v.attrs[key] === val && (b < 0 || v.sale < p.variations[b].sale)) b = j; }); return b;
+  };
+  const avState = (p, idx, key, val) => { const cur = p.variations[idx].attrs, j = HC.vkey(p, Object.assign({}, cur, { [key]: val })); return { on: cur[key] === val, j }; };
+  HC.attrHtml = (p, idx, uid) => `<div class="attr-ui" data-id="${p.id}" data-idx="${idx}">` + p.attributes.map(a => {
+    const name = `at-${uid}-${a.key}`, cur = p.variations[idx].attrs[a.key];
+    if (a.swatch) return `<div class="attr-row"><div class="attr-label">${a.label}: <b class="attr-cur" data-key="${a.key}">${cur}</b></div><div class="swatches" role="radiogroup" aria-label="${a.label}">` + a.values.map(x => { const v = avName(x), st = avState(p, idx, a.key, v);
+      return `<label class="swatch ${st.j < 0 ? 'na' : ''}" title="${v}"><input type="radio" class="attr-radio" name="${name}" data-key="${a.key}" value="${v}" ${st.on ? 'checked' : ''}><i style="--c:${x.hex || '#ccc'}"></i><span class="visually-hidden">${v}</span></label>`; }).join('') + '</div></div>';
+    return `<div class="attr-row"><div class="attr-label">${a.label}</div><div class="pc-group" style="--n:${a.values.length === 4 ? 2 : Math.min(a.values.length, 3)}">` + a.values.map(x => { const v = avName(x), st = avState(p, idx, a.key, v);
+      return `<label class="${st.j < 0 ? 'na' : ''}"><span><input type="radio" class="form-check-input attr-radio me-1" name="${name}" data-key="${a.key}" value="${v}" ${st.on ? 'checked' : ''}>${v}</span><b class="attr-price">${st.j >= 0 ? BDT(p.variations[st.j].sale) : '—'}</b></label>`; }).join('') + '</div></div>';
+  }).join('') + '</div>';
+  HC.attrSync = ($ui, p, idx) => {
+    $ui.data('idx', idx);
+    $ui.find('.attr-radio').each(function () {
+      const st = avState(p, idx, this.dataset.key, this.value), $l = $(this).closest('label');
+      this.checked = st.on; $l.toggleClass('na', st.j < 0);
+      $l.find('.attr-price').text(st.j >= 0 ? BDT(p.variations[st.j].sale) : '—');
+    });
+    $ui.find('.attr-cur').each(function () { $(this).text(p.variations[idx].attrs[this.dataset.key]); });
+  };
+
   HC.cmp = () => store.get('hc_cmp', []).filter(id => HC.find(id));
   HC.CMP_MAX = 3;
   HC.card = p => {
     const lo = HC.lowest(p), o = HC.options(p)[lo];
     const disc = o.regular > o.sale ? Math.round((1 - o.sale / o.regular) * 100) : 0;
     let opts = '';
-    if (p.type === 'variable' || p.type === 'grouped') {
+    if (HC.attrs(p)) {
+      opts = HC.attrHtml(p, lo, p.id + '-' + Math.random().toString(36).slice(2, 7));
+    } else if (p.type === 'variable' || p.type === 'grouped') {
       // একই কার্ডের সব রেডিওর name এক হতে হবে (না হলে একসাথে একটাই সিলেক্ট হয় না); প্রতিটি কার্ডের জন্য ইউনিক নাম
       const gname = 'opt-' + p.id + '-' + Math.random().toString(36).slice(2, 8);
       const list = p.type === 'variable' ? p.variations : p.children;
-      opts = `<div class="pc-group" style="--n:${Math.min(list.length, 3)}">` + list.map((v, i) =>
+      opts = `<div class="pc-group" style="--n:${list.length === 4 ? 2 : Math.min(list.length, 3)}">` + list.map((v, i) =>
         `<label><span><input type="radio" class="form-check-input opt-radio me-1" name="${gname}" value="${i}" ${i === lo ? 'checked' : ''}>${v.label}</span><b>${BDT(v.sale)}</b></label>`).join('') + '</div>';
     }
     // ভ্যারিয়েশন/গ্রুপ না থাকলে ইম্পর্টেন্ট Additional information আইকনসহ
@@ -339,6 +368,16 @@
       const $c = $(this).closest('.product-card'), p = HC.find($c.data('id')), o = HC.options(p)[+$(this).val()];
       $c.find('.pc-price').html(priceHtml(o, p));
     });
+    // ---- একাধিক অ্যাট্রিবিউট: রং / কানেকশন বদলালে কম্বিনেশন, দাম ও কার্ট-অপশন আপডেট
+    $(document).on('change', '.attr-radio', function () {
+      const $ui = $(this).closest('.attr-ui'), p = HC.find($ui.data('id')), idx = HC.pickVar(p, +$ui.data('idx'), this.dataset.key, this.value);
+      HC.attrSync($ui, p, idx); $ui.trigger('varchange', [idx]);
+    });
+    $(document).on('varchange', '.attr-ui', function (e, idx) {
+      const p = HC.find($(this).data('id')), o = p.variations[idx], $c = $(this).closest('.product-card');
+      if ($c.length) { $c.data('opt', idx); $c.find('.pc-price').html(priceHtml(o, p)); }
+      else if ($(this).closest('#qvBody').length) $('#qvPrice').html(priceHtml(o, p));
+    });
     $(document).on('click', '.btn-add', function () {
       const $c = $(this).closest('.product-card'); HC.add($c.data('id'), cardOpt($c), 1); HC.toast('কার্টে যোগ হয়েছে ✓');
     });
@@ -362,8 +401,8 @@
     /* ---------- Quick View ---------- */
     function qvHtml(p) {
       const opts = HC.options(p), lo = HC.lowest(p), o = opts[lo], ext = p.type === 'external', out = p.stock <= 0 && !ext;
-      const radios = p.type === 'variable' || p.type === 'grouped'
-        ? '<div class="pc-group mb-3" style="--n:' + Math.min(opts.length, 3) + '">' + opts.map((v, i) => `<label><span><input type="radio" class="form-check-input qv-opt me-1" name="qvopt" value="${i}" ${i === lo ? 'checked' : ''}>${v.label}</span><b>${BDT(v.sale)}</b></label>`).join('') + '</div>' : '';
+      const radios = HC.attrs(p) ? HC.attrHtml(p, lo, 'qv') : p.type === 'variable' || p.type === 'grouped'
+        ? '<div class="pc-group mb-3" style="--n:' + (opts.length === 4 ? 2 : Math.min(opts.length, 3)) + '">' + opts.map((v, i) => `<label><span><input type="radio" class="form-check-input qv-opt me-1" name="qvopt" value="${i}" ${i === lo ? 'checked' : ''}>${v.label}</span><b>${BDT(v.sale)}</b></label>`).join('') + '</div>' : '';
       const act = ext ? `<a class="btn btn-brand rounded-pill flex-grow-1" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`
         : `<div class="qty qv-qty"><button type="button" class="qv-q" data-d="-1" aria-label="কমান">−</button><span id="qvQty">1</span><button type="button" class="qv-q" data-d="1" aria-label="বাড়ান">+</button></div>
            <button class="btn btn-brand rounded-pill flex-grow-1" id="qvAdd" type="button" ${out ? 'disabled' : ''}><i class="bi bi-cart-plus"></i> ${out ? 'স্টক আউট' : 'অ্যাড টু কার্ট'}</button>`;
@@ -386,7 +425,7 @@
     $(document).on('change', '.qv-opt', function () { const p = HC.find($('#qvBody').data('id')); $('#qvPrice').html(priceHtml(HC.options(p)[+this.value], p)); });
     $(document).on('click', '.qv-q', function () { const n = Math.max(1, Math.min(99, (+$('#qvQty').text() || 1) + +$(this).data('d'))); $('#qvQty').text(n); });
     $(document).on('click', '#qvAdd', function () {
-      HC.add($('#qvBody').data('id'), +($('.qv-opt:checked').val() || HC.lowest(HC.find($('#qvBody').data('id')))), +$('#qvQty').text() || 1);
+      HC.add($('#qvBody').data('id'), +($('#qvBody .attr-ui').length ? $('#qvBody .attr-ui').data('idx') : ($('.qv-opt:checked').val() || HC.lowest(HC.find($('#qvBody').data('id'))))), +$('#qvQty').text() || 1);
       bootstrap.Modal.getOrCreateInstance(document.getElementById('qvModal')).hide(); HC.toast('কার্টে যোগ হয়েছে ✓');
     });
 

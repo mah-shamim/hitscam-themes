@@ -15,17 +15,26 @@
 
   const lorem = 'এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।';
 
+  // একাধিক অ্যাট্রিবিউট (রং × কানেকশন): variations কম্বিনেশন থেকে তৈরি। কম্বিনেশন বাদ দিতে NA তে যোগ করুন।
+  const solar = (() => {
+    const colors = [{ v: 'কালো', hex: '#111827' }, { v: 'সাদা', hex: '#f8fafc' }, { v: 'আর্মি গ্রিন', hex: '#4d6b3a' }, { v: 'ধূসর', hex: '#9ca3af' }];
+    const conns = ['4G SIM + WiFi', 'শুধু WiFi', 'শুধু SIM', '4G SIM + 128GB কার্ড'];
+    const base = { '4G SIM + WiFi': [14500, 12900], 'শুধু WiFi': [12500, 11500], 'শুধু SIM': [13200, 11900], '4G SIM + 128GB কার্ড': [16000, 14200] };
+    const extra = { 'কালো': 0, 'সাদা': 0, 'আর্মি গ্রিন': 200, 'ধূসর': 100 };       // রং অনুযায়ী বাড়তি দাম
+    const NA = { 'সাদা|শুধু SIM': 1, 'ধূসর|4G SIM + 128GB কার্ড': 1 };               // এই কম্বিনেশন নেই
+    const variations = [];
+    colors.forEach(c => conns.forEach(n => { if (NA[c.v + '|' + n]) return;
+      variations.push({ label: c.v + ' / ' + n, attrs: { color: c.v, conn: n }, regular: base[n][0] + extra[c.v], sale: base[n][1] + extra[c.v] }); }));
+    return { attributes: [{ key: 'color', label: 'রং', swatch: true, values: colors }, { key: 'conn', label: 'কানেকশন', values: conns }], variations };
+  })();
+
   const products = [
     { id: 1, type: 'simple', name: '4G PTZ Camera – সিম সাপোর্ট আউটডোর ক্যামেরা', cat: 'ip-camera', sku: 'HC-PTZ-4G',
       regular: 6500, sale: 5500, rating: 4.8, reviews: 126, tags: ['trending', 'best', 'flash'], img: ph('4G PTZ Camera'), desc: lorem },
 
     { id: 2, type: 'variable', name: '4 Lens Solar Security Camera – 4G SIM ও WiFi স্মার্ট সিকিউরিটি ক্যামেরা', cat: 'security', sku: 'HC-SOLAR-4L',
       rating: 4.9, reviews: 212, tags: ['trending', 'new', 'best'], img: ph('Solar 4 Lens'), desc: lorem,
-      variations: [
-        { label: '4G SIM + WiFi',          regular: 14500, sale: 12900 },
-        { label: 'শুধু WiFi',               regular: 12500, sale: 11500 },
-        { label: '4G SIM + 128GB কার্ড',   regular: 16000, sale: 14200 }
-      ] },
+      attributes: solar.attributes, variations: solar.variations },
 
     { id: 3, type: 'grouped', name: 'স্মার্ট হোম সিকিউরিটি কিট (৩ আইটেম)', cat: 'security', sku: 'HC-KIT-3',
       rating: 4.6, reviews: 58, tags: ['trending', 'new'], img: ph('Home Kit', '0f172a'), desc: lorem,
