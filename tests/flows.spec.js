@@ -289,3 +289,31 @@ test('প্রোডাক্ট পেজ: রং/কানেকশন বদ
   await page.locator('.p-add').first().click();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('hc_cart'))[0].label)).toBe('ধূসর / শুধু SIM');
 });
+
+test('কার্ডে ফাঁকা জায়গা অ্যাট্রিবিউট দিয়ে ভরা (দাম আর আগের কনটেন্টের মাঝে বড় গ্যাপ নেই)', async ({ page }) => {
+  for (const url of ['/index.html', '/shop.html']) {
+    await page.goto(url);
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(400);                       // fillSoon ডিবাউন্স
+    const gaps = await page.evaluate(() => [...document.querySelectorAll('.product-card')].map(c => {
+      const price = c.querySelector('.pc-price'); let prev = price.previousElementSibling;
+      while (prev && prev.offsetHeight === 0) prev = prev.previousElementSibling;
+      return { id: c.dataset.id, gap: Math.round(price.getBoundingClientRect().top - prev.getBoundingClientRect().bottom), vis: c.getBoundingClientRect().width > 0 };
+    }));
+    expect(gaps.length).toBeGreaterThan(3);
+    const bad = gaps.filter(g => g.gap > 44);
+    expect(bad, `${url}: ফাঁকা জায়গা রয়ে গেছে ${JSON.stringify(bad)}`).toEqual([]);
+  }
+});
+
+test('কার্ডের বাড়তি অ্যাট্রিবিউট সারির উচ্চতা বাড়ায় না', async ({ page }) => {
+  await page.goto('/shop.html'); await page.waitForLoadState('networkidle'); await page.waitForTimeout(400);
+  const rows = await page.evaluate(() => {
+    const by = {};   // একই দৃশ্যমান সারি = একই top
+    document.querySelectorAll('.product-card').forEach(c => { const r = c.getBoundingClientRect(); if (!r.width) return; const k = Math.round(r.top + scrollY); (by[k] = by[k] || []).push(Math.round(r.height)); });
+    return Object.values(by).map(a => new Set(a).size);
+  });
+  expect(rows.length).toBeGreaterThan(0);
+  rows.forEach(n => expect(n, 'একই সারির কার্ডের উচ্চতা ভিন্ন').toBe(1));
+});

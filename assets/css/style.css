@@ -402,3 +402,8 @@ main:focus{outline:none}
 .pc-group label.na b{color:var(--muted)}
 #pOptions .swatch{width:38px;height:38px}
 #pOptions .attr-label{font-size:.9rem}
+
+/* অ্যাট্রিবিউট ফিল: বাড়তি আইটেম ডিফল্টে লুকানো; ফাঁকা জায়গা থাকলে JS .on দেয় */
+.pc-info li.x{display:none}
+.pc-info li.x.on{display:flex}
+.pc-info:not(:has(li:not(.x))):not(:has(li.on)){display:none}
