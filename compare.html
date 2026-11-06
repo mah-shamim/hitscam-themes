@@ -46,6 +46,7 @@ $(function () {
       ${row('ধরন', p => TYPE[p.type])}
       ${row('স্টক', p => p.stock <= 0 ? '<span class="text-danger">স্টক আউট</span>' : p.stock <= HC.LOW_STOCK ? `<span class="text-warning">মাত্র ${p.stock}টি বাকি</span>` : '<span class="cmp-best">স্টকে আছে</span>')}
       ${row('বিক্রি', p => p.sold ? HC.soldFmt(p.sold) + ' পিস' : '—')}
+      ${list.some(p => HC.attrs(p)) ? row('অপশন', p => HC.attrs(p) ? p.attributes.map(a => `<div class="small"><b>${a.label}:</b> ${a.values.map(x => typeof x === 'string' ? x : x.v).join(', ')}</div>`).join('') : '—') : ''}
       ${row('ফিচার', p => p.info && p.info.length ? '<ul class="list-unstyled mb-0 small">' + p.info.map(x => `<li><i class="bi ${x[0]} text-brand"></i> ${x[1]}</li>`).join('') + '</ul>' : '—')}
       ${row('', p => p.type === 'external' ? `<a class="btn btn-brand btn-sm rounded-pill" href="${p.url}" target="_blank" rel="sponsored noopener">${p.btn}</a>` : `<button class="btn btn-brand btn-sm rounded-pill cmp-add" data-id="${p.id}" type="button" ${p.stock <= 0 ? 'disabled' : ''}><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>`)}
     </tbody></table></div>`);

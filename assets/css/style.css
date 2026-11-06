@@ -385,3 +385,20 @@ main:focus{outline:none}
   a{color:#000!important;text-decoration:none!important}
   .container{max-width:100%!important}
 }
+
+/* একাধিক অ্যাট্রিবিউট: রং সোয়াচ + কানেকশন রেডিও */
+.attr-row{margin-bottom:.55rem}
+.attr-label{font-size:.78rem;color:var(--muted);margin-bottom:.3rem}
+.attr-label b{color:var(--ink)}
+.swatches{display:flex;flex-wrap:wrap;gap:.5rem}
+.swatch{position:relative;margin:0;cursor:pointer;width:30px;height:30px}
+.swatch input{position:absolute;inset:0;z-index:1;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.swatch i{display:block;width:100%;height:100%;border-radius:50%;background:var(--c);border:2px solid var(--line);box-shadow:inset 0 0 0 2px var(--card);transition:.15s}
+.swatch input:checked+i{border-color:var(--brand);box-shadow:inset 0 0 0 2px var(--card),0 0 0 2px var(--brand-soft)}
+.swatch input:focus-visible+i{outline:3px solid var(--brand);outline-offset:2px}
+.swatch.na i{opacity:.45}
+.swatch.na::after{content:"";position:absolute;left:3px;right:3px;top:50%;height:2px;background:var(--brand);transform:rotate(-45deg);pointer-events:none}
+.pc-group label.na{opacity:.55}
+.pc-group label.na b{color:var(--muted)}
+#pOptions .swatch{width:38px;height:38px}
+#pOptions .attr-label{font-size:.9rem}

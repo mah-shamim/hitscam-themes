@@ -19,18 +19,32 @@ async function addFirstToCart(page) {
   await expect(cartCount(page)).toHaveText('1');
 }
 
-test('Variable/Grouped কার্ড: রেডিও এক গ্রুপে, লোয়েস্ট দাম সিলেক্টেড, ৩ কলাম', async ({ page }) => {
+test('Variable কার্ড (রং × কানেকশন): সোয়াচ + রেডিও, লোয়েস্ট সিলেক্টেড, দাম ও কার্ট লেবেল মেলে', async ({ page }) => {
   await page.goto('/index.html');
-  const v = card(page, 2), radios = v.locator('.opt-radio');
-  await expect(radios).toHaveCount(3);
-  expect(await radios.evaluateAll(els => new Set(els.map(e => e.name)).size), 'একই কার্ডের রেডিও একই name').toBe(1);
-  await expect(radios.nth(1)).toBeChecked();                       // শুধু WiFi = সবচেয়ে কম দাম
-  await radios.nth(2).check();
-  await expect(radios.nth(1)).not.toBeChecked();
-  await expect(v.locator('.pc-price')).toContainText('14,200');
-  const ys = await v.locator('.pc-group label').evaluateAll(l => l.map(x => Math.round(x.getBoundingClientRect().top)));
-  expect(Math.max(...ys) - Math.min(...ys), '৩টি অপশন এক সারিতে').toBeLessThanOrEqual(2);
+  const v = card(page, 2), sw = v.locator('.swatch input'), conn = v.locator('.attr-radio[data-key=conn]');
+  await expect(sw).toHaveCount(4);
+  await expect(conn).toHaveCount(4);
+  expect(await v.locator('.attr-radio').evaluateAll(els => new Set(els.map(e => e.name)).size), 'রং ও কানেকশন = ২ গ্রুপ').toBe(2);
+  await expect(v.locator('.swatch input[value="কালো"]')).toBeChecked();
+  await expect(v.locator('.attr-radio[value="শুধু WiFi"]')).toBeChecked();   // সবচেয়ে কম দাম
+  await expect(v.locator('.pc-price')).toContainText('11,500');
+  await v.locator('.swatch input[value="আর্মি গ্রিন"]').check();               // রং অনুযায়ী +৳200
+  await expect(v.locator('.pc-price')).toContainText('11,700');
+  await expect(v.locator('.attr-cur')).toHaveText('আর্মি গ্রিন');
+  await v.locator('.attr-radio[value="শুধু SIM"]').check();
+  await expect(v.locator('.pc-price')).toContainText('12,100');
+  await v.locator('.swatch input[value="সাদা"]').check();                      // সাদা + শুধু SIM নেই → সবচেয়ে কম দামের সাদা
+  await expect(v.locator('.attr-radio[value="শুধু WiFi"]')).toBeChecked();
+  await expect(v.locator('.pc-price')).toContainText('11,500');
+  await expect(v.locator('.attr-radio[value="শুধু SIM"]').locator('xpath=ancestor::label')).toHaveClass(/na/);
+  const rows = await v.locator('.pc-group label').evaluateAll(l => new Set(l.map(x => Math.round(x.getBoundingClientRect().top))).size);
+  expect(rows, '৪টি কানেকশন ২ সারিতে (২×২)').toBe(2);
+  await v.locator('.btn-add').click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('hc_cart'))[0].label)).toBe('সাদা / শুধু WiFi');
+});
 
+test('Grouped কার্ড: রেডিও এক গ্রুপে, লোয়েস্ট দাম সিলেক্টেড', async ({ page }) => {
+  await page.goto('/index.html');
   const g = card(page, 3).locator('.opt-radio');
   await expect(g.nth(1)).toBeChecked();                            // ডোর সেন্সর ৳650
   await g.nth(0).check();
@@ -240,7 +254,7 @@ test('কুইক ভিউ: খোলে, অপশন বদলালে দ�
   const m = page.locator('#qvModal');
   await expect(m).toBeVisible();
   await expect(m.locator('#qvTitle')).toContainText('Solar');
-  await m.locator('.qv-opt').nth(2).check();
+  await m.locator('.attr-radio[value="4G SIM + 128GB কার্ড"]').check();
   await expect(m.locator('#qvPrice')).toContainText('14,200');
   await m.locator('.qv-q[data-d="1"]').click();
   await m.locator('#qvAdd').click();
@@ -263,4 +277,15 @@ test('তুলনা: সর্বোচ্চ ৩টি, বার দেখ�
   await expect(page.locator('#cmpTable .cmp-rm')).toHaveCount(3);
   await page.locator('.cmp-rm').first().click();
   await expect(page.locator('#cmpTable .cmp-rm')).toHaveCount(2);
+});
+
+test('প্রোডাক্ট পেজ: রং/কানেকশন বদলালে দাম, স্টিকি বার ও কার্ট লেবেল বদলায়', async ({ page }) => {
+  await page.goto('/product.html?id=2');
+  await expect(page.locator('#pPrice')).toContainText('11,500');
+  await page.locator('#pOptions .swatch input[value="ধূসর"]').check();
+  await page.locator('#pOptions .attr-radio[value="শুধু SIM"]').check();
+  await expect(page.locator('#pPrice')).toContainText('12,000');                // 11,900 + 100
+  await expect(page.locator('#pOptions .attr-cur')).toHaveText('ধূসর');
+  await page.locator('.p-add').first().click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('hc_cart'))[0].label)).toBe('ধূসর / শুধু SIM');
 });
