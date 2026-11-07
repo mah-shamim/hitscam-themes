@@ -137,8 +137,8 @@
         <div class="pc-cat">${HC.cat(p.cat).name} · <span class="text-muted">${TYPE_LABEL[p.type]}</span></div>
         <a class="pc-title" href="product.html?id=${p.id}">${p.name}</a>
         <div class="pc-rate">${HC.stars(p.rating)} <span class="text-muted">(${p.reviews})</span>${p.sold ? `<span class="pc-sold" title="টোটাল সোল্ড"><i class="bi bi-bag-check-fill"></i> ${HC.soldFmt(p.sold)} বিক্রি</span>` : ''}</div>
-        ${opts}
         ${infoHtml}
+        ${opts}
         ${HC.stockHtml(p, false)}
         <div class="pc-price">${priceHtml(o, p)}</div>
         <div class="pc-actions ${p.type !== 'external' && HC.inCart(p.id) ? 'three' : ''}">${actions}</div>
