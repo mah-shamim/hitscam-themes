@@ -113,3 +113,13 @@ test('স্টক আউট: "স্টকে এলে জানান" ফো
   await page.goto('/product.html?id=1');
   await expect(page.locator('#pNotify')).toBeHidden();
 });
+
+test('কার্ট পেজের ক্রস-সেলস কার্ড ঠাসা নয় (প্রস্থ ≥ ২৪০px) ও ওভারফ্লো নেই', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('hc_cart', JSON.stringify([{ key: '1|0', id: 1, name: 'X', label: '', img: '', regular: 100, sale: 90, qty: 1 }])));
+  await page.goto('/cart.html');
+  const cards = page.locator('#crossSells .product-card');
+  await expect(cards).toHaveCount(4);
+  const ws = await cards.evaluateAll(els => els.map(e => Math.round(e.getBoundingClientRect().width)));
+  ws.forEach(w => expect(w, 'কার্ড সরু: ' + ws).toBeGreaterThanOrEqual(240));
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+});
