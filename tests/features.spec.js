@@ -138,3 +138,50 @@ test('কার্ট পেজের ক্রস-সেলস: মোবাই
   ws.forEach(w => expect(w, 'কার্ড সরু: ' + ws).toBeGreaterThanOrEqual(240));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
+
+const cart3 = () => localStorage.setItem('hc_cart', JSON.stringify([
+  { key: '5|0', id: 5, name: 'A', label: '', img: '', regular: 900, sale: 800, qty: 1 },
+  { key: '6|0', id: 6, name: 'B', label: '', img: '', regular: 600, sale: 450, qty: 1 },
+  { key: '7|0', id: 7, name: 'C', label: '', img: '', regular: 1500, sale: 1200, qty: 1 }]));   // ৳2,450 < ৳5,000
+
+test('ফ্রি-শিপিং বার স্ক্রলের সময় হেডারের নিচে আটকে থাকে', async ({ page }) => {
+  await page.addInitScript(cart3);
+  await page.goto('/cart.html');
+  const bar = page.locator('#freeShip .free-ship');
+  await expect(bar).toHaveClass(/need/);
+  await expect(bar).toContainText('ফ্রি শিপিং');
+  await page.evaluate(() => window.scrollTo(0, 700));
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(300);
+  const r = await page.evaluate(() => ({ bar: document.querySelector('#freeShip').getBoundingClientRect(), hdr: document.querySelector('.site-header').getBoundingClientRect() }));
+  expect(r.bar.top, 'বার হেডারের নিচে আটকে নেই').toBeGreaterThanOrEqual(r.hdr.bottom - 1);
+  expect(r.bar.top).toBeLessThan(r.hdr.bottom + 20);
+  await expect(bar).toBeInViewport();
+});
+
+test('ফ্রি-শিপিং বার ৳৫,০০০ ছুঁলে সবুজ, ব্লিংক ছাড়া', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('hc_cart', JSON.stringify([{ key: '1|0', id: 1, name: 'X', label: '', img: '', regular: 6500, sale: 5500, qty: 1 }])));
+  await page.goto('/cart.html');
+  const bar = page.locator('#freeShip .free-ship');
+  await expect(bar).toHaveClass(/done/);
+  await expect(bar).not.toHaveClass(/need/);
+  expect(await bar.evaluate(e => getComputedStyle(e).animationName)).toBe('none');
+});
+
+test.describe('ব্লিংক অ্যানিমেশন', () => {
+  test.use({ reducedMotion: 'no-preference' });
+  test('শিপিং ফ্রি হতে বাকি থাকলে বার ও লেখা ব্লিংক করে', async ({ page }) => {
+    await page.addInitScript(cart3);
+    await page.goto('/cart.html');
+    const names = await page.evaluate(() => [getComputedStyle(document.querySelector('.free-ship')).animationName, getComputedStyle(document.querySelector('.free-ship .fs-msg b.text-brand')).animationName]);
+    expect(names).toEqual(['fsPulse', 'fsBlink']);
+  });
+});
+
+test.describe('রিডিউসড মোশন', () => {
+  test.use({ reducedMotion: 'reduce' });
+  test('রিডিউসড-মোশনে ব্লিংক বন্ধ', async ({ page }) => {
+    await page.addInitScript(cart3);
+    await page.goto('/cart.html');
+    expect(await page.evaluate(() => getComputedStyle(document.querySelector('.free-ship')).animationName)).toBe('none');
+  });
+});
