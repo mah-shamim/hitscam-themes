@@ -44,7 +44,7 @@
 
   /* ---------- Cart ---------- */
   HC.cart = () => memCart || store.get('hc_cart', []);
-  HC.saveCart = c => { memCart = c; store.set('hc_cart', c); $(document).trigger('cartchange'); };
+  HC.saveCart = c => { memCart = c; store.set('hc_cart', c); store.set('hc_cart_ts', Date.now()); $(document).trigger('cartchange'); };
   HC.add = (id, oi, qty) => {
     const p = HC.find(id), o = HC.options(p)[oi || 0], c = HC.cart().slice(), key = id + '|' + (oi || 0);
     const ex = c.find(i => i.key === key);
@@ -101,6 +101,41 @@
       $l.find('.attr-price').text(st.j >= 0 ? BDT(p.variations[st.j].sale) : '—');
     });
     $ui.find('.attr-cur').each(function () { $(this).text(p.variations[idx].attrs[this.dataset.key]); });
+  };
+
+  // ---------- WhatsApp এ অর্ডার ----------
+  HC.WA_NUM = '8801614747054';
+  HC.waOpen = text => window.open('https://wa.me/' + HC.WA_NUM + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+  HC.waLine = (n, i) => `${n}) ${i.name}${i.label ? ' (' + i.label + ')' : ''} × ${i.qty} = ${BDT(i.sale * i.qty)}`;
+  HC.waCartText = () => {
+    const c = HC.cart(), t = HC.totals();
+    return 'আসসালামু আলাইকুম, আমি অর্ডার করতে চাই:\n' + c.map((i, n) => HC.waLine(n + 1, i)).join('\n') + `\nশিপিং: ${t.ship ? BDT(t.ship) : 'ফ্রি'}\nমোট: ${BDT(t.total)}`;
+  };
+  HC.waBtn = '<button type="button" class="btn btn-wa w-100 wa-cart"><i class="bi bi-whatsapp"></i> WhatsApp এ অর্ডার করুন</button>';
+
+  // ---------- ডেলিভারি এস্টিমেট (শুক্রবার ছুটি ধরা হয়) ----------
+  HC.ZONES = { 70: { name: 'ঢাকার ভিতরে', min: 1, max: 2 }, 130: { name: 'ঢাকার বাইরে', min: 2, max: 4 } };
+  HC.addBizDays = (from, n) => { const d = new Date(from); while (n > 0) { d.setDate(d.getDate() + 1); if (d.getDay() !== 5) n--; } return d; };
+  HC.fmtDay = d => { try { return d.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long' }); } catch (e) { return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); } };
+  HC.deliveryText = (zone, price) => {
+    const z = HC.ZONES[zone] || HC.ZONES[70], now = new Date(), a = HC.addBizDays(now, z.min), b = HC.addBizDays(now, z.max);
+    const fee = price >= FREE_SHIP ? 'ডেলিভারি চার্জ ফ্রি' : 'ডেলিভারি চার্জ ' + BDT(+zone);
+    return `${HC.fmtDay(a)} – ${HC.fmtDay(b)} এর মধ্যে · ${fee}`;
+  };
+
+  // ---------- EMI (ডেমো হার; ব্যাংক/কার্ড অনুযায়ী বদলে নিন) ----------
+  HC.EMI_MIN = 5000;
+  HC.EMI_PLANS = [{ m: 3, fee: 0 }, { m: 6, fee: 0 }, { m: 12, fee: 0.06 }];   // fee = মোট ফি (মূল্যের %)
+  HC.emi = price => HC.EMI_PLANS.map(p => ({ m: p.m, fee: p.fee, month: Math.ceil(price * (1 + p.fee) / p.m), total: Math.round(price * (1 + p.fee)) }));
+
+  // ---------- চেকআউট ড্রাফট ও কার্ট রিমাইন্ডার ----------
+  HC.DRAFT_FIELDS = ['name', 'address', 'phone', 'email', 'notes'];
+  HC.saveDraft = form => { const d = {}; HC.DRAFT_FIELDS.forEach(k => { const v = $.trim($(form).find('[name=' + k + ']').val() || ''); if (v) d[k] = v; }); store.set('hc_draft', Object.keys(d).length ? d : null); };
+  HC.restoreDraft = form => {
+    const d = store.get('hc_draft', null) || {}, u = store.get('hc_user', null);
+    if (!d.name && u && u.name && u.name !== 'গ্রাহক') d.name = u.name;
+    if (!d.phone && u && /^(?:\+?88)?01[3-9]\d{8}$/.test(String(u.id || '').replace(/[\s-]/g, ''))) d.phone = u.id;
+    HC.DRAFT_FIELDS.forEach(k => { const $f = $(form).find('[name=' + k + ']'); if (d[k] && !$f.val()) $f.val(d[k]); });
   };
 
   HC.cmp = () => store.get('hc_cmp', []).filter(id => HC.find(id));
@@ -249,6 +284,7 @@
     $(el).html(`<div class="row g-4"><div class="col-lg-6"><div class="panel h-100"><h5 class="fw-bold mb-3">Your details</h5>${HC.detailsForm()}</div></div>
       <div class="col-lg-6"><div class="panel" data-summary></div></div></div>`);
     HC.renderSummary($(el).find('[data-summary]'));
+    HC.restoreDraft($(el).find('#orderForm'));
   };
   // স্লিপ ফাইল যাচাই: ছবি/PDF, সর্বোচ্চ ৫MB (WooCommerce এ ফাইল multipart ফর্মে সার্ভারে যাবে)
   const slipOk = f => (/^image\//.test(f.type) || f.type === 'application/pdf') && f.size <= 5 * 1024 * 1024;
@@ -273,7 +309,7 @@
       id: 500 + Math.floor(Math.random() * 400), date: new Date().toISOString(), items: HC.cart(), totals: t,
       name: v('name'), address: v('address'), phone: v('phone'), email: v('email'), notes: v('notes'), pay, txn, slipName
     });
-    memCart = []; store.set('hc_cart', []); store.set('hc_coupon', null);
+    memCart = []; store.set('hc_cart', []); store.set('hc_coupon', null); store.set('hc_draft', null);
     location.href = 'order-received.html';
   };
 
@@ -343,7 +379,7 @@
     const c = HC.cart(), t = HC.totals();
     $('#miniCartBody').html(c.length ? `${c.map(HC.line).join('')}${HC.addonsHtml()}
       <div class="mt-3">${HC.totalsHtml()}</div>
-      <div class="d-grid gap-2 mt-3"><a class="btn btn-brand" href="checkout.html">Proceed to Checkout</a><a class="btn btn-soft" href="cart.html">কার্ট দেখুন</a></div>` : HC.emptyCart);
+      <div class="d-grid gap-2 mt-3"><a class="btn btn-brand" href="checkout.html">Proceed to Checkout</a><a class="btn btn-soft" href="cart.html">কার্ট দেখুন</a>${HC.waBtn}</div>` : HC.emptyCart);
     $('.cart-count').text(t.count);
   };
   HC.wish = () => store.get('hc_wish', []);
@@ -485,6 +521,24 @@
       const reg = () => { try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) {} };
       if (document.readyState === 'complete') reg(); else window.addEventListener('load', reg);
     }
+
+    // ---- WhatsApp এ কার্টের অর্ডার
+    $(document).on('click', '.wa-cart', function () { if (!HC.cart().length) { HC.toast('কার্ট খালি!'); return; } HC.waOpen(HC.waCartText()); });
+
+    // ---- চেকআউট ফর্ম ড্রাফট: লিখতে লিখতেই সেভ (অর্ডার হলে মুছে যায়)
+    $(document).on('input change', '#orderForm', function () { HC.saveDraft(this); });
+
+    // ---- ফেলে যাওয়া কার্ট রিমাইন্ডার: ৩০ মিনিটের বেশি আগের কার্টে পণ্য থাকলে ফিরলে ব্যানার (সেশনে একবার)
+    (function () {
+      let dismissed = false; try { dismissed = sessionStorage.getItem('hc_remind') === '1'; } catch (e) {}
+      const c = HC.cart(), ts = store.get('hc_cart_ts', 0), idle = Date.now() - ts;
+      if (dismissed || !c.length || !ts || idle < (window.HC_REMIND_MS != null ? window.HC_REMIND_MS : 30 * 60 * 1000)) return;
+      if (/(cart|checkout|order-received)\.html/.test(location.pathname)) return;
+      const t = HC.totals();
+      $('.main-nav').first().after(`<div class="remind-bar" role="status"><span><i class="bi bi-bag-heart"></i> আপনার কার্টে <b>${t.count}টি</b> পণ্য আছে (${BDT(t.total)}) — অর্ডারটি সম্পূর্ণ করুন।</span>
+        <span class="d-flex gap-2 align-items-center"><a class="btn btn-sm btn-brand rounded-pill" href="checkout.html">অর্ডার সম্পূর্ণ করুন</a><button type="button" class="btn-close remind-x" aria-label="বন্ধ করুন"></button></span></div>`);
+      $(document).on('click', '.remind-x', function () { $('.remind-bar').remove(); try { sessionStorage.setItem('hc_remind', '1'); } catch (e) {} });
+    })();
 
     // ---- "সব প্রোডাক্ট" সাব মেনু: ডেস্কটপে হোভার, মোবাইলে ট্যাপ
     const subSet = open => { $('#navSub').toggleClass('open', open); $('.sub-toggle').attr('aria-expanded', open).toggleClass('on', open); };

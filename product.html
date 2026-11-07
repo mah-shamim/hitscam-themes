@@ -53,7 +53,35 @@
           <button class="btn btn-brand-outline btn-lg rounded-pill flex-fill p-add" type="button"><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>
           <button class="btn btn-brand btn-lg rounded-pill flex-fill p-order" type="button"><i class="bi bi-lightning-charge-fill"></i> অর্ডার নাউ</button>
         </div>
+        <button type="button" class="btn btn-wa-outline btn-lg rounded-pill w-100 mt-2" id="pWa"><i class="bi bi-whatsapp"></i> WhatsApp এ অর্ডার করুন</button>
       </div>
+
+      <!-- স্টক আউট: স্টকে এলে জানান -->
+      <div class="notify-box" id="pNotify" style="display:none">
+        <div class="fw-semibold mb-1"><i class="bi bi-bell text-brand"></i> স্টকে এলে জানান</div>
+        <form class="d-flex gap-2" id="notifyForm" novalidate>
+          <input class="form-control" name="phone" type="tel" inputmode="tel" placeholder="01XXXXXXXXX" aria-label="ফোন নাম্বার" required>
+          <button class="btn btn-brand flex-shrink-0" type="submit">জানান</button>
+        </form>
+        <div class="small text-success mt-1" id="notifyOk" style="display:none"></div>
+      </div>
+
+      <!-- ডেলিভারি এস্টিমেট -->
+      <div class="deliv-box" id="pDeliv">
+        <div class="fw-semibold"><i class="bi bi-truck text-brand"></i> আনুমানিক ডেলিভারি</div>
+        <div class="zones" role="group" aria-label="ডেলিভারি এলাকা">
+          <button type="button" class="zone-btn" data-z="70">ঢাকার ভিতরে</button>
+          <button type="button" class="zone-btn" data-z="130">ঢাকার বাইরে</button>
+        </div>
+        <div id="delivText" class="text-muted"></div>
+      </div>
+
+      <!-- EMI -->
+      <details class="emi-box" id="pEmi" style="display:none">
+        <summary><i class="bi bi-credit-card-2-front text-brand"></i> ক্রেডিট কার্ড EMI: মাসে <b id="emiFrom"></b> থেকে <small class="text-muted">(দেখুন)</small></summary>
+        <table class="emi-table"><thead><tr><th>মেয়াদ</th><th>মাসিক কিস্তি</th><th>মোট</th></tr></thead><tbody id="emiRows"></tbody></table>
+        <small class="text-muted">ডেমো হার। ব্যাংক ও কার্ড অনুযায়ী প্রসেসিং ফি পরিবর্তন হতে পারে।</small>
+      </details>
 
       <!-- শেয়ার -->
       <div class="share-row mb-3">
@@ -187,6 +215,49 @@ $(function () {
   $('#qMinus').on('click', () => $('#pQty').val(Math.max(1, +$('#pQty').val() - 1)));
   $('#qPlus').on('click', () => $('#pQty').val(+$('#pQty').val() + 1));
   renderOptions(); renderPrice();
+
+  // ডেলিভারি এস্টিমেট + EMI (দাম/অপশন বদলালে আপডেট)
+  const zoneNow = () => (HC.ship() == 130 ? 130 : 70);
+  function renderExtras() {
+    const price = +$('#pPrice').data('buy') || 0, z = zoneNow(), ext = p.type === 'external', out = p.stock <= 0;
+    $('#pDeliv').toggle(!ext && !out);
+    $('#pDeliv .zone-btn').each(function () { const on = +$(this).data('z') === z; $(this).toggleClass('active', on).attr('aria-pressed', on); });
+    $('#delivText').text(HC.deliveryText(z, price));
+    const show = !ext && !out && price >= HC.EMI_MIN;
+    $('#pEmi').toggle(show);
+    if (show) {
+      const pl = HC.emi(price); $('#emiFrom').text(B(pl[pl.length - 1].month));
+      $('#emiRows').html(pl.map(x => `<tr><td>${x.m} মাস</td><td><b>${B(x.month)}</b></td><td>${B(x.total)}${x.fee ? ' <small class="text-muted">(ফি ' + Math.round(x.fee * 100) + '%)</small>' : ''}</td></tr>`).join(''));
+    }
+  }
+  $(document).on('click', '#pDeliv .zone-btn', function () { HC.store.set('hc_ship', +$(this).data('z')); renderExtras(); });
+  $(document).on('varchange', '#pOptions .attr-ui', renderExtras);
+  $(document).on('click', '.var-btn, .g-d', () => setTimeout(renderExtras, 0));
+  renderExtras();
+
+  // WhatsApp এ অর্ডার (নির্বাচিত অপশন ও পরিমাণসহ)
+  if (p.type === 'external') $('#pWa').hide();
+  $('#pWa').on('click', function () {
+    const lines = []; let total = 0;
+    if (p.type === 'grouped') {
+      p.children.forEach((c, i) => { if (grpQty[i] > 0) { lines.push(HC.waLine(lines.length + 1, { name: p.name, label: c.label, qty: grpQty[i], sale: c.sale })); total += c.sale * grpQty[i]; } });
+      if (!lines.length) { HC.toast('অন্তত একটি আইটেম বেছে নিন'); return; }
+    } else { const o = HC.options(p)[sel], q = Math.max(1, +$('#pQty').val() || 1); lines.push(HC.waLine(1, { name: p.name, label: o.label, qty: q, sale: o.sale })); total = o.sale * q; }
+    HC.waOpen('আসসালামু আলাইকুম, আমি এই পণ্যটি অর্ডার করতে চাই:\n' + lines.join('\n') + '\nমোট: ' + B(total) + '\nলিংক: ' + location.href.split('#')[0]);
+  });
+
+  // স্টক আউট: স্টকে এলে জানান (ফোন নাম্বার সেভ; WooCommerce এ "Back in stock" প্লাগিন/ওয়েবহুক)
+  if (p.stock <= 0) {
+    $('#pNotify').show(); $('#pWa').hide();
+    const PH = /^(?:\+?88)?01[3-9]\d{8}$/, list = () => HC.store.get('hc_notify', []);
+    const done = ph => { $('#notifyForm').hide(); $('#notifyOk').text('✓ ধন্যবাদ! স্টকে এলে ' + ph + ' নাম্বারে জানানো হবে।').show(); };
+    const mine = list().find(x => x.id === p.id); if (mine) done(mine.phone);
+    $('#notifyForm').on('submit', function (e) {
+      e.preventDefault(); const ph = $.trim(this.phone.value).replace(/[\s-]/g, '');
+      if (!PH.test(ph)) { $(this.phone).addClass('is-invalid'); HC.toast('সঠিক বাংলাদেশি নাম্বার দিন'); return; }
+      HC.store.set('hc_notify', list().filter(x => x.id !== p.id).concat({ id: p.id, phone: ph, ts: Date.now() })); done(ph);
+    });
+  }
 
   // Upsells (Frequently bought together)
   $('#upsells').html('<h6><i class="bi bi-stars text-brand"></i> Frequently bought together</h6>' + HC.D.addons.map(a => { const x = HC.find(a.id); return `<label class="addon-item"><input type="checkbox" class="form-check-input up-chk" data-id="${x.id}"><span class="grow">${x.name}<small>${a.note}</small></span><b>${B(x.sale)}</b></label>`; }).join(''));
