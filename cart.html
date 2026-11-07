@@ -33,7 +33,10 @@
         <div class="row g-3 cs-closed" id="crossSells"></div>
       </div>
       <div class="col-lg-4">
-        <div class="panel position-sticky" style="top:110px" id="cartTotals"></div>
+        <div class="cart-side">
+          <div class="panel" id="cartTotals"></div>
+          <div class="panel cart-trust mt-3" id="cartTrust"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -55,8 +58,25 @@ window.renderCartPage = function () {
   $('#cartTotals').html(`<h5 class="fw-bold mb-3">Cart totals</h5>${HC.couponHtml()}${HC.totalsHtml()}
     ${c.length ? `<a href="checkout.html" class="btn btn-brand btn-lg w-100 mt-3">প্রসেস টু চেকআউট <i class="bi bi-arrow-right"></i></a>${HC.waBtn.replace('w-100','w-100 mt-2')}` : ''}
     <a href="shop.html" class="btn btn-soft w-100 mt-2">কেনাকাটা চালিয়ে যান</a>`);
+  // ডেলিভারি ও আস্থা বক্স (টোটালের নিচে): এলাকা বাছলে শিপিং চার্জ ও টোটাল বদলায়
+  const z = HC.ship() == 130 ? 130 : 70, t = HC.totals();
+  $('#cartTrust').toggle(c.length > 0).html(c.length ? `
+    <div class="fw-semibold mb-1"><i class="bi bi-truck text-brand"></i> আনুমানিক ডেলিভারি</div>
+    <div class="zones" role="group" aria-label="ডেলিভারি এলাকা">
+      <button type="button" class="zone-btn ${z === 70 ? 'active' : ''}" data-z="70" aria-pressed="${z === 70}">ঢাকার ভিতরে</button>
+      <button type="button" class="zone-btn ${z === 130 ? 'active' : ''}" data-z="130" aria-pressed="${z === 130}">ঢাকার বাইরে</button></div>
+    <div class="small text-muted" id="cartDeliv">${HC.deliveryText(z, t.sub)}</div>
+    <hr class="my-3">
+    <ul class="trust-list">
+      <li><i class="bi bi-arrow-repeat"></i> ৭ দিনের সহজ রিটার্ন</li>
+      <li><i class="bi bi-patch-check"></i> অরিজিনাল পণ্য, ওয়ারেন্টিসহ</li>
+      <li><i class="bi bi-shield-lock"></i> নিরাপদ পেমেন্ট ও তথ্য সুরক্ষা</li></ul>
+    <div class="pay-chips" aria-label="পেমেন্ট মাধ্যম"><span><i class="bi bi-cash-coin"></i> ক্যাশ অন ডেলিভারি</span><span>বিকাশ</span><span>নগদ</span></div>
+    <hr class="my-3">
+    <div class="small">সাহায্য লাগবে? <a class="text-brand fw-semibold" href="tel:+8801614747054"><i class="bi bi-telephone"></i> +880 1614-747054</a></div>` : '');
 };
 $(function () {
+  $(document).on('click', '#cartTrust .zone-btn', function () { HC.store.set('hc_ship', +$(this).data('z')); $(document).trigger('cartchange'); });
   window.renderCartPage();
   // মোবাইলে ক্রস-সেলস ডিফল্টে বন্ধ; কাস্টমার চাইলে খুলে দেখতে পারে (ডেস্কটপে সবসময় খোলা)
   $('#csToggle').on('click', function () {

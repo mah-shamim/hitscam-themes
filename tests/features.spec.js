@@ -208,3 +208,29 @@ test('অর্ডার মোডালেও ফ্রি-শিপিং ব�
   await expect(page.locator('#orderModal')).toBeVisible();
   await expect(page.locator('#orderModal .fs-wrap .free-ship')).toHaveClass(/done/);
 });
+
+test('কার্টের ডান কলাম: ডেলিভারি ও আস্থা বক্স; এলাকা বদলালে শিপিং ও টোটাল বদলায়', async ({ page }) => {
+  await page.addInitScript(cart3);                              // ৳2,450 → শিপিং ফি প্রযোজ্য
+  await page.goto('/cart.html');
+  const box = page.locator('#cartTrust');
+  await expect(box).toBeVisible();
+  await expect(box.locator('.trust-list li')).toHaveCount(3);
+  await expect(box.locator('.pay-chips span')).toHaveCount(3);
+  await expect(page.locator('#cartDeliv')).toContainText('৳70');
+  await expect(page.locator('#cartTotals')).toContainText('৳70');
+  await box.locator('.zone-btn[data-z="130"]').click();
+  await expect(page.locator('#cartDeliv')).toContainText('৳130');
+  await expect(page.locator('#cartTotals')).toContainText('৳130');
+  await expect(box.locator('.zone-btn[data-z="130"]')).toHaveClass(/active/);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('hc_ship')))).toBe(130);
+});
+
+test('কার্ট ডেস্কটপ: ডান কলাম স্ক্রলে আটকে থাকে কিন্তু ফ্রি-শিপিং বারের নিচে', async ({ page }) => {
+  test.skip(page.viewportSize().width < 992, 'ডেস্কটপ লেআউট');
+  await page.addInitScript(cart3);
+  await page.goto('/cart.html');
+  await page.evaluate(() => window.scrollTo(0, 450));
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(200);
+  const r = await page.evaluate(() => ({ side: document.querySelector('.cart-side').getBoundingClientRect().top, bar: document.querySelector('#freeShip').getBoundingClientRect().bottom }));
+  expect(r.side, 'ডান কলাম ফ্রি-শিপিং বারের নিচে নেই').toBeGreaterThanOrEqual(r.bar - 1);
+});
