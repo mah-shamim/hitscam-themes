@@ -238,7 +238,7 @@
   };
   HC.freeShipHtml = () => {
     const t = HC.totals(); const left = Math.max(0, FREE_SHIP - t.sub); const pct = Math.min(100, t.sub / FREE_SHIP * 100);
-    return `<div class="free-ship mb-3"><div class="mb-2">${left > 0 ? `আরও <b>${BDT(left)}</b> এর পণ্য কার্টে যোগ করুন এবং পান <b class="text-brand">ফ্রি শিপিং!</b>` : '🎉 অভিনন্দন! আপনি <b>ফ্রি শিপিং</b> পাচ্ছেন।'}</div><div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div></div>`;
+    return `<div class="free-ship ${left > 0 ? 'need' : 'done'}" role="status"><div class="mb-2 fs-msg">${left > 0 ? `আরও <b>${BDT(left)}</b> এর পণ্য কার্টে যোগ করুন এবং পান <b class="text-brand">ফ্রি শিপিং!</b>` : '🎉 অভিনন্দন! আপনি <b>ফ্রি শিপিং</b> পাচ্ছেন।'}</div><div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div></div>`;
   };
 
   /* ---------- Checkout (page + modal) ---------- */
@@ -506,6 +506,14 @@
     });
     $(document).on('click', '.cmp-clear', function () { store.set('hc_cmp', []); HC.renderCmpBar(); $(document).trigger('cmpchange'); });
     HC.renderCmpBar();
+
+    // স্টিকি এলিমেন্ট (ফ্রি-শিপিং বার) হেডারের ঠিক নিচে আটকে থাকার জন্য হেডারের উচ্চতা CSS ভ্যারিয়েবলে রাখা
+    (function () {
+      const h = document.querySelector('.site-header'); if (!h) return;
+      const set = () => document.documentElement.style.setProperty('--hdr-h', h.offsetHeight + 'px');
+      set(); window.addEventListener('resize', set); window.addEventListener('load', set);
+      if (window.ResizeObserver) new ResizeObserver(set).observe(h);
+    })();
 
     // ---- অ্যাক্সেসিবিলিটি: স্কিপ লিংক + মূল কনটেন্ট ল্যান্ডমার্ক
     const $main = $('main').first();
