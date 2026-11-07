@@ -64,11 +64,15 @@ test('চেকআউট ড্রাফট: লিখে রাখা তথ্
   await page.goto('/checkout.html');
   await page.locator('[name=name]').fill('রাকিব হাসান');
   await page.locator('[name=phone]').fill('01712345678');
-  await page.locator('[name=address]').fill('মিরপুর ১০, ঢাকা');
+  await page.locator('[name=road]').fill('মিরপুর ১০, রোড ৪');
+  await page.locator('[name=thana]').fill('মিরপুর');
+  await page.locator('[name=district]').selectOption('ঢাকা');
   await page.reload();
   await expect(page.locator('[name=name]')).toHaveValue('রাকিব হাসান');
   await expect(page.locator('[name=phone]')).toHaveValue('01712345678');
-  await expect(page.locator('[name=address]')).toHaveValue('মিরপুর ১০, ঢাকা');
+  await expect(page.locator('[name=road]')).toHaveValue('মিরপুর ১০, রোড ৪');
+  await expect(page.locator('[name=thana]')).toHaveValue('মিরপুর');
+  await expect(page.locator('[name=district]')).toHaveValue('ঢাকা');
   await page.locator('.place-order').click();
   await expect(page).toHaveURL(/order-received/);
   expect(await page.evaluate(() => localStorage.getItem('hc_draft'))).toBe('null');
@@ -233,4 +237,73 @@ test('কার্ট ডেস্কটপ: ডান কলাম স্ক্
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(200);
   const r = await page.evaluate(() => ({ side: document.querySelector('.cart-side').getBoundingClientRect().top, bar: document.querySelector('#freeShip').getBoundingClientRect().bottom }));
   expect(r.side, 'ডান কলাম ফ্রি-শিপিং বারের নিচে নেই').toBeGreaterThanOrEqual(r.bar - 1);
+});
+
+test('চেকআউট ফর্ম: অটোফিল অ্যাট্রিবিউট (ই-মেইল/নাম/ফোন/ঠিকানা) ও ৬৪ জেলা', async ({ page }) => {
+  await page.addInitScript(cart3);
+  await page.goto('/checkout.html');
+  const attr = (n, a) => page.locator(`[name=${n}]`).getAttribute(a);
+  expect(await attr('email', 'autocomplete')).toBe('email');
+  expect(await attr('email', 'inputmode')).toBe('email');
+  expect(await attr('email', 'autocapitalize')).toBe('off');
+  expect(await attr('name', 'autocomplete')).toBe('name');
+  expect(await attr('phone', 'autocomplete')).toBe('tel');
+  expect(await attr('road', 'autocomplete')).toBe('address-line1');
+  expect(await attr('thana', 'autocomplete')).toBe('address-level2');
+  expect(await attr('district', 'autocomplete')).toBe('address-level1');
+  await expect(page.locator('[name=district] option')).toHaveCount(65);         // ৬৪ জেলা + "বেছে নিন"
+  expect(await page.locator('[name=district] option').evaluateAll(o => new Set(o.map(x => x.value)).size)).toBe(65);
+});
+
+test('ই-মেইল সাজেশন: gmail/yahoo চিপ, ক্লিকে বসে; ভুল ই-মেইলে অর্ডার আটকায়', async ({ page }) => {
+  await page.addInitScript(cart3);
+  await page.goto('/checkout.html');
+  const em = page.locator('[name=email]'), chips = page.locator('.email-chip');
+  await em.fill('rakib');
+  await expect(chips).toHaveCount(4);
+  await expect(chips.first()).toHaveText('rakib@gmail.com');
+  await em.fill('rakib@y');
+  await expect(chips).toHaveCount(1);
+  await expect(chips.first()).toHaveText('rakib@yahoo.com');
+  await chips.first().click();
+  await expect(em).toHaveValue('rakib@yahoo.com');
+  await expect(chips).toHaveCount(0);
+  await em.fill('rakib@gmail');                                                  // অসম্পূর্ণ → অর্ডার হবে না
+  await page.locator('[name=name]').fill('রাকিব'); await page.locator('[name=phone]').fill('01712345678');
+  await page.locator('[name=road]').fill('বাসা ১'); await page.locator('[name=thana]').fill('মিরপুর'); await page.locator('[name=district]').selectOption('ঢাকা');
+  await page.locator('.place-order').click();
+  await expect(em).toHaveClass(/is-invalid/);
+  expect(page.url()).not.toContain('order-received');
+});
+
+test('জেলা বাছলে শিপিং জোন বদলায় (ঢাকা=৳৭০, অন্য=৳১৩০) এবং অর্ডারে রোড/থানা/জেলা আলাদা সেভ হয়', async ({ page }) => {
+  await page.addInitScript(cart3);
+  await page.goto('/checkout.html');
+  await page.locator('[name=district]').selectOption('চট্টগ্রাম');
+  await expect(page.locator('.ship-radio[value="130"]')).toBeChecked();
+  await expect(page.locator('[data-summary]')).toContainText('৳130');
+  await page.locator('[name=district]').selectOption('ঢাকা');
+  await expect(page.locator('.ship-radio[value="70"]')).toBeChecked();
+  await expect(page.locator('[data-summary]')).toContainText('৳70');
+  await page.locator('[name=name]').fill('রাকিব হাসান'); await page.locator('[name=phone]').fill('01712345678');
+  await page.locator('[name=email]').fill('rakib@gmail.com');
+  await page.locator('[name=road]').fill('বাসা ১২, রোড ৩'); await page.locator('[name=thana]').fill('মিরপুর');
+  await page.locator('.place-order').click();
+  await expect(page).toHaveURL(/order-received/);
+  const o = await page.evaluate(() => JSON.parse(localStorage.getItem('hc_last_order')));
+  expect([o.road, o.thana, o.district, o.email]).toEqual(['বাসা ১২, রোড ৩', 'মিরপুর', 'ঢাকা', 'rakib@gmail.com']);
+  expect(o.address).toBe('বাসা ১২, রোড ৩, মিরপুর, ঢাকা');
+  await expect(page.locator('#oAddr')).toContainText('মিরপুর, ঢাকা');
+});
+
+test('ঠিকানার তিনটি ঘর আলাদাভাবে বাধ্যতামূলক', async ({ page }) => {
+  await page.addInitScript(cart3);
+  await page.goto('/checkout.html');
+  await page.locator('[name=name]').fill('রাকিব'); await page.locator('[name=phone]').fill('01712345678');
+  await page.locator('[name=road]').fill('বাসা ১');                          // থানা ও জেলা বাকি
+  await page.locator('.place-order').click();
+  await expect(page.locator('[name=thana]')).toHaveClass(/is-invalid/);
+  await expect(page.locator('[name=district]')).toHaveClass(/is-invalid/);
+  await expect(page.locator('[name=road]')).not.toHaveClass(/is-invalid/);
+  expect(page.url()).not.toContain('order-received');
 });

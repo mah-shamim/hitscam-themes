@@ -80,7 +80,9 @@ test('অর্ডার নাউ → মোডাল → ভ্যালিড
   expect(page.url()).not.toContain('order-received');
 
   await modal.locator('[name=name]').fill('রাকিব হাসান');
-  await modal.locator('[name=address]').fill('গাজীপুর সদর, গাজীপুর');
+  await modal.locator('[name=road]').fill('বাসা ১২, রোড ৩');
+  await modal.locator('[name=thana]').fill('গাজীপুর সদর');
+  await modal.locator('[name=district]').selectOption('গাজীপুর');
   await modal.locator('[name=phone]').fill(phone);
   await modal.locator('.place-order').click();
   await page.waitForURL(/order-received/);
@@ -95,7 +97,9 @@ test('বিকাশ: TrxID বাধ্যতামূলক + স্লিপ
   await addFirstToCart(page);
   await page.goto('/checkout.html');
   await page.locator('[name=name]').fill('রাকিব হাসান');
-  await page.locator('[name=address]').fill('গাজীপুর সদর');
+  await page.locator('[name=road]').fill('বাসা ১২, রোড ৩');
+  await page.locator('[name=thana]').fill('গাজীপুর সদর');
+  await page.locator('[name=district]').selectOption('গাজীপুর');
   await page.locator('[name=phone]').fill(phone);
   await expect(page.locator('#payExtra')).toBeHidden();
   await page.locator('input[name=pay][value="বিকাশ"]').check();

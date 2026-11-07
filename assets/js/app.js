@@ -129,12 +129,13 @@
   HC.emi = price => HC.EMI_PLANS.map(p => ({ m: p.m, fee: p.fee, month: Math.ceil(price * (1 + p.fee) / p.m), total: Math.round(price * (1 + p.fee)) }));
 
   // ---------- চেকআউট ড্রাফট ও কার্ট রিমাইন্ডার ----------
-  HC.DRAFT_FIELDS = ['name', 'address', 'phone', 'email', 'notes'];
+  HC.DRAFT_FIELDS = ['name', 'road', 'thana', 'district', 'phone', 'email', 'notes'];
   HC.saveDraft = form => { const d = {}; HC.DRAFT_FIELDS.forEach(k => { const v = $.trim($(form).find('[name=' + k + ']').val() || ''); if (v) d[k] = v; }); store.set('hc_draft', Object.keys(d).length ? d : null); };
   HC.restoreDraft = form => {
     const d = store.get('hc_draft', null) || {}, u = store.get('hc_user', null);
     if (!d.name && u && u.name && u.name !== 'গ্রাহক') d.name = u.name;
     if (!d.phone && u && /^(?:\+?88)?01[3-9]\d{8}$/.test(String(u.id || '').replace(/[\s-]/g, ''))) d.phone = u.id;
+    if (!d.email && u && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(u.id || ''))) d.email = u.id;
     HC.DRAFT_FIELDS.forEach(k => { const $f = $(form).find('[name=' + k + ']'); if (d[k] && !$f.val()) $f.val(d[k]); });
   };
 
@@ -241,13 +242,29 @@
     return `<div class="free-ship ${left > 0 ? 'need' : 'done'}" role="status"><div class="mb-2 fs-msg">${left > 0 ? `আরও <b>${BDT(left)}</b> এর পণ্য কার্টে যোগ করুন এবং পান <b class="text-brand">ফ্রি শিপিং!</b>` : '🎉 অভিনন্দন! আপনি <b>ফ্রি শিপিং</b> পাচ্ছেন।'}</div><div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div></div>`;
   };
 
+  // বাংলাদেশের ৬৪ জেলা (চেকআউটের ঠিকানায়)
+  HC.DISTRICTS = ['ঢাকা', 'গাজীপুর', 'নারায়ণগঞ্জ', 'নরসিংদী', 'মানিকগঞ্জ', 'মুন্সীগঞ্জ', 'কিশোরগঞ্জ', 'টাঙ্গাইল', 'ফরিদপুর', 'গোপালগঞ্জ', 'মাদারীপুর', 'রাজবাড়ী', 'শরীয়তপুর',
+    'চট্টগ্রাম', 'কক্সবাজার', 'কুমিল্লা', 'ফেনী', 'ব্রাহ্মণবাড়িয়া', 'চাঁদপুর', 'লক্ষ্মীপুর', 'নোয়াখালী', 'রাঙ্গামাটি', 'বান্দরবান', 'খাগড়াছড়ি',
+    'রাজশাহী', 'নাটোর', 'নওগাঁ', 'চাঁপাইনবাবগঞ্জ', 'পাবনা', 'সিরাজগঞ্জ', 'বগুড়া', 'জয়পুরহাট',
+    'খুলনা', 'বাগেরহাট', 'সাতক্ষীরা', 'যশোর', 'ঝিনাইদহ', 'মাগুরা', 'নড়াইল', 'কুষ্টিয়া', 'চুয়াডাঙ্গা', 'মেহেরপুর',
+    'বরিশাল', 'ভোলা', 'পটুয়াখালী', 'পিরোজপুর', 'ঝালকাঠি', 'বরগুনা',
+    'সিলেট', 'মৌলভীবাজার', 'হবিগঞ্জ', 'সুনামগঞ্জ',
+    'রংপুর', 'দিনাজপুর', 'গাইবান্ধা', 'কুড়িগ্রাম', 'লালমনিরহাট', 'নীলফামারী', 'পঞ্চগড়', 'ঠাকুরগাঁও',
+    'ময়মনসিংহ', 'জামালপুর', 'নেত্রকোণা', 'শেরপুর'];
+  HC.EMAIL_DOMAINS = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
+  HC.EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   /* ---------- Checkout (page + modal) ---------- */
   HC.detailsForm = () => `<form id="orderForm" novalidate>
-    <div class="mb-3"><label class="form-label">আপনার নাম *</label><input class="form-control" name="name" required placeholder="পুরো নাম"><div class="invalid-feedback">নাম লিখুন</div></div>
-    <div class="mb-3"><label class="form-label">আপনার ঠিকানা *</label><textarea class="form-control" name="address" rows="2" required placeholder="বাসা/রোড, থানা, জেলা"></textarea><div class="invalid-feedback">ঠিকানা লিখুন</div></div>
+    <div class="mb-3"><label class="form-label">আপনার নাম *</label><input class="form-control" name="name" required autocomplete="name" placeholder="পুরো নাম"><div class="invalid-feedback">নাম লিখুন</div></div>
+    <div class="mb-3"><label class="form-label">বাসা / রোড / এলাকা *</label><input class="form-control" name="road" required autocomplete="address-line1" placeholder="বাসা নং, রোড/গ্রাম, এলাকা"><div class="invalid-feedback">বাসা/রোড/এলাকা লিখুন</div></div>
     <div class="row g-3 mb-3">
-      <div class="col-md-6"><label class="form-label">ফোন নাম্বার *</label><input class="form-control" name="phone" type="tel" inputmode="tel" required placeholder="01XXXXXXXXX"><div class="invalid-feedback">সঠিক বাংলাদেশি নাম্বার দিন</div></div>
-      <div class="col-md-6"><label class="form-label">ই-মেইল (ঐচ্ছিক)</label><input class="form-control" name="email" type="email" placeholder="you@example.com"></div>
+      <div class="col-md-6"><label class="form-label">থানা / উপজেলা *</label><input class="form-control" name="thana" required autocomplete="address-level2" placeholder="যেমন: মিরপুর / সাভার"><div class="invalid-feedback">থানা/উপজেলা লিখুন</div></div>
+      <div class="col-md-6"><label class="form-label">জেলা *</label><select class="form-select" name="district" required autocomplete="address-level1"><option value="">জেলা বেছে নিন</option>${HC.DISTRICTS.map(d => `<option value="${d}">${d}</option>`).join('')}</select><div class="invalid-feedback">জেলা বেছে নিন</div></div>
+      <div class="col-12 form-text mt-1">ঢাকা জেলা বাছলে শিপিং ৳70, অন্য জেলায় ৳130 (৳${FREE_SHIP.toLocaleString('en-IN')}+ অর্ডারে ফ্রি)।</div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-md-6"><label class="form-label">ফোন নাম্বার *</label><input class="form-control" name="phone" type="tel" inputmode="tel" required autocomplete="tel" placeholder="01XXXXXXXXX"><div class="invalid-feedback">সঠিক বাংলাদেশি নাম্বার দিন</div></div>
+      <div class="col-md-6"><label class="form-label">ই-মেইল (ঐচ্ছিক)</label><input class="form-control" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com"><div class="invalid-feedback">সঠিক ই-মেইল দিন</div><div class="email-sugg" aria-live="polite"></div></div>
     </div>
     <div class="mb-3"><label class="form-label">Order notes (ঐচ্ছিক)</label><textarea class="form-control" name="notes" rows="2" placeholder="ডেলিভারি সম্পর্কে বিশেষ নির্দেশনা"></textarea></div>
     <div class="mb-3"><label class="form-label fw-bold">Shipping method</label>
@@ -292,8 +309,9 @@
   HC.placeOrder = form => {
     const f = form, v = n => $.trim($(f).find('[name=' + n + ']').val());
     let ok = true;
-    $(f).find('[name=name],[name=address]').each(function () { const bad = !$.trim(this.value); $(this).toggleClass('is-invalid', bad); if (bad) ok = false; });
+    $(f).find('[name=name],[name=road],[name=thana],[name=district]').each(function () { const bad = !$.trim(this.value); $(this).toggleClass('is-invalid', bad); if (bad) ok = false; });
     const ph = $(f).find('[name=phone]'); const badp = !BD_PHONE.test(ph.val().replace(/[\s-]/g, '')); ph.toggleClass('is-invalid', badp); if (badp) ok = false;
+    const em = $(f).find('[name=email]'), bade = !!$.trim(em.val()) && !HC.EMAIL_RE.test($.trim(em.val())); em.toggleClass('is-invalid', bade); if (bade) ok = false;
     const pay = $(f).find('[name=pay]:checked').val(), mobile = !!PAY_NUMBERS[pay];
     let txn = '', slipName = '';
     if (mobile) {
@@ -307,7 +325,7 @@
     const t = HC.totals();
     store.set('hc_last_order', {
       id: 500 + Math.floor(Math.random() * 400), date: new Date().toISOString(), items: HC.cart(), totals: t,
-      name: v('name'), address: v('address'), phone: v('phone'), email: v('email'), notes: v('notes'), pay, txn, slipName
+      name: v('name'), road: v('road'), thana: v('thana'), district: v('district'), address: [v('road'), v('thana'), v('district')].join(', '), phone: v('phone'), email: v('email'), notes: v('notes'), pay, txn, slipName
     });
     memCart = []; store.set('hc_cart', []); store.set('hc_coupon', null); store.set('hc_draft', null);
     location.href = 'order-received.html';
@@ -530,6 +548,25 @@
       const reg = () => { try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) {} };
       if (document.readyState === 'complete') reg(); else window.addEventListener('load', reg);
     }
+
+    // ---- ই-মেইল সাজেশন (gmail/yahoo/outlook…) এবং জেলা বাছলে শিপিং জোন
+    const emailChips = $inp => {
+      const v = $.trim($inp.val()), $box = $inp.closest('div').find('.email-sugg');
+      if (!v || HC.EMAIL_RE.test(v) && HC.EMAIL_DOMAINS.includes(v.split('@')[1])) { $box.empty(); return; }
+      const at = v.indexOf('@'), local = at < 0 ? v : v.slice(0, at), dom = at < 0 ? '' : v.slice(at + 1).toLowerCase();
+      if (!local) { $box.empty(); return; }
+      $box.html(HC.EMAIL_DOMAINS.filter(d => d.startsWith(dom) && d !== dom).map(d => `<button type="button" class="email-chip" data-v="${local}@${d}">${local}@${d}</button>`).join(''));
+    };
+    $(document).on('input', '#orderForm [name=email]', function () { $(this).removeClass('is-invalid'); emailChips($(this)); });
+    $(document).on('click', '.email-chip', function () {
+      const $f = $(this).closest('form').find('[name=email]'); $f.val($(this).data('v')).removeClass('is-invalid').trigger('input').trigger('change'); $(this).closest('.email-sugg').empty();
+    });
+    $(document).on('change', '#orderForm [name=district]', function () {
+      $(this).removeClass('is-invalid'); if (!this.value) return;
+      const z = this.value === 'ঢাকা' ? 70 : 130;
+      $('#orderForm .ship-radio[value=' + z + ']').prop('checked', true);
+      if (HC.ship() !== z) { store.set('hc_ship', z); $(document).trigger('cartchange'); }
+    });
 
     // ---- WhatsApp এ কার্টের অর্ডার
     $(document).on('click', '.wa-cart', function () { if (!HC.cart().length) { HC.toast('কার্ট খালি!'); return; } HC.waOpen(HC.waCartText()); });
