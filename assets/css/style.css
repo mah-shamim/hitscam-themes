@@ -462,3 +462,9 @@ main:focus{outline:none}
 .trust-list i{color:var(--brand);margin-right:.35rem}
 .pay-chips{display:flex;flex-wrap:wrap;gap:.4rem}
 .pay-chips span{border:1px solid var(--line);background:var(--bg);border-radius:50px;padding:.2rem .7rem;font-size:.8rem}
+
+/* ই-মেইল সাজেশন চিপ */
+.email-sugg{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.4rem}
+.email-sugg:empty{display:none}
+.email-chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:50px;padding:.2rem .7rem;font-size:.8rem}
+.email-chip:hover,.email-chip:focus-visible{border-color:var(--brand);color:var(--brand)}
