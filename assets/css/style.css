@@ -438,8 +438,9 @@ main:focus{outline:none}
 #csToggle.open i{transform:rotate(180deg)}
 
 /* ফ্রি-শিপিং বার: স্ক্রলের সময় হেডারের নিচে আটকে থাকে এবং ব্লিংক করে (শিপিং ফ্রি হলে ব্লিংক বন্ধ) */
-#freeShip{position:sticky;top:calc(var(--hdr-h,0px) + 6px);z-index:1020;margin-bottom:1rem}
-#freeShip:empty{margin:0}
+#freeShip,.fs-wrap{position:sticky;top:calc(var(--hdr-h,0px) + 6px);z-index:1020;margin-bottom:1rem}
+#freeShip:empty,.fs-wrap:empty{margin:0}
+.modal .fs-wrap{top:0}
 .free-ship{box-shadow:0 6px 18px rgba(15,23,42,.12)}
 .free-ship.done{background:#e8f8ee;border-color:#b7e4c7}
 .free-ship.need{animation:fsPulse 1.4s ease-in-out infinite}
@@ -450,3 +451,6 @@ main:focus{outline:none}
 [data-theme=dark] .free-ship{background:#2a1d22;border-color:#4a2b33}
 [data-theme=dark] .free-ship.done{background:#14301f;border-color:#235a37}
 @media(prefers-reduced-motion:reduce){.free-ship.need,.free-ship.need .fs-msg b.text-brand{animation:none}}
+
+/* অর্ডার-মোডালের ভেতরে ফ্রি-শিপিং বার মোডালের উপরে আটকে থাকে */
+.modal .fs-wrap{top:0;z-index:5}
