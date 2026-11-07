@@ -185,3 +185,26 @@ test.describe('রিডিউসড মোশন', () => {
     expect(await page.evaluate(() => getComputedStyle(document.querySelector('.free-ship')).animationName)).toBe('none');
   });
 });
+
+test('চেকআউটে ফ্রি-শিপিং বার: স্ক্রলে আটকে থাকে, পরিমাণ বদলালে আপডেট হয়', async ({ page }) => {
+  await page.addInitScript(cart3);
+  await page.goto('/checkout.html');
+  const bar = page.locator('.fs-wrap .free-ship');
+  await expect(bar).toHaveClass(/need/);
+  await expect(bar).toContainText('ফ্রি শিপিং');
+  await expect(bar).toContainText('2,550');                        // ৳5,000 − ৳2,450
+  await page.locator('[data-summary] .qty-btn[data-d="1"]').first().click();   // ৳800 আরও যোগ
+  await expect(bar).toContainText('1,750');
+  await page.evaluate(() => window.scrollTo(0, 500));
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(150);
+  const r = await page.evaluate(() => ({ b: document.querySelector('.fs-wrap').getBoundingClientRect(), h: document.querySelector('.site-header').getBoundingClientRect() }));
+  expect(r.b.top).toBeGreaterThanOrEqual(r.h.bottom - 1);
+  expect(r.b.top).toBeLessThan(r.h.bottom + 20);
+});
+
+test('অর্ডার মোডালেও ফ্রি-শিপিং বার দেখায়; ৳৫,০০০+ এ সবুজ', async ({ page }) => {
+  await page.goto('/index.html');
+  await page.locator('#secTrending .product-card[data-id="1"] .btn-order').click();   // ৳5,500
+  await expect(page.locator('#orderModal')).toBeVisible();
+  await expect(page.locator('#orderModal .fs-wrap .free-ship')).toHaveClass(/done/);
+});

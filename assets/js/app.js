@@ -281,7 +281,7 @@
       <p class="small text-muted text-center mt-2 mb-0"><i class="bi bi-shield-lock"></i> আপনার তথ্য সুরক্ষিত</p>`);
   };
   HC.renderCheckout = el => {
-    $(el).html(`<div class="row g-4"><div class="col-lg-6"><div class="panel h-100"><h5 class="fw-bold mb-3">Your details</h5>${HC.detailsForm()}</div></div>
+    $(el).html(`<div class="fs-wrap">${HC.cart().length ? HC.freeShipHtml() : ''}</div><div class="row g-4"><div class="col-lg-6"><div class="panel h-100"><h5 class="fw-bold mb-3">Your details</h5>${HC.detailsForm()}</div></div>
       <div class="col-lg-6"><div class="panel" data-summary></div></div></div>`);
     HC.renderSummary($(el).find('[data-summary]'));
     HC.restoreDraft($(el).find('#orderForm'));
@@ -419,6 +419,7 @@
       HC.syncCards();
       HC.renderMini();
       $('[data-summary]').each(function () { HC.renderSummary(this); });
+      $('.fs-wrap').html(HC.cart().length ? HC.freeShipHtml() : '');
       $('[data-cart-page]').each(function () { if (window.renderCartPage) window.renderCartPage(); });
     });
 
