@@ -114,11 +114,26 @@ test('স্টক আউট: "স্টকে এলে জানান" ফো
   await expect(page.locator('#pNotify')).toBeHidden();
 });
 
-test('কার্ট পেজের ক্রস-সেলস কার্ড ঠাসা নয় (প্রস্থ ≥ ২৪০px) ও ওভারফ্লো নেই', async ({ page }) => {
+test('কার্ট পেজের ক্রস-সেলস: মোবাইলে ডিফল্টে বন্ধ (টগলে খোলে), ডেস্কটপে খোলা; কার্ড ঠাসা নয়', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('hc_cart', JSON.stringify([{ key: '1|0', id: 1, name: 'X', label: '', img: '', regular: 100, sale: 90, qty: 1 }])));
   await page.goto('/cart.html');
-  const cards = page.locator('#crossSells .product-card');
+  const cards = page.locator('#crossSells .product-card'), tg = page.locator('#csToggle');
   await expect(cards).toHaveCount(4);
+  const mobile = page.viewportSize().width < 768;
+  if (mobile) {
+    await expect(tg).toBeVisible();
+    await expect(page.locator('#crossSells')).toBeHidden();
+    await expect(tg).toHaveAttribute('aria-expanded', 'false');
+    await tg.click();
+    await expect(page.locator('#crossSells')).toBeVisible();
+    await expect(tg).toHaveAttribute('aria-expanded', 'true');
+    await tg.click();
+    await expect(page.locator('#crossSells')).toBeHidden();
+    await tg.click();
+  } else {
+    await expect(tg).toBeHidden();
+    await expect(page.locator('#crossSells')).toBeVisible();
+  }
   const ws = await cards.evaluateAll(els => els.map(e => Math.round(e.getBoundingClientRect().width)));
   ws.forEach(w => expect(w, 'কার্ড সরু: ' + ws).toBeGreaterThanOrEqual(240));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);

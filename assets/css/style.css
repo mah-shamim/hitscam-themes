@@ -431,3 +431,8 @@ main:focus{outline:none}
 
 /* লুকানো তুলনা বার কিবোর্ড ট্যাবে ধরা পড়বে না */
 .cmp-bar:not(.show){visibility:hidden}
+
+/* কার্ট: মোবাইলে ক্রস-সেলস ভাঁজ করা (টগল বাটন দিয়ে খোলে) */
+@media(max-width:767.98px){#crossSells.cs-closed{display:none}}
+#csToggle i{transition:transform .2s;display:inline-block}
+#csToggle.open i{transform:rotate(180deg)}

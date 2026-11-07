@@ -28,8 +28,9 @@
       <div class="col-lg-8">
         <div class="panel mb-3" id="cartList"></div>
         <div id="upsellWrap"><div id="cartAddons"></div></div>
-        <div class="section-head mt-4"><h2 class="fs-4">ক্রস সেলস – আপনার পছন্দ হতে পারে</h2></div>
-        <div class="row g-3" id="crossSells"></div>
+        <div class="section-head mt-4"><h2 class="fs-4">ক্রস সেলস – আপনার পছন্দ হতে পারে</h2>
+          <button type="button" class="btn btn-soft btn-sm rounded-pill d-md-none" id="csToggle" aria-expanded="false" aria-controls="crossSells"><span class="cs-label">দেখুন</span> <i class="bi bi-chevron-down"></i></button></div>
+        <div class="row g-3 cs-closed" id="crossSells"></div>
       </div>
       <div class="col-lg-4">
         <div class="panel position-sticky" style="top:110px" id="cartTotals"></div>
@@ -55,7 +56,15 @@ window.renderCartPage = function () {
     ${c.length ? `<a href="checkout.html" class="btn btn-brand btn-lg w-100 mt-3">প্রসেস টু চেকআউট <i class="bi bi-arrow-right"></i></a>${HC.waBtn.replace('w-100','w-100 mt-2')}` : ''}
     <a href="shop.html" class="btn btn-soft w-100 mt-2">কেনাকাটা চালিয়ে যান</a>`);
 };
-$(function () { window.renderCartPage(); });
+$(function () {
+  window.renderCartPage();
+  // মোবাইলে ক্রস-সেলস ডিফল্টে বন্ধ; কাস্টমার চাইলে খুলে দেখতে পারে (ডেস্কটপে সবসময় খোলা)
+  $('#csToggle').on('click', function () {
+    const open = $('#crossSells').hasClass('cs-closed');
+    $('#crossSells').toggleClass('cs-closed', !open);
+    $(this).attr('aria-expanded', open).toggleClass('open', open).find('.cs-label').text(open ? 'লুকান' : 'দেখুন');
+  });
+});
 </script>
 </body>
 </html>
