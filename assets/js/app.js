@@ -118,11 +118,10 @@
       opts = `<div class="pc-group" style="--n:${list.length === 4 ? 2 : Math.min(list.length, 3)}">` + list.map((v, i) =>
         `<label><span><input type="radio" class="form-check-input opt-radio me-1" name="${gname}" value="${i}" ${i === lo ? 'checked' : ''}>${v.label}</span><b>${BDT(v.sale)}</b></label>`).join('') + '</div>';
     }
-    // Additional information: ভ্যারিয়েশন/গ্রুপ না থাকলে প্রথম ৪টি সবসময় দেখায়; বাকি অ্যাট্রিবিউট (li.x) ফাঁকা জায়গা থাকলে HC.fillCards দিয়ে ভরে
-    const hasOpts = !!opts, seen = new Set(), li = (x, cls) => `<li class="${cls}"><i class="bi ${x[0]}"></i><span>${x[1]}</span></li>`;
-    const all = (p.info || []).concat(p.more || []).filter(x => !seen.has(x[1]) && seen.add(x[1]));
-    const baseN = hasOpts ? 0 : Math.min(4, all.length);
-    const infoHtml = all.length ? '<ul class="pc-info">' + all.map((x, i) => li(x, i < baseN ? '' : 'x')).join('') + '</ul>' : '';
+    // ভ্যারিয়েশন/গ্রুপ না থাকলে ইম্পর্টেন্ট Additional information আইকনসহ
+    if (!opts && p.info && p.info.length) {
+      opts = '<ul class="pc-info">' + p.info.slice(0, 4).map(x => `<li><i class="bi ${x[0]}"></i><span>${x[1]}</span></li>`).join('') + '</ul>';
+    }
     const actions = p.type === 'external'
       ? `<a class="btn btn-brand btn-ext" href="${p.url}" target="_blank" rel="sponsored noopener"><i class="bi bi-box-arrow-up-right"></i> ${p.btn}</a>`
       : `<button class="btn btn-brand btn-add" type="button" ${p.stock <= 0 ? 'disabled' : ''}>অ্যাড টু কার্ট</button>
@@ -138,37 +137,14 @@
         <a class="pc-title" href="product.html?id=${p.id}">${p.name}</a>
         <div class="pc-rate">${HC.stars(p.rating)} <span class="text-muted">(${p.reviews})</span>${p.sold ? `<span class="pc-sold" title="টোটাল সোল্ড"><i class="bi bi-bag-check-fill"></i> ${HC.soldFmt(p.sold)} বিক্রি</span>` : ''}</div>
         ${opts}
-        ${infoHtml}
         ${HC.stockHtml(p, false)}
         <div class="pc-price">${priceHtml(o, p)}</div>
         <div class="pc-actions ${p.type !== 'external' && HC.inCart(p.id) ? 'three' : ''}">${actions}</div>
       </div></div>`;
   };
-  // কার্ডের ফাঁকা জায়গা অ্যাট্রিবিউট দিয়ে ভরা: একই সারির সবচেয়ে লম্বা কার্ডের উচ্চতা বাড়ে না এমন পর্যন্তই বাড়তি li দেখায়
-  HC.fillCards = root => {
-    const rows = new Set();
-    $(root || document).find('.product-card').each(function () { const r = $(this).closest('.row')[0]; if (r) rows.add(r); });
-    rows.forEach(row => {
-      const cards = [...row.querySelectorAll('.product-card')];
-      cards.forEach(c => c.querySelectorAll('.pc-info li.x').forEach(l => l.classList.remove('on')));
-      const H = Math.max(...cards.map(c => c.parentElement.offsetHeight));
-      if (!(H > 0)) return;
-      const over = c => c.scrollHeight > c.clientHeight + 1 || c.parentElement.offsetHeight > H + 1;
-      cards.forEach(c => {
-        const xs = [...c.querySelectorAll('.pc-info li.x')], on = [];
-        for (const l of xs) { l.classList.add('on'); if (over(c)) { l.classList.remove('on'); break; } on.push(l); }
-        if (on.length % 2) on.pop().classList.remove('on');          // জোড় সংখ্যায় রাখা (২ কলাম)
-      });
-    });
-  };
-  let fillT; HC.fillSoon = () => { clearTimeout(fillT); fillT = setTimeout(() => HC.fillCards(), 60); };
-  $(window).on('resize load', HC.fillSoon);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(HC.fillSoon);
-
   HC.grid = (sel, list, cols) => {
     const c = cols || 'col-12 col-sm-6 col-md-4 col-lg-3';
     $(sel).html(list.length ? list.map(p => `<div class="${c}">${HC.card(p)}</div>`).join('') : '<div class="col-12 text-center text-muted py-5">কোনো প্রোডাক্ট পাওয়া যায়নি।</div>');
-    HC.fillSoon();
   };
   HC.section = (sel, tag, n) => HC.grid(sel, D.products.filter(p => p.tags.includes(tag)).slice(0, n || 4));
 
@@ -375,10 +351,10 @@
     if (!$('body').is('[data-no-modal]')) $('body').append(orderModal());
     HC.renderMini(); HC.renderWish();
 
-    HC.syncCards = () => { HC.fillSoon(); $('.product-card').each(function () {
+    HC.syncCards = () => $('.product-card').each(function () {
       const $a = $(this).find('.pc-actions');
       $a.toggleClass('three', !$a.find('.btn-ext').length && HC.inCart($(this).data('id')));
-    }); };
+    });
     $(document).on('cartchange', function () {
       HC.syncCards();
       HC.renderMini();

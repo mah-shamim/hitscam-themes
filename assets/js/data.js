@@ -117,19 +117,6 @@
   products.forEach(p => { p.stock = p.stock != null ? p.stock : (stockById[p.id] != null ? stockById[p.id] : 20); });
   products.forEach(p => { p.sold = p.sold != null ? p.sold : (soldById[p.id] || 0); });
   products.forEach(p => { p.info = p.info || infoById[p.id] || infoByCat[p.cat] || []; });
-  // কার্ডে ফাঁকা জায়গা থাকলে এই অতিরিক্ত অ্যাট্রিবিউটগুলো দিয়ে ভরা হয় (app.js: HC.fillCards)। WooCommerce এ প্রোডাক্ট অ্যাট্রিবিউট থেকে আসবে।
-  const common = [['bi-truck', 'সারা দেশে ডেলিভারি'], ['bi-headset', 'ফ্রি সাপোর্ট'], ['bi-box-seam', 'সিল প্যাকেজ'], ['bi-cash-coin', 'ক্যাশ অন ডেলিভারি'], ['bi-arrow-repeat', '৭ দিনের রিটার্ন'], ['bi-credit-card-2-front', 'বিকাশ / নগদ পেমেন্ট'], ['bi-geo-alt', 'ঢাকায় দ্রুত ডেলিভারি'], ['bi-star', 'টপ রেটেড পণ্য']];
-  const moreByCat = {
-    'ip-camera':   [['bi-phone', 'মোবাইল লাইভ ভিউ'], ['bi-mic', 'টু-ওয়ে অডিও'], ['bi-bell', 'মোশন অ্যালার্ট'], ['bi-cloud-check', 'মেমোরি কার্ড / ক্লাউড'], ['bi-translate', 'বাংলা সাপোর্ট']].concat(common),
-    'cc-camera':   [['bi-brightness-high', 'ওয়াইড অ্যাঙ্গেল'], ['bi-cloud-rain', 'ওয়েদারপ্রুফ'], ['bi-lightning', 'কম বিদ্যুৎ খরচ'], ['bi-tools', 'সহজ ইন্সটলেশন'], ['bi-eye', 'ক্রিস্টাল ক্লিয়ার ছবি']].concat(common),
-    'security':    [['bi-wifi', 'WiFi / 4G কানেক্টিভিটি'], ['bi-sun', 'সোলার / DC পাওয়ার'], ['bi-mic', 'টু-ওয়ে অডিও'], ['bi-cloud-rain', 'আউটডোর রেডি'], ['bi-tools', 'সহজ ইন্সটলেশন']].concat(common),
-    'memory-card': [['bi-hdd', 'হাই এন্ডুরেন্স'], ['bi-thermometer-half', 'তাপ ও শক রেজিস্ট্যান্ট'], ['bi-arrow-left-right', 'দ্রুত ডাটা ট্রান্সফার'], ['bi-droplet', 'ওয়াটারপ্রুফ'], ['bi-camera-video', 'ক্যামেরা/ফোন সাপোর্ট']].concat(common),
-    'mini-ups':    [['bi-shield-lock', 'ওভারলোড প্রোটেকশন'], ['bi-plug', 'মাল্টি পোর্ট'], ['bi-clock-history', 'দীর্ঘ ব্যাকআপ'], ['bi-thermometer-half', 'অটো কুলিং'], ['bi-tools', 'সহজ সেটআপ']].concat(common),
-    'smartphone':  [['bi-camera', 'ভালো ক্যামেরা'], ['bi-sd-card', 'এক্সপান্ডেবল স্টোরেজ'], ['bi-lightning-charge', 'ফাস্ট চার্জ'], ['bi-wifi', '4G / WiFi'], ['bi-translate', 'বাংলা সাপোর্ট']].concat(common),
-    'laptop':      [['bi-display', 'ফুল HD ডিসপ্লে'], ['bi-keyboard', 'ব্যাকলিট কিবোর্ড'], ['bi-usb-c', 'USB-C পোর্ট'], ['bi-wifi', 'WiFi 6'], ['bi-windows', 'অরিজিনাল OS']].concat(common),
-    'accessories': [['bi-plug', 'সব ডিভাইসে মানানসই'], ['bi-arrows-angle-expand', 'অ্যাডজাস্টেবল'], ['bi-cloud-rain', 'টেকসই বিল্ড'], ['bi-camera-video', 'ক্যামেরা সাপোর্ট'], ['bi-gift', 'গিফট রেডি']].concat(common)
-  };
-  products.forEach(p => { p.more = p.more || moreByCat[p.cat] || common; });
 
   window.HC_DATA = { categories, products, addons, ph };
 })();
