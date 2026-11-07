@@ -407,3 +407,24 @@ main:focus{outline:none}
 .pc-info li.x{display:none}
 .pc-info li.x.on{display:flex}
 .pc-info:not(:has(li:not(.x))):not(:has(li.on)){display:none}
+
+/* WhatsApp অর্ডার বাটন */
+.btn-wa{background:#25d366;border:1.5px solid #25d366;color:#fff;font-weight:600}
+.btn-wa:hover,.btn-wa:focus{background:#1fb558;border-color:#1fb558;color:#fff}
+.btn-wa-outline{background:var(--card);border:1.5px solid #25d366;color:#128c4a;font-weight:600}
+.btn-wa-outline:hover{background:#25d366;color:#fff}
+/* ডেলিভারি এস্টিমেট + EMI */
+.deliv-box,.emi-box{border:1px dashed var(--line);border-radius:14px;padding:.8rem 1rem;background:var(--card);margin-bottom:.8rem;font-size:.9rem}
+.deliv-box .zones{display:flex;gap:.4rem;margin:.4rem 0}
+.zone-btn{border:1px solid var(--line);background:var(--bg);border-radius:50px;padding:.25rem .8rem;font-size:.82rem;color:var(--ink)}
+.zone-btn.active{background:var(--brand);border-color:var(--brand);color:#fff}
+.emi-box summary{cursor:pointer;font-weight:600;list-style:none}
+.emi-box summary::-webkit-details-marker{display:none}
+.emi-table{width:100%;margin-top:.5rem;font-size:.85rem}
+.emi-table td,.emi-table th{padding:.3rem .2rem;border-bottom:1px solid var(--line)}
+.emi-table tr:last-child td{border-bottom:0}
+/* নোটিফাই ও রিমাইন্ডার */
+.notify-box{border:1px solid var(--line);border-radius:14px;padding:.9rem 1rem;background:var(--bg);margin-bottom:.8rem}
+.remind-bar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;background:var(--brand-soft);color:var(--ink);padding:.55rem 1rem;font-size:.9rem;border-bottom:1px solid var(--line)}
+[data-theme=dark] .remind-bar{background:#2a1d22}
+[data-theme=dark] .zone-btn{color:var(--ink)}
