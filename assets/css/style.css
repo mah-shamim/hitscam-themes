@@ -468,3 +468,6 @@ main:focus{outline:none}
 .email-sugg:empty{display:none}
 .email-chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:50px;padding:.2rem .7rem;font-size:.8rem}
 .email-chip:hover,.email-chip:focus-visible{border-color:var(--brand);color:var(--brand)}
+
+/* ছোট স্ক্রিনে লম্বা ব্যাজ লাইন ভেঙে নামবে, অনুভূমিক স্ক্রল তৈরি করবে না */
+.badge{white-space:normal;text-align:start;max-width:100%}
