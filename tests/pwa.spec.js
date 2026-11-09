@@ -52,7 +52,7 @@ test('অজানা পেজে 404 পেজ + জনপ্রিয় প�
 
 test.describe('সার্ভিস ওয়ার্কার', () => {
   test.use({ serviceWorkers: 'allow' });
-  test('রেজিস্টার হয় ও অফলাইনে ক্যাশ করা পেজ খোলে', async ({ page, context, browserName }) => {
+  test('রেজিস্টার হয় ও অফলাইনে ক্যাশ করা পেজ খোলে', async ({ page, context, browserName }, ti) => {
     test.skip(browserName !== 'chromium', 'অফলাইন সিমুলেশন Chromium এ নির্ভরযোগ্য');
     await page.goto('/index.html');
     await page.evaluate(() => navigator.serviceWorker.ready);
@@ -63,6 +63,8 @@ test.describe('সার্ভিস ওয়ার্কার', () => {
     await page.goto('/shop.html');
     await expect(page.locator('.site-header')).toBeVisible();
     await context.setOffline(false);
+    // অফলাইনে ক্যাশে-না-থাকা বাইরের ছবি লোড না হওয়াই প্রত্যাশিত
+    ti.problems = ti.problems.filter(x => !/ERR_INTERNET_DISCONNECTED/.test(x));
   });
 });
 
