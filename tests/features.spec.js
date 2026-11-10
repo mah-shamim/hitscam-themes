@@ -176,6 +176,7 @@ test.describe('ব্লিংক অ্যানিমেশন', () => {
   test('শিপিং ফ্রি হতে বাকি থাকলে বার ও লেখা ব্লিংক করে', async ({ page }) => {
     await page.addInitScript(cart3);
     await page.goto('/cart.html');
+    await expect(page.locator('#freeShip .free-ship.need .fs-msg b.text-brand')).toBeAttached();   // কার্ট JS দিয়ে রেন্ডার হয়; WebKit এ দেরি হতে পারে
     const names = await page.evaluate(() => [getComputedStyle(document.querySelector('.free-ship')).animationName, getComputedStyle(document.querySelector('.free-ship .fs-msg b.text-brand')).animationName]);
     expect(names).toEqual(['fsPulse', 'fsBlink']);
   });
