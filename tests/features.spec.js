@@ -308,3 +308,20 @@ test('ঠিকানার তিনটি ঘর আলাদাভাবে �
   await expect(page.locator('[name=road]')).not.toHaveClass(/is-invalid/);
   expect(page.url()).not.toContain('order-received');
 });
+
+test('প্রোডাক্ট পেজ: কার্টে থাকলে "কার্ট দেখুন" বার আসে, না থাকলে লুকানো', async ({ page }) => {
+  await page.goto('/product.html?id=1');
+  const bar = page.locator('#pInCart');
+  await expect(bar).toBeHidden();
+  await page.locator('.p-add').dispatchEvent('click');
+  await expect(bar).toBeVisible();
+  await expect(bar).toContainText('কার্টে আছে');
+  await page.locator('#pInCart').dispatchEvent('click');
+  await expect(page).toHaveURL(/cart\.html/);
+});
+
+test('প্রোডাক্ট পেজ: ডেস্কটপে ছবির কলাম স্ক্রলে আটকে থাকে', async ({ page, viewport }) => {
+  test.skip(viewport.width < 992, 'ডেস্কটপ লেআউট');
+  await page.goto('/product.html?id=1');
+  expect(await page.locator('.pg-sticky').evaluate(e => getComputedStyle(e).position)).toBe('sticky');
+});
