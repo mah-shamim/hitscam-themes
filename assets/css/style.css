@@ -480,3 +480,7 @@ main:focus{outline:none}
 [data-theme=dark] .in-cart-bar{background:#052e16;border-color:#166534;color:#86efac}
 /* বাম কলামের ছবি ডান কলাম স্ক্রলের সময় আটকে থাকে → ফাঁকা জায়গা থাকে না */
 @media (min-width:992px){.pg-sticky{position:sticky;top:calc(var(--hdr-h,0px) + 16px)}}
+/* ডেস্কটপে ছবির কলাম স্থির; ডান (ইনফো) কলাম নিজের ভেতরে স্ক্রল করে — ভিউপোর্ট ছোট হলে স্বাভাবিক */
+@media (min-width:992px) and (min-height:620px){
+  .pi-scroll{position:sticky;top:calc(var(--hdr-h,0px) + 16px);max-height:calc(100vh - var(--hdr-h,0px) - 32px);overflow-y:auto;overflow-x:hidden;padding:4px 10px 4px 4px;margin:-4px -10px -4px -4px;scrollbar-width:thin;scrollbar-gutter:stable}
+}
