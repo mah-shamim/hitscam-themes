@@ -325,3 +325,14 @@ test('প্রোডাক্ট পেজ: ডেস্কটপে ছবি�
   await page.goto('/product.html?id=1');
   expect(await page.locator('.pg-sticky').evaluate(e => getComputedStyle(e).position)).toBe('sticky');
 });
+
+test('প্রোডাক্ট পেজ ডেস্কটপ: ডান কলাম নিজের ভেতরে স্ক্রল করে, ছবি স্থির', async ({ page, viewport }) => {
+  test.skip(viewport.width < 992 || viewport.height < 620, 'ডেস্কটপ লেআউট');
+  await page.goto('/product.html?id=1');
+  const r = await page.locator('.pi-scroll').evaluate(e => ({ sh: e.scrollHeight, ch: e.clientHeight, ov: getComputedStyle(e).overflowY }));
+  expect(r.ov).toBe('auto');
+  expect(r.sh).toBeGreaterThan(r.ch);                    // ভেতরে স্ক্রল করার মতো কনটেন্ট আছে
+  await page.locator('.pi-scroll').evaluate(e => { e.scrollTop = 300; });
+  expect(await page.locator('.pi-scroll').evaluate(e => e.scrollTop)).toBeGreaterThan(200);
+  await expect(page.locator('#upsells')).toBeAttached();
+});
