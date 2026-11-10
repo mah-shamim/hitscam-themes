@@ -321,3 +321,15 @@ test('কার্ডের বাড়তি অ্যাট্রিবিউ
   expect(rows.length).toBeGreaterThan(0);
   rows.forEach(n => expect(n, 'একই সারির কার্ডের উচ্চতা ভিন্ন').toBe(1));
 });
+
+test('কুইক ভিউ: "X" বাটনে আসল ক্লিকে মোডাল বন্ধ হয় (কিছু ঢেকে নেই)', async ({ page }) => {
+  await page.goto('/shop.html');
+  await page.locator('.qv-btn').first().dispatchEvent('click');
+  const modal = page.locator('#qvModal');
+  await expect(modal).toHaveClass(/show/);
+  await page.waitForTimeout(500);                                   // ফেড অ্যানিমেশন শেষ
+  const covered = await page.evaluate(() => { const b = document.querySelector('#qvModal .btn-close'), r = b.getBoundingClientRect(); const t = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return !(t === b || b.contains(t)); });
+  expect(covered, 'X বাটনের ওপর অন্য এলিমেন্ট').toBe(false);
+  await page.locator('#qvModal .btn-close').click();                // dispatchEvent নয় — আসল ক্লিক
+  await expect(modal).not.toHaveClass(/show/);
+});
