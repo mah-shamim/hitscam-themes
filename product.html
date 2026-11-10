@@ -26,8 +26,10 @@
   <div class="row g-4 mb-4">
     <!-- ইমেজ: জুম কন্টেইনার + থাম্ব owl-carousel -->
     <div class="col-lg-6">
+     <div class="pg-sticky">
       <div class="zoom-box" id="zoomBox" role="img" aria-label="প্রোডাক্ট ইমেজ"></div>
       <div class="owl-carousel owl-theme mt-3" id="thumbs"></div>
+     </div>
     </div>
 
     <!-- ইনফো -->
@@ -54,6 +56,7 @@
           <button class="btn btn-brand btn-lg rounded-pill flex-fill p-order" type="button"><i class="bi bi-lightning-charge-fill"></i> অর্ডার নাউ</button>
         </div>
         <button type="button" class="btn btn-wa-outline btn-lg rounded-pill w-100 mt-2" id="pWa"><i class="bi bi-whatsapp"></i> WhatsApp এ অর্ডার করুন</button>
+        <a href="cart.html" class="in-cart-bar" id="pInCart" hidden><span><i class="bi bi-check-circle-fill"></i> <b id="pInCartTxt"></b></span><span class="go">কার্ট দেখুন <i class="bi bi-arrow-right"></i></span></a>
       </div>
 
       <!-- স্টক আউট: স্টকে এলে জানান -->
@@ -271,6 +274,12 @@ $(function () {
     $('.up-chk:checked').each(function () { HC.add(+$(this).data('id'), 0, 1); });
     return true;
   }
+  const inCartSync = () => {
+    const q = HC.cart().filter(i => i.id === +p.id).reduce((n, i) => n + i.qty, 0);
+    $('#pInCartTxt').text(q ? 'এই পণ্য কার্টে আছে (' + q + 'টি)' : '');
+    $('#pInCart').prop('hidden', !q);
+  };
+  inCartSync(); $(document).on('cartchange', inCartSync);
   $('.p-add').on('click', () => { if (addMain()) HC.toast('কার্টে যোগ হয়েছে ✓'); });
   $('.p-order').on('click', () => { if (addMain()) HC.openOrder(); });
 

@@ -471,3 +471,12 @@ main:focus{outline:none}
 
 /* ছোট স্ক্রিনে লম্বা ব্যাজ লাইন ভেঙে নামবে, অনুভূমিক স্ক্রল তৈরি করবে না */
 .badge{white-space:normal;text-align:start;max-width:100%}
+
+/* প্রোডাক্ট পেজ: কার্টে থাকলে "কার্ট দেখুন" বার */
+.in-cart-bar{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.5rem;padding:.6rem 1rem;border-radius:999px;background:#ecfdf3;border:1px solid #86efac;color:#166534;text-decoration:none;font-size:.92rem}
+.in-cart-bar[hidden]{display:none}
+.in-cart-bar .go{font-weight:700;white-space:nowrap}
+.in-cart-bar:hover{background:#dcfce7;color:#14532d}
+[data-theme=dark] .in-cart-bar{background:#052e16;border-color:#166534;color:#86efac}
+/* বাম কলামের ছবি ডান কলাম স্ক্রলের সময় আটকে থাকে → ফাঁকা জায়গা থাকে না */
+@media (min-width:992px){.pg-sticky{position:sticky;top:calc(var(--hdr-h,0px) + 16px)}}
