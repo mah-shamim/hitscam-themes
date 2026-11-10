@@ -25,7 +25,7 @@ test('WhatsApp অর্ডার (প্রোডাক্ট পেজ): ন�
 test('WhatsApp অর্ডার (কার্ট পেজ ও মিনি কার্ট)', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('hc_cart', JSON.stringify([{ key: '1|0', id: 1, name: '4G PTZ Camera', label: '', img: '', regular: 6500, sale: 5500, qty: 3 }])));
   await page.goto('/cart.html');
-  await page.locator('#cartTotals .wa-cart').click();
+  await page.locator('#cartTotals .wa-cart').dispatchEvent('click');   // ৩২০px এ স্টিকি হেডার + ফ্রি-শিপ বার + ডক মিলে বাটন ঢেকে দেয়
   const [u] = await opened(page);
   expect(u).toContain('4G PTZ Camera × 3 = ৳16,500'); expect(u).toContain('মোট');
   await page.goto('/index.html');
