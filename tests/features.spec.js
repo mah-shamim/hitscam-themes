@@ -336,3 +336,32 @@ test('প্রোডাক্ট পেজ ডেস্কটপ: ডান ক
   expect(await page.locator('.pi-scroll').evaluate(e => e.scrollTop)).toBeGreaterThan(200);
   await expect(page.locator('#upsells')).toBeAttached();
 });
+
+test('শপ ফিল্টার: মূল্য দুই-হাতলের রেঞ্জ ও রেটিং স্লাইডার পণ্য ছাঁটে, রিসেটে ফেরে', async ({ page, viewport }) => {
+  await page.goto('/shop.html');
+  if (viewport.width < 992) { await page.locator('[data-bs-target="#filters"]').dispatchEvent('click'); await expect(page.locator('#fReset')).toBeVisible(); }   // মোবাইলে ফিল্টার ভাঁজ করা
+  const count = async () => +(await page.locator('#resultCount').innerText()).match(/\d+/)[0];
+  const all = await count();
+  expect(await page.locator('#fMinR').getAttribute('type')).toBe('range');
+  expect(await page.locator('#fRate').getAttribute('type')).toBe('range');
+  // মূল্য: সর্বোচ্চ হাতল নামালে কম পণ্য
+  await page.locator('#fMaxR').evaluate(e => { e.value = 1000; e.dispatchEvent(new Event('input', { bubbles: true })); });
+  expect(await page.locator('#fMax').inputValue()).toBe('1000');
+  const low = await count(); expect(low).toBeLessThan(all); expect(low).toBeGreaterThan(0);
+  // হাতল পরস্পর পার হয় না
+  await page.locator('#fMinR').evaluate(e => { e.value = 5000; e.dispatchEvent(new Event('input', { bubbles: true })); });
+  expect(+(await page.locator('#fMin').inputValue())).toBeLessThanOrEqual(+(await page.locator('#fMax').inputValue()));
+  // সংখ্যা ঘর থেকেও স্লাইডার নড়ে
+  await page.locator('#fReset').dispatchEvent('click');
+  expect(await count()).toBe(all);
+  await page.locator('#fMax').evaluate(e => { e.value = 1000; e.dispatchEvent(new Event('input', { bubbles: true })); });
+  expect(await page.locator('#fMaxR').inputValue()).toBe('1000');
+  await page.locator('#fReset').dispatchEvent('click');
+  // রেটিং
+  await page.locator('#fRate').evaluate(e => { e.value = 4.8; e.dispatchEvent(new Event('input', { bubbles: true })); });
+  await expect(page.locator('#fRateLbl')).toContainText('4.8');
+  const rated = await count(); expect(rated).toBeLessThan(all);
+  await page.locator('#fReset').dispatchEvent('click');
+  expect(await count()).toBe(all); await expect(page.locator('#fRateLbl')).toHaveText('সব');
+  await expect(page.locator('#filters a[href="compare.html"]')).toBeVisible();
+});
