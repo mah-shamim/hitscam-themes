@@ -44,6 +44,7 @@
         <li><b>SKU:</b> <span id="pSku"></span></li>
         <li><b>ক্যাটাগরি:</b> <a id="pCat" class="text-brand" href="#"></a></li>
         <li id="pStock"></li>
+        <li id="pPulse" class="pulse-line" hidden></li>
       </ul>
 
       <div id="pOptions" class="mb-3"></div>
@@ -86,6 +87,8 @@
         <table class="emi-table"><thead><tr><th>মেয়াদ</th><th>মাসিক কিস্তি</th><th>মোট</th></tr></thead><tbody id="emiRows"></tbody></table>
         <small class="text-muted">ডেমো হার। ব্যাংক ও কার্ড অনুযায়ী প্রসেসিং ফি পরিবর্তন হতে পারে।</small>
       </details>
+
+      <div id="pBundles"></div>
 
       <!-- শেয়ার -->
       <div class="share-row mb-3">
@@ -134,6 +137,7 @@
           <div class="rating-input"><input type="radio" name="rate" id="r5" value="5"><label for="r5">★</label><input type="radio" name="rate" id="r4" value="4"><label for="r4">★</label><input type="radio" name="rate" id="r3" value="3"><label for="r3">★</label><input type="radio" name="rate" id="r2" value="2"><label for="r2">★</label><input type="radio" name="rate" id="r1" value="1"><label for="r1">★</label></div></div>
         <div class="mb-3"><label class="form-label">আপনার রিভিউ *</label><textarea class="form-control" name="text" rows="4" required></textarea></div>
         <div class="row g-2 mb-3"><div class="col-md-6"><input class="form-control" name="name" placeholder="নাম *" required></div><div class="col-md-6"><input class="form-control" type="email" name="email" placeholder="ই-মেইল (ঐচ্ছিক)"></div></div>
+        <div class="mb-3"><label class="form-label" for="rvPhotos">ছবি যোগ করুন (ঐচ্ছিক, সর্বোচ্চ ২টি)</label><input class="form-control" type="file" id="rvPhotos" accept="image/*" multiple><div class="rv-prev" id="rvPrev"></div></div>
         <button class="btn btn-brand">রিভিউ জমা দিন</button></form></div></div>
   </div>
 
@@ -282,6 +286,9 @@ $(function () {
     $('#pInCart').prop('hidden', !q);
   };
   inCartSync(); $(document).on('cartchange', inCartSync);
+  // সোশ্যাল প্রুফ (data.js এর p.pulse থেকে) ও এই পণ্য যে বান্ডেলে আছে
+  if (p.pulse) $('#pPulse').prop('hidden', false).html('<i class="bi bi-eye"></i> আজ ' + p.pulse.views + ' জন দেখেছেন · সর্বশেষ অর্ডার ' + p.pulse.last);
+  $('#pBundles').html((HC.D.bundles || []).filter(b => b.items.some(i => i[0] === p.id)).map(b => { const its = HC.bundleItems(b); return `<a class="bnd-teaser" href="bundles.html"><span><i class="bi bi-box2-heart text-brand"></i> <b>${b.name}</b><br><small class="text-muted">${its.length}টি আইটেম একসাথে — ${b.off}% ছাড়</small></span><b class="text-brand">${HC.BDT(its.reduce((s, x) => s + x.sale, 0))} <i class="bi bi-arrow-right"></i></b></a>`; }).join(''));
   $('.p-add').on('click', () => { if (addMain()) HC.toast('কার্টে যোগ হয়েছে ✓'); });
   $('.p-order').on('click', () => { if (addMain()) HC.openOrder(); });
 
@@ -312,18 +319,39 @@ $(function () {
   window.addEventListener('scroll', () => { if (!bbTick) { bbTick = true; requestAnimationFrame(() => { bbTick = false; bbCheck(); }); } }, { passive: true });
   window.addEventListener('resize', bbCheck); bbCheck();
 
-  // রিভিউ
+  // রিভিউ: ভেরিফাইড ক্রেতা ব্যাজ, ছবি (ছোট করে localStorage এ), "সহায়ক" ভোট
   let saved = null; try { saved = JSON.parse(localStorage.getItem('hc_rv_' + p.id) || 'null'); } catch (x) { /* storage বন্ধ */ }
   const reviews = saved || [
-    { n: 'রাকিব হাসান', r: 5, t: 'দারুণ প্রোডাক্ট! কোয়ালিটি আশানুরূপ।', d: '২৮ অক্টোবর, ২০২৬' },
-    { n: 'সুমাইয়া আক্তার', r: 4, t: 'ডেলিভারি দ্রুত ছিল। ইন্সটলেশন সহজ।', d: '২২ অক্টোবর, ২০২৬' }];
-  function renderReviews() { $('#rvCount').text(reviews.length); $('#reviewList').html(reviews.map(r => `<div class="review-item"><div class="d-flex justify-content-between"><b>${r.n}</b><small class="text-muted">${r.d}</small></div>${HC.stars(r.r)}<p class="mb-0 mt-1">${r.t}</p></div>`).join('')); }
+    { id: 's1', n: 'রাকিব হাসান', r: 5, t: 'দারুণ প্রোডাক্ট! কোয়ালিটি আশানুরূপ।', d: '২৮ অক্টোবর, ২০২৬', v: true, h: 12, ph: [] },
+    { id: 's2', n: 'সুমাইয়া আক্তার', r: 4, t: 'ডেলিভারি দ্রুত ছিল। ইন্সটলেশন সহজ।', d: '২২ অক্টোবর, ২০২৬', v: true, h: 5, ph: [] }];
+  let voted = []; try { voted = JSON.parse(localStorage.getItem('hc_helpful') || '[]'); } catch (x) {}
+  function renderReviews() {
+    $('#rvCount').text(reviews.length);
+    $('#reviewList').html(reviews.map(r => `<div class="review-item"><div class="d-flex justify-content-between"><span><b>${r.n}</b> ${r.v ? '<span class="rv-badge"><i class="bi bi-patch-check-fill"></i> ভেরিফাইড ক্রেতা</span>' : ''}</span><small class="text-muted">${r.d}</small></div>${HC.stars(r.r)}<p class="mb-0 mt-1">${r.t}</p>
+      ${(r.ph || []).length ? '<div class="rv-photos">' + r.ph.map(u => `<img class="rv-photo" src="${u}" alt="রিভিউর ছবি" tabindex="0">`).join('') + '</div>' : ''}
+      <button type="button" class="btn btn-sm btn-soft mt-2 rv-help ${voted.includes(r.id) ? 'on' : ''}" data-id="${r.id}"><i class="bi bi-hand-thumbs-up"></i> সহায়ক (${r.h || 0})</button></div>`).join(''));
+  }
+  const saveRv = () => { try { localStorage.setItem('hc_rv_' + p.id, JSON.stringify(reviews)); } catch (x) {} };
   renderReviews();
+  $(document).on('click', '.rv-photo', function () { HC.lightbox(this.src); });
+  $(document).on('click', '.rv-help', function () {
+    const id = String($(this).data('id')), r = reviews.find(x => String(x.id) === id); if (!r) return;
+    const on = voted.includes(id); r.h = Math.max(0, (r.h || 0) + (on ? -1 : 1)); voted = on ? voted.filter(x => x !== id) : voted.concat(id);
+    try { localStorage.setItem('hc_helpful', JSON.stringify(voted)); } catch (x) {} saveRv(); renderReviews();
+  });
+  // ছবি: ক্যানভাসে ৪৮০px এ ছোট করে JPEG ডাটা-URL
+  const shrink = file => new Promise(res => { const fr = new FileReader(); fr.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, 480 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', 0.7)); }; im.onerror = () => res(null); im.src = fr.result; }; fr.onerror = () => res(null); fr.readAsDataURL(file); });
+  let rvPics = [];
+  $('#rvPhotos').on('change', async function () {
+    rvPics = []; const fl = Array.from(this.files).filter(f => /^image\//.test(f.type)).slice(0, 2);
+    for (const f of fl) { const u = await shrink(f); if (u) rvPics.push(u); }
+    $('#rvPrev').html(rvPics.map(u => `<img src="${u}" alt="">`).join(''));
+  });
   $('#reviewForm').on('submit', function (e) {
     e.preventDefault(); const f = this; const rate = +($(f).find('[name=rate]:checked').val() || 0);
     if (!rate) { HC.toast('রেটিং দিন'); return; }
-    reviews.unshift({ n: f.name.value, r: rate, t: f.text.value, d: 'এইমাত্র' });
-    try { localStorage.setItem('hc_rv_' + p.id, JSON.stringify(reviews)); } catch (x) {}
+    reviews.unshift({ id: 'u' + Date.now(), n: f.name.value, r: rate, t: f.text.value, d: 'এইমাত্র', v: HC.hasBought(p.id), h: 0, ph: rvPics.slice() });
+    saveRv(); rvPics = []; $('#rvPrev').empty();
     renderReviews(); f.reset(); HC.toast('ধন্যবাদ! রিভিউ যোগ হয়েছে');
   });
 

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23e03131'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23fff'/%3E%3C/svg%3E">
+<title>ওয়ারেন্টি চেক – HitsCam</title>
+<meta name="description" content="সিরিয়াল নাম্বার বা কেনার সময়ের ফোন নাম্বার দিয়ে পণ্যের ওয়ারেন্টির অবস্থা দেখুন।">
+<meta name="theme-color" content="#e03131">
+<meta property="og:site_name" content="HitsCam"><meta property="og:locale" content="bn_BD"><meta property="og:type" content="website">
+<meta property="og:title" content="ওয়ারেন্টি চেক – HitsCam"><meta property="og:description" content="সিরিয়াল নাম্বার বা কেনার সময়ের ফোন নাম্বার দিয়ে পণ্যের ওয়ারেন্টির অবস্থা দেখুন।"><meta property="og:image" content="assets/icons/icon-512.png">
+<meta name="twitter:card" content="summary"><meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main class="container">
+  <div class="breadcrumb-bar"><a href="index.html">Home</a> / ওয়ারেন্টি চেক</div>
+  <h1 class="page-title mb-3">ওয়ারেন্টি চেক</h1>
+  <div class="row g-3"><div class="col-lg-5"><div class="panel">
+    <form id="wtyForm" novalidate><label class="form-label fw-semibold" for="wtyQ">সিরিয়াল নাম্বার বা ফোন নাম্বার</label>
+      <input class="form-control form-control-lg" id="wtyQ" placeholder="যেমন HC-PTZ-0001 অথবা 01712345678" autocomplete="off" required>
+      <button class="btn btn-brand w-100 mt-3" type="submit"><i class="bi bi-shield-check"></i> ওয়ারেন্টি দেখুন</button></form>
+    <p class="small text-muted mt-3 mb-0">ডেমো সিরিয়াল: <code>HC-PTZ-0001</code>, <code>HC-SOL-0420</code>, <code>HC-MC-1188</code></p></div></div>
+  <div class="col-lg-7"><div id="wtyRes"></div></div></div>
+</main>
+<div id="site-footer"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+$(function () {
+  const WA = HC.WA_NUM, DAY = 86400000;
+  const addM = (d, m) => { const x = new Date(d); x.setMonth(x.getMonth() + m); return x; };
+  const D = d => d.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+  function find(q) {
+    q = HC.digits(q).trim().toUpperCase().replace(/\s+/g, '');
+    if (!q) return [];
+    const phone = q.replace(/\D/g, '');
+    const out = HC.D.warranty.filter(w => w.serial === q || (phone.length >= 10 && w.phone === phone)).map(w => ({ p: HC.find(w.product), date: new Date(w.date), months: w.months, serial: w.serial }));
+    if (phone.length >= 10) HC.orders().filter(o => HC.digits(o.phone || '') === phone).forEach(o => (o.items || []).forEach(i => { const p = HC.find(i.id); if (p) out.push({ p, date: new Date(o.date), months: 12, serial: 'অর্ডার #' + o.id }); }));
+    return out;
+  }
+  $('#wtyForm').on('submit', function (e) {
+    e.preventDefault(); const rows = find($('#wtyQ').val());
+    if (!rows.length) { $('#wtyRes').html('<div class="wty-res text-center text-muted py-4"><i class="bi bi-search fs-2"></i><p class="mb-2 mt-2">কোনো রেকর্ড পাওয়া যায়নি।</p><a class="text-brand" href="contact.html">আমাদের সাথে যোগাযোগ করুন</a></div>'); return; }
+    $('#wtyRes').html(rows.map(r => {
+      const end = addM(r.date, r.months), left = Math.ceil((end - Date.now()) / DAY), ok = left >= 0;
+      const msg = encodeURIComponent('ওয়ারেন্টি ক্লেইম: ' + r.p.name + ' (' + r.serial + ')');
+      return `<div class="wty-res mb-3"><div class="d-flex gap-3"><img src="${r.p.img}" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:10px"><div class="flex-fill"><div class="fw-bold">${r.p.name}</div><small class="text-muted">${r.serial}</small></div>
+        <span class="badge align-self-start ${ok ? 'bg-success' : 'bg-danger'}">${ok ? 'ওয়ারেন্টি সক্রিয়' : 'মেয়াদোত্তীর্ণ'}</span></div>
+        <div class="row g-2 mt-2 small"><div class="col-6"><span class="text-muted">কেনার তারিখ</span><br><b>${D(r.date)}</b></div>
+        <div class="col-6"><span class="text-muted">মেয়াদ শেষ</span><br><b>${D(end)}</b></div>
+        <div class="col-12">${ok ? '<span class="text-success">আরও ' + left + ' দিন বাকি</span>' : '<span class="text-danger">' + Math.abs(left) + ' দিন আগে শেষ হয়েছে</span>'} · ওয়ারেন্টি ${r.months} মাস</div></div>
+        ${ok ? `<a class="btn btn-wa mt-3 w-100" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${msg}"><i class="bi bi-whatsapp"></i> WhatsApp এ ক্লেইম করুন</a>` : ''}</div>`;
+    }).join(''));
+  });
+});
+</script>
+</body>
+</html>

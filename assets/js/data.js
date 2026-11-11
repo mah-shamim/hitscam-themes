@@ -131,5 +131,32 @@
   };
   products.forEach(p => { p.more = p.more || moreByCat[p.cat] || common; });
 
-  window.HC_DATA = { categories, products, addons, ph };
+  // ক্যামেরা বাছাই কুইজের জন্য: কোথায় (in/out) · পাওয়ার (mains/solar) · নেটওয়ার্ক (wifi/sim/wired)
+  const fitById = {
+    1: { place: ['out'], power: ['mains'], net: ['sim'] },
+    2: { place: ['out'], power: ['solar'], net: ['sim', 'wifi'] },
+    3: { place: ['in'], power: ['mains'], net: ['wifi'] },
+    8: { place: ['in'], power: ['mains'], net: ['wifi'] },
+    9: { place: ['in', 'out'], power: ['mains'], net: ['wired'] },
+    10: { place: ['out'], power: ['mains'], net: ['wired'] },
+    11: { place: ['in'], power: ['mains'], net: ['wifi'] }
+  };
+  products.forEach(p => { if (fitById[p.id]) p.fit = fitById[p.id]; });
+  // বান্ডেল: items = [প্রোডাক্ট id, (ঐচ্ছিক) অপশন ইনডেক্স]; off = % ছাড়। অপশন না দিলে সবচেয়ে কম দামেরটি
+  const bundles = [
+    { id: 'b1', name: 'সোলার ক্যামেরা কমপ্লিট সেটআপ', desc: 'বিদ্যুৎ ছাড়া ২৪/৭ নজরদারি — ক্যামেরা, মেমোরি কার্ড ও মাউন্ট একসাথে।', off: 10, items: [[2], [5], [6]] },
+    { id: 'b2', name: 'ইনডোর WiFi স্টার্টার', desc: 'ঘরের জন্য স্মার্ট ক্যামেরা + ৬৪GB কার্ড।', off: 7, items: [[8], [5]] },
+    { id: 'b3', name: 'আউটডোর 4G + সোলার ব্যাকআপ', desc: '৪G PTZ ক্যামেরা, কার্ড, সোলার প্যানেল ও মাউন্ট।', off: 12, items: [[1], [5], [7], [6]] }
+  ];
+  // সোশ্যাল প্রুফ (ডেমো)। আসল সাইটে অ্যানালিটিক্স/অর্ডার ডাটা থেকে বসবে; না দিলে লাইনটি দেখায় না
+  const pulseById = { 1: { views: 38, last: '২ ঘণ্টা আগে' }, 2: { views: 64, last: '৪৫ মিনিট আগে' }, 3: { views: 21, last: 'গতকাল' }, 5: { views: 87, last: '২০ মিনিট আগে' }, 6: { views: 19, last: '৩ ঘণ্টা আগে' }, 7: { views: 26, last: '৫ ঘণ্টা আগে' }, 8: { views: 42, last: '১ ঘণ্টা আগে' }, 9: { views: 17, last: 'গতকাল' }, 10: { views: 23, last: '৬ ঘণ্টা আগে' }, 11: { views: 55, last: '৩০ মিনিট আগে' } };
+  products.forEach(p => { if (pulseById[p.id]) p.pulse = pulseById[p.id]; });
+  // ওয়ারেন্টি চেকের ডেমো রেকর্ড (সিরিয়াল বা ফোন দিয়ে খোঁজা যায়)
+  const warranty = [
+    { serial: 'HC-PTZ-0001', phone: '01712345678', product: 1, date: '2026-02-10', months: 12 },
+    { serial: 'HC-SOL-0420', phone: '01812345678', product: 2, date: '2025-09-01', months: 12 },
+    { serial: 'HC-MC-1188', phone: '01912345678', product: 5, date: '2026-08-20', months: 6 }
+  ];
+
+  window.HC_DATA = { categories, products, addons, ph, bundles, warranty };
 })();

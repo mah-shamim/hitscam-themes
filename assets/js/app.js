@@ -53,6 +53,25 @@
     HC.saveCart(c);
   };
   HC.setQty = (key, q) => HC.saveCart(HC.cart().map(i => i.key === key ? Object.assign({}, i, { qty: q }) : i).filter(i => i.qty > 0));
+  // বান্ডেল: প্রতিটি আইটেমে % ছাড় বসিয়ে কার্টে যোগ (key এ বান্ডেল id থাকে)
+  HC.bundle = bid => (HC.D.bundles || []).find(b => b.id === bid);
+  HC.bundleItems = b => b.items.map(it => { const p = HC.find(it[0]), oi = it[1] != null ? it[1] : HC.lowest(p), o = HC.options(p)[oi]; return { p, oi, o, sale: Math.round(o.sale * (100 - b.off) / 100) }; });
+  HC.addBundle = bid => {
+    const b = HC.bundle(bid); if (!b) return;
+    const c = HC.cart().slice();
+    HC.bundleItems(b).forEach(x => {
+      const key = x.p.id + '|' + x.oi + '|' + bid, ex = c.find(i => i.key === key);
+      if (ex) ex.qty += 1; else c.push({ key, id: +x.p.id, name: x.p.name, label: (x.o.label ? x.o.label + ' · ' : '') + 'বান্ডেল −' + b.off + '%', img: x.p.img, regular: x.o.regular, sale: x.sale, qty: 1, bundle: bid });
+    });
+    HC.saveCart(c);
+  };
+  // অর্ডার ইতিহাস (ভেরিফাইড রিভিউ, ওয়ারেন্টি, আবার-অর্ডারে লাগে)
+  HC.orders = () => store.get('hc_orders', []);
+  HC.hasBought = id => HC.orders().some(o => (o.items || []).some(i => i.id === +id));
+  HC.digits = t => String(t == null ? '' : t).replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
+  HC.lightbox = src => { $('.hc-lb').remove(); $('body').append(`<div class="hc-lb" role="dialog" aria-label="ছবি"><button type="button" class="hc-lb-x" aria-label="বন্ধ করুন"><i class="bi bi-x-lg"></i></button><img src="${src}" alt=""></div>`); };
+  $(document).on('click', '.hc-lb', function (e) { if (!$(e.target).is('img')) $(this).remove(); });
+  $(document).on('keydown', e => { if (e.key === 'Escape') $('.hc-lb').remove(); });
   HC.inCart = id => HC.cart().some(i => i.id === +id);
   HC.removeProduct = id => HC.saveCart(HC.cart().filter(i => i.id !== +id));
   HC.coupon = () => store.get('hc_coupon', null);
@@ -327,12 +346,13 @@
       id: 500 + Math.floor(Math.random() * 400), date: new Date().toISOString(), items: HC.cart(), totals: t,
       name: v('name'), road: v('road'), thana: v('thana'), district: v('district'), address: [v('road'), v('thana'), v('district')].join(', '), phone: v('phone'), email: v('email'), notes: v('notes'), pay, txn, slipName
     });
+    const ord = store.get('hc_last_order', null); if (ord) store.set('hc_orders', [ord].concat(HC.orders()).slice(0, 20));
     memCart = []; store.set('hc_cart', []); store.set('hc_coupon', null); store.set('hc_draft', null);
     location.href = 'order-received.html';
   };
 
   /* ---------- Layout injection ---------- */
-  const NAV = [['index.html', 'হোম'], ['shop.html', 'সব প্রোডাক্ট', true], ['track-order.html', 'অর্ডার ট্র্যাক'], ['contact.html', 'যোগাযোগ'], ['faq.html', 'FAQ']];
+  const NAV = [['index.html', 'হোম'], ['shop.html', 'সব প্রোডাক্ট', true], ['finder.html', 'ক্যামেরা বাছাই'], ['bundles.html', 'বান্ডেল অফার'], ['track-order.html', 'অর্ডার ট্র্যাক'], ['contact.html', 'যোগাযোগ'], ['faq.html', 'FAQ']];
   const catOpts = '<option value="">সকল ক্যাটাগরি</option>' + D.categories.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
   const header = () => {
     const here = location.pathname.split('/').pop() || 'index.html';
@@ -365,7 +385,7 @@
       <div class="col-lg-4"><div class="brand text-white mb-2"><span class="brand-mark"><i class="bi bi-camera-video-fill"></i></span><span>HITS<b>Cam</b></span></div>
         <p>সিসিটিভি, আইপি ক্যামেরা ও স্মার্ট গ্যাজেটের বিশ্বস্ত অনলাইন শপ। অরিজিনাল পণ্য, দ্রুত ডেলিভারি, বিক্রয়োত্তর সাপোর্ট।</p>
         <p class="mb-0"><i class="bi bi-telephone"></i> +880 1614-747054<br><i class="bi bi-envelope"></i> support@hitscam.com</p></div>
-      <div class="col-6 col-lg-2"><h6>কোম্পানি</h6><a href="index.html">হোম</a><a href="shop.html">শপ</a><a href="contact.html">যোগাযোগ</a><a href="faq.html">FAQ</a><a href="compare.html">পণ্য তুলনা</a></div>
+      <div class="col-6 col-lg-2"><h6>কোম্পানি</h6><a href="index.html">হোম</a><a href="shop.html">শপ</a><a href="contact.html">যোগাযোগ</a><a href="faq.html">FAQ</a><a href="finder.html">ক্যামেরা বাছাই</a><a href="bundles.html">বান্ডেল অফার</a><a href="warranty.html">ওয়ারেন্টি চেক</a><a href="compare.html">পণ্য তুলনা</a></div>
       <div class="col-6 col-lg-3"><h6>পলিসি</h6><a href="terms.html">শর্তাবলী</a><a href="returns.html">রিটার্ন, রিফান্ড ও ওয়ারেন্টি</a><a href="shipping.html">শিপিং তথ্য</a><a href="track-order.html">অর্ডার ট্র্যাক</a></div>
       <div class="col-lg-3"><h6>কম্পেটিবিলিটি</h6><a href="device-compatibility.html">ডিভাইস ও ব্রাউজার</a><a href="social-compatibility.html">সোশ্যাল মিডিয়া অ্যাপ ব্রাউজার</a><a href="minicart.html">মিনি কার্ট</a></div></div>
       <div class="footer-bottom d-flex justify-content-between flex-wrap gap-2"><span>© 2026 HitsCam. সর্বস্বত্ব সংরক্ষিত।</span><span>পেমেন্ট: ক্যাশ অন ডেলিভারি · বিকাশ · নগদ</span></div></div></footer>`;

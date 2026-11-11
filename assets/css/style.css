@@ -506,3 +506,31 @@ main:focus{outline:none}
 #qvModal .btn-close{width:34px;height:34px;padding:0;border-radius:50%;background-color:var(--card,#fff);box-shadow:0 1px 6px rgba(0,0,0,.25);opacity:1;display:flex;align-items:center;justify-content:center;background-size:.7em}
 [data-theme=dark] #qvModal .btn-close{filter:invert(1) grayscale(1)}
 #qvModal .modal-body{padding-top:3.4rem}
+
+/* ---- v1.9.0: ক্যামেরা বাছাই, বান্ডেল, রিভিউ ছবি, লাইটবক্স ---- */
+.hc-lb{position:fixed;inset:0;z-index:2000;background:rgba(15,23,42,.88);display:flex;align-items:center;justify-content:center;padding:1rem}
+.hc-lb img{max-width:100%;max-height:92vh;border-radius:12px;background:#fff}
+.hc-lb-x{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:0;background:#fff;color:#0f172a}
+.fnd-step{max-width:720px;margin:0 auto}
+.fnd-prog{height:6px;border-radius:6px;background:var(--line);overflow:hidden}.fnd-prog>i{display:block;height:100%;background:var(--brand);transition:width .25s}
+.fnd-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+.fnd-opt{border:2px solid var(--line);background:var(--card);border-radius:16px;padding:1rem .75rem;text-align:center;font-weight:600;cursor:pointer;color:inherit}
+.fnd-opt i{display:block;font-size:1.8rem;color:var(--brand);margin-bottom:.35rem}
+.fnd-opt small{display:block;font-weight:400;color:var(--muted)}
+.fnd-opt:hover,.fnd-opt:focus-visible{border-color:var(--brand)}
+.fnd-why{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem}
+.fnd-why span{font-size:.72rem;padding:.1rem .5rem;border-radius:999px;background:#ecfdf3;color:#166534}
+.fnd-why span.no{background:#fff1f2;color:#9f1239}
+.bnd-card{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:1.1rem;height:100%;display:flex;flex-direction:column}
+.bnd-items{display:flex;flex-direction:column;gap:.5rem;margin:.75rem 0}
+.bnd-item{display:flex;align-items:center;gap:.6rem;font-size:.9rem}.bnd-item img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--bg)}
+.bnd-item .nm{flex:1;min-width:0}.bnd-item del{color:var(--muted);font-size:.8rem}
+.bnd-save{display:inline-block;background:#ecfdf3;color:#166534;border-radius:999px;padding:.1rem .6rem;font-size:.8rem;font-weight:700}
+.bnd-teaser{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.6rem .9rem;border:1px dashed var(--brand);border-radius:14px;margin-bottom:.75rem;text-decoration:none;color:inherit;font-size:.9rem}
+.pulse-line{font-size:.82rem;color:var(--muted)}
+.rv-badge{font-size:.72rem;background:#ecfdf3;color:#166534;border-radius:999px;padding:.1rem .5rem;font-weight:600}
+.rv-photos{display:flex;gap:.4rem;margin-top:.4rem}.rv-photos img{width:64px;height:64px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--line)}
+.rv-help.on{background:var(--brand);color:#fff}
+.rv-prev{display:flex;gap:.4rem;margin-top:.4rem}.rv-prev img{width:56px;height:56px;object-fit:cover;border-radius:8px}
+.wty-res{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);padding:1rem}
+[data-theme=dark] .fnd-why span,[data-theme=dark] .bnd-save,[data-theme=dark] .rv-badge{background:#052e16;color:#86efac}

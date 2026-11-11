@@ -29,4 +29,7 @@
   <url><loc>https://example.com/category.html?cat=smartphone</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://example.com/category.html?cat=laptop</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://example.com/category.html?cat=accessories</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://example.com/finder.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://example.com/bundles.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://example.com/warranty.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
 </urlset>

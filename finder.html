@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23e03131'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23fff'/%3E%3C/svg%3E">
+<title>ক্যামেরা বাছাই – আমার কোন ক্যামেরা লাগবে – HitsCam</title>
+<meta name="description" content="৪টি প্রশ্নের উত্তরে আপনার জায়গা, পাওয়ার, নেটওয়ার্ক ও বাজেট অনুযায়ী সঠিক ক্যামেরা খুঁজে নিন।">
+<meta name="theme-color" content="#e03131">
+<meta property="og:site_name" content="HitsCam"><meta property="og:locale" content="bn_BD"><meta property="og:type" content="website">
+<meta property="og:title" content="ক্যামেরা বাছাই – আমার কোন ক্যামেরা লাগবে – HitsCam"><meta property="og:description" content="৪টি প্রশ্নের উত্তরে আপনার জায়গা, পাওয়ার, নেটওয়ার্ক ও বাজেট অনুযায়ী সঠিক ক্যামেরা খুঁজে নিন।"><meta property="og:image" content="assets/icons/icon-512.png">
+<meta name="twitter:card" content="summary"><meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main class="container">
+  <div class="breadcrumb-bar"><a href="index.html">Home</a> / ক্যামেরা বাছাই</div>
+  <h1 class="page-title mb-3">আমার কোন ক্যামেরা লাগবে?</h1>
+  <p class="text-muted">৪টি ছোট প্রশ্নের উত্তর দিন — আমরা আপনার জন্য মানানসই ক্যামেরা দেখাব।</p>
+  <div id="fnd" class="fnd-step"></div>
+  <div id="fndRes" class="mt-4"></div>
+</main>
+<div id="site-footer"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+$(function () {
+  const B = HC.BDT;
+  const Q = [
+    { k: 'place', t: 'ক্যামেরা কোথায় বসাবেন?', o: [['in', 'bi-house-door', 'ঘরের ভেতর', 'বাসা, অফিস, দোকান'], ['out', 'bi-cloud-sun', 'বাইরে', 'গেট, উঠান, ছাদ']] },
+    { k: 'power', t: 'বিদ্যুৎ সংযোগ আছে কি?', o: [['mains', 'bi-plug', 'হ্যাঁ, বিদ্যুৎ আছে', 'সকেট/অ্যাডাপ্টার'], ['solar', 'bi-sun', 'না, সোলার চাই', 'বিদ্যুৎ ছাড়া চলবে']] },
+    { k: 'net', t: 'কীভাবে মোবাইলে দেখবেন?', o: [['wifi', 'bi-wifi', 'WiFi', 'বাসার ইন্টারনেট'], ['sim', 'bi-sim', '4G SIM', 'WiFi ছাড়াই'], ['wired', 'bi-hdd-network', 'তারযুক্ত (DVR)', 'একাধিক ক্যামেরা']] },
+    { k: 'budget', t: 'আপনার বাজেট কত?', o: [['low', 'bi-cash', '৳৩,০০০ পর্যন্ত', ''], ['mid', 'bi-cash-stack', '৳৩,০০০ – ১০,০০০', ''], ['high', 'bi-gem', '৳১০,০০০+', ''], ['any', 'bi-infinity', 'যেকোনো', 'বাজেট ঠিক নেই']] }
+  ];
+  const ans = {}; let step = 0;
+  const inBudget = (p, b) => { const x = HC.minPrice(p).sale; return b === 'low' ? x <= 3000 : b === 'mid' ? x > 3000 && x <= 10000 : b === 'high' ? x > 10000 : true; };
+  const LBL = { place: { in: 'ঘরের ভেতর', out: 'বাইরে' }, power: { mains: 'বিদ্যুৎ', solar: 'সোলার' }, net: { wifi: 'WiFi', sim: '4G SIM', wired: 'তারযুক্ত' } };
+  function draw() {
+    $('#fndRes').empty();
+    const q = Q[step];
+    $('#fnd').html(`<div class="fnd-prog mb-3" role="progressbar" aria-valuemin="0" aria-valuemax="${Q.length}" aria-valuenow="${step}"><i style="width:${step / Q.length * 100}%"></i></div>
+      <div class="small text-muted mb-1">প্রশ্ন ${step + 1} / ${Q.length}</div><h2 class="h4 fw-bold mb-3">${q.t}</h2>
+      <div class="fnd-opts">${q.o.map(o => `<button type="button" class="fnd-opt" data-v="${o[0]}"><i class="bi ${o[1]}"></i>${o[2]}<small>${o[3]}</small></button>`).join('')}</div>
+      ${step ? '<button type="button" class="btn btn-link text-brand mt-3 p-0" id="fndBack"><i class="bi bi-arrow-left"></i> পিছনে</button>' : ''}`);
+  }
+  function result() {
+    $('#fnd').html(`<div class="fnd-prog mb-3"><i style="width:100%"></i></div><h2 class="h4 fw-bold mb-2">আপনার জন্য সেরা মিল</h2>
+      <p class="text-muted small mb-2">${LBL.place[ans.place]} · ${LBL.power[ans.power]} · ${LBL.net[ans.net]} · বাজেট: ${Q[3].o.find(o => o[0] === ans.budget)[2]}</p>
+      <button type="button" class="btn btn-soft btn-sm" id="fndAgain"><i class="bi bi-arrow-repeat"></i> আবার শুরু করুন</button>`);
+    const rows = HC.D.products.filter(p => p.fit).map(p => {
+      const m = { place: p.fit.place.includes(ans.place), power: p.fit.power.includes(ans.power), net: p.fit.net.includes(ans.net), budget: inBudget(p, ans.budget) };
+      return { p, m, score: (m.place ? 1 : 0) + (m.power ? 1 : 0) + (m.net ? 1 : 0) + (m.budget ? 1 : 0) };
+    }).filter(r => r.score >= 2).sort((a, b) => b.score - a.score || HC.minPrice(a.p).sale - HC.minPrice(b.p).sale);
+    if (!rows.length) { $('#fndRes').html('<div class="panel text-center text-muted py-4">এই মিলে সরাসরি কোনো পণ্য পাইনি। <a class="text-brand" href="contact.html">আমাদের জানান</a>, আমরা সাহায্য করব।</div>'); return; }
+    $('#fndRes').html('<div class="row g-3">' + rows.map(r => `<div class="col-12 col-md-6"><div class="panel h-100"><div class="d-flex gap-3"><a href="product.html?id=${r.p.id}"><img src="${r.p.img}" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:12px"></a>
+      <div class="flex-fill"><div class="d-flex justify-content-between"><span class="badge ${r.score === 4 ? 'bg-success' : 'bg-secondary'}">মিল ${r.score}/৪</span><b class="text-brand">${r.p.type === 'variable' || r.p.type === 'grouped' ? 'থেকে ' : ''}${B(HC.minPrice(r.p).sale)}</b></div>
+      <a class="fw-bold d-block mt-1" href="product.html?id=${r.p.id}">${r.p.name}</a>
+      <div class="fnd-why">${[['place', 'জায়গা'], ['power', 'পাওয়ার'], ['net', 'নেটওয়ার্ক'], ['budget', 'বাজেট']].map(x => `<span class="${r.m[x[0]] ? '' : 'no'}">${r.m[x[0]] ? '✓' : '✗'} ${x[1]}</span>`).join('')}</div></div></div>
+      <a class="btn btn-brand btn-sm rounded-pill mt-3 w-100" href="product.html?id=${r.p.id}">বিস্তারিত দেখুন</a></div></div>`).join('') + '</div>');
+  }
+  $(document).on('click', '.fnd-opt', function () { ans[Q[step].k] = $(this).data('v'); step++; step < Q.length ? draw() : result(); });
+  $(document).on('click', '#fndBack', () => { step--; draw(); });
+  $(document).on('click', '#fndAgain', () => { step = 0; draw(); });
+  draw();
+});
+</script>
+</body>
+</html>
