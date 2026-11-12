@@ -21,6 +21,7 @@
 <main class="container" style="max-width:1000px">
   <div class="breadcrumb-bar"><a href="index.html">Home</a> / Checkout</div>
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4"><h1 class="page-title mb-0">Order received</h1>
+    <button type="button" class="btn btn-brand rounded-pill no-print reorder-btn" id="reorderBtn" data-id=""><i class="bi bi-arrow-repeat"></i> আবার অর্ডার করুন</button>
     <button type="button" class="btn btn-soft rounded-pill no-print" id="printBtn"><i class="bi bi-printer"></i> ইনভয়েস প্রিন্ট</button></div>
   <div class="print-only mb-3"><h2 class="fw-bold mb-0">HitsCam – ইনভয়েস</h2><small>support@hitscam.com · +880 1614-747054</small></div>
 
@@ -105,6 +106,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/extras.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script>
 $(function () {
@@ -115,7 +117,7 @@ $(function () {
     items: [{ name: '4 Lens Solar Security Camera – 4G SIM ও WiFi স্মার্ট সিকিউরিটি ক্যামেরা', img: HC.D.products[1].img, sale: 12900, regular: 14500, qty: 2, label: '' }],
     totals: { sub: 25800, disc: 0, ship: 0, total: 25800 } };
   const t = o.totals, d = new Date(o.date);
-  $('#oName, #oName2').text(o.name.toUpperCase()); $('#oId').text('#' + o.id);
+  $('#oName, #oName2').text(o.name.toUpperCase()); $('#oId').text('#' + o.id); $('#reorderBtn').attr('data-id', o.id);
   $('#oDate').text(d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
   $('#oTotal, #oTotal2').text(B(t.total)); $('#oPay, #oPay2').text(o.pay);
   if (o.payStatus) { $('#oPSRow').show(); $('#oPS').text(o.payStatus); }

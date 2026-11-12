@@ -4,7 +4,7 @@
   const D = window.HC_DATA;
   const BDT = n => '৳' + Math.round(n).toLocaleString('en-IN');
   const FREE_SHIP = 5000;
-  const COUPONS = { HITS10: { type: 'pct', v: 10, label: '১০% ছাড়' }, WELCOME100: { type: 'flat', v: 100, label: '৳১০০ ছাড়' } };
+  const COUPONS = { HITS10: { type: 'pct', v: 10, label: '১০% ছাড়' }, WELCOME100: { type: 'flat', v: 100, label: '৳১০০ ছাড়' }, CAM500: { type: 'flat', v: 500, min: 15000, label: '৳৫০০ ছাড় (৳১৫,০০০+ অর্ডারে)' } };
   // মোবাইল ব্যাংকিং নাম্বার — আপনার আসল পার্সোনাল নাম্বার দিয়ে বদলে নিন
   const PAY_NUMBERS = { 'বিকাশ': '01XXXXXXXXX', 'নগদ': '01XXXXXXXXX' };
   const TYPE_LABEL = { simple: 'Simple', variable: 'Variable', grouped: 'Grouped', external: 'Affiliate' };
@@ -74,13 +74,14 @@
   $(document).on('keydown', e => { if (e.key === 'Escape') $('.hc-lb').remove(); });
   HC.inCart = id => HC.cart().some(i => i.id === +id);
   HC.removeProduct = id => HC.saveCart(HC.cart().filter(i => i.id !== +id));
+  HC.COUPONS = COUPONS;
   HC.coupon = () => store.get('hc_coupon', null);
   HC.ship = () => store.get('hc_ship', 70);
   HC.totals = () => {
     const c = HC.cart();
     const sub = c.reduce((s, i) => s + i.sale * i.qty, 0);
     const reg = c.reduce((s, i) => s + i.regular * i.qty, 0);
-    const cp = HC.coupon() && COUPONS[HC.coupon()];
+    const cp0 = HC.coupon() && COUPONS[HC.coupon()], cp = cp0 && sub >= (cp0.min || 0) ? cp0 : null;     // ন্যূনতম অর্ডার (min) না পূরণ হলে কুপন কাজ করে না
     const disc = cp ? (cp.type === 'pct' ? Math.round(sub * cp.v / 100) : Math.min(cp.v, sub)) : 0;
     const ship = (!c.length || sub >= FREE_SHIP) ? 0 : HC.ship();
     return { sub, reg, disc, ship, total: sub - disc + ship, count: c.reduce((s, i) => s + i.qty, 0), saved: reg - sub };
@@ -244,6 +245,7 @@
         <div class="nm">${i.name}${i.label ? ' <small class="text-muted">(' + i.label + ')</small>' : ''}</div>
         <div class="pr">${i.regular > i.sale ? '<del>' + BDT(i.regular) + '</del>' : ''}<b>${BDT(i.sale)}</b></div>
         <div class="mt-1 d-flex align-items-center gap-2">${HC.qty(i.key, i.qty)}<button class="rm-btn" data-key="${i.key}" type="button" aria-label="মুছুন"><i class="bi bi-trash3"></i></button></div>
+        <div class="line-acts"><button type="button" class="lnk-btn later-btn" data-key="${i.key}"><i class="bi bi-clock-history"></i> পরে কিনব</button><button type="button" class="lnk-btn wish-move" data-key="${i.key}"><i class="bi bi-heart"></i> উইশলিস্টে রাখুন</button></div>
       </div>
       <div class="fw-bold text-end">${BDT(i.sale * i.qty)}</div></div>`;
   HC.emptyCart = '<div class="text-center text-muted py-5"><i class="bi bi-bag-x fs-1"></i><p class="mt-2">আপনার কার্ট খালি</p><a href="shop.html" class="btn btn-brand">কেনাকাটা শুরু করুন</a></div>';
@@ -687,7 +689,7 @@
     });
     $(document).on('click', '.coupon-apply', function () {
       const code = $.trim($(this).closest('.input-group').find('.coupon-input').val()).toUpperCase();
-      if (!code) { store.set('hc_coupon', null); } else if (COUPONS[code]) { store.set('hc_coupon', code); HC.toast('কুপন প্রয়োগ হয়েছে: ' + COUPONS[code].label); } else { HC.toast('কুপন কোড সঠিক নয়'); return; }
+      if (!code) { store.set('hc_coupon', null); } else if (COUPONS[code] && HC.totals().sub < (COUPONS[code].min || 0)) { HC.toast('এই কুপনের জন্য আরও ৳' + ((COUPONS[code].min - HC.totals().sub)).toLocaleString('en-IN') + ' এর পণ্য লাগবে'); return; } else if (COUPONS[code]) { store.set('hc_coupon', code); HC.toast('কুপন প্রয়োগ হয়েছে: ' + COUPONS[code].label); } else { HC.toast('কুপন কোড সঠিক নয়'); return; }
       $(document).trigger('cartchange');
     });
     $(document).on('change', '.ship-radio', function () { store.set('hc_ship', +this.value); $(document).trigger('cartchange'); });

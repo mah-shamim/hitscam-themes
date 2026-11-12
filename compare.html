@@ -29,6 +29,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/extras.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script>
 $(function () {
@@ -51,7 +52,20 @@ $(function () {
       ${row('ফিচার', p => p.info && p.info.length ? '<ul class="list-unstyled mb-0 small">' + p.info.map(x => `<li><i class="bi ${x[0]} text-brand"></i> ${x[1]}</li>`).join('') + '</ul>' : '—')}
       ${row('', p => p.type === 'external' ? `<a class="btn btn-brand btn-sm rounded-pill" href="${p.url}" target="_blank" rel="sponsored noopener">${p.btn}</a>` : `<button class="btn btn-brand btn-sm rounded-pill cmp-add" data-id="${p.id}" type="button" ${p.stock <= 0 ? 'disabled' : ''}><i class="bi bi-cart-plus"></i> অ্যাড টু কার্ট</button>`)}
     </tbody></table></div>`);
+    // শুধু পার্থক্য: সব পণ্যে একই মানের সারি লুকানো যায়
+    if (list.length > 1) {
+      let same = 0;
+      $('#cmpTable tr').each(function () {
+        const lab = $(this).find('th').text().trim(); if (!lab || lab === 'নাম' || lab === 'দাম') return;
+        const v = $(this).find('td').map((_, e) => $(e).text().replace(/\s+/g, ' ').trim()).get();
+        if (v.every(x => x === v[0])) { $(this).addClass('cmp-same'); same++; }
+      });
+      const on = HC.store.get('hc_cmpdiff', false);
+      $('#cmpRoot').prepend(`<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2"><label class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" id="cmpDiff" ${on ? 'checked' : ''}><span class="form-check-label">শুধু পার্থক্য দেখান</span></label><small class="text-muted" id="cmpSameNote">${same ? same + 'টি সারিতে সব পণ্যের মান একই' : 'সব সারিতেই পার্থক্য আছে'}</small></div>`);
+      $('#cmpTable').toggleClass('diff-only', on);
+    }
   }
+  $(document).on('change', '#cmpDiff', function () { HC.store.set('hc_cmpdiff', this.checked); $('#cmpTable').toggleClass('diff-only', this.checked); });
   $(document).on('click', '.cmp-rm', function () { HC.store.set('hc_cmp', HC.cmp().filter(x => x !== +$(this).data('id'))); HC.renderCmpBar(); render(); });
   $(document).on('click', '.cmp-add', function () { const p = HC.find($(this).data('id')); HC.add(p.id, HC.lowest(p), 1); HC.toast('কার্টে যোগ হয়েছে ✓'); });
   $(document).on('cmpchange', render);

@@ -32,7 +32,7 @@
     { id: 1, type: 'simple', name: '4G PTZ Camera – সিম সাপোর্ট আউটডোর ক্যামেরা', cat: 'ip-camera', sku: 'HC-PTZ-4G',
       regular: 6500, sale: 5500, rating: 4.8, reviews: 126, tags: ['trending', 'best', 'flash'], img: ph('4G PTZ Camera'), desc: lorem },
 
-    { id: 2, type: 'variable', name: '4 Lens Solar Security Camera – 4G SIM ও WiFi স্মার্ট সিকিউরিটি ক্যামেরা', cat: 'security', sku: 'HC-SOLAR-4L',
+    { id: 2, video: 'jNQXAC9IVRw', spin: 12, type: 'variable', name: '4 Lens Solar Security Camera – 4G SIM ও WiFi স্মার্ট সিকিউরিটি ক্যামেরা', cat: 'security', sku: 'HC-SOLAR-4L',
       rating: 4.9, reviews: 212, tags: ['trending', 'new', 'best'], img: ph('Solar 4 Lens'), desc: lorem,
       attributes: solar.attributes, variations: solar.variations },
 

@@ -167,6 +167,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/extras.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script>
 $(function () {
@@ -186,9 +187,31 @@ $(function () {
 
   // গ্যালারি
   const imgs = [p.img, ph(p.sku + ' 2', '0f172a'), ph(p.sku + ' 3'), ph(p.sku + ' 4', '0f172a'), ph(p.sku + ' 5')];
-  function show(i) { $('#zoomBox').css('background-image', 'url(' + imgs[i] + ')').css('background-size', 'cover').data('i', i); $('.thumb').removeClass('active').eq(i).addClass('active'); }
-  $('#thumbs').html(imgs.map((s, i) => `<div class="thumb" data-i="${i}"><img src="${s}" alt=""></div>`).join('')).owlCarousel({ margin: 10, dots: false, nav: true, navText: ['‹', '›'], responsive: { 0: { items: 4 }, 576: { items: 5 } } });
+  // গ্যালারি আইটেম: ছবি + (ঐচ্ছিক) ভিডিও (p.video = YouTube ID) + ৩৬০° (p.spin = ফ্রেম সংখ্যা)
+  const items = imgs.map(src => ({ t: 'img', src }));
+  if (p.video) items.push({ t: 'video', id: p.video });
+  if (p.spin) items.push({ t: 'spin', n: p.spin });
+  const spinSrc = k => ph(p.sku + ' ' + Math.round(k * 360 / p.spin) + '°', k % 2 ? '0f172a' : 'e03131');
+  function show(i) {
+    const it = items[i], $z = $('#zoomBox').data('i', i).removeClass('zooming spin-on video-on').empty();
+    if (it.t === 'img') $z.css({ 'background-image': 'url(' + it.src + ')', 'background-size': 'cover', 'background-position': 'center' });
+    else if (it.t === 'video') {
+      $z.addClass('video-on').css('background-image', 'none').html('<iframe title="প্রোডাক্ট ভিডিও" src="https://www.youtube-nocookie.com/embed/' + it.id + '?rel=0" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe>');
+    } else {
+      $z.addClass('spin-on').css('background-image', 'none').html('<img class="spin-img" alt="৩৬০° ভিউ" draggable="false" src="' + spinSrc(0) + '"><div class="spin-ui"><span><i class="bi bi-arrow-repeat"></i> টেনে ঘোরান</span><input type="range" class="spin-range" min="0" max="' + (it.n - 1) + '" value="0" aria-label="৩৬০° ঘোরান"></div>');
+      for (let k = 1; k < it.n; k++) new Image().src = spinSrc(k);
+    }
+    $('.thumb').removeClass('active').eq(i).addClass('active');
+  }
+  $('#thumbs').html(items.map((it, i) => it.t === 'img' ? `<div class="thumb" data-i="${i}"><img src="${it.src}" alt=""></div>` : `<div class="thumb thumb-${it.t}" data-i="${i}" role="button" aria-label="${it.t === 'video' ? 'ভিডিও' : '৩৬০° ভিউ'}"><i class="bi ${it.t === 'video' ? 'bi-play-circle-fill' : 'bi-arrow-repeat'}"></i><small>${it.t === 'video' ? 'ভিডিও' : '৩৬০°'}</small></div>`).join('')).owlCarousel({ margin: 10, dots: false, nav: true, navText: ['‹', '›'], responsive: { 0: { items: 4 }, 576: { items: 5 } } });
   $(document).on('click', '.thumb', function () { show($(this).data('i')); });
+  $(document).on('input', '.spin-range', function () { $('.spin-img').attr('src', spinSrc(+this.value)); });
+  (function () {                       // টেনে ঘোরানো (মাউস/টাচ)
+    let down = false, x0 = 0, k0 = 0;
+    $(document).on('pointerdown', '.spin-img', function (e) { down = true; x0 = e.clientX; k0 = +$('.spin-range').val(); });
+    $(document).on('pointermove', function (e) { if (!down) return; const n = p.spin, w = $('#zoomBox').width() || 400; let k = (k0 + Math.round((e.clientX - x0) / (w / n))) % n; if (k < 0) k += n; $('.spin-range').val(k); $('.spin-img').attr('src', spinSrc(k)); });
+    $(document).on('pointerup pointercancel', function () { down = false; });
+  })();
   show(0);
   $('#zoomBox').on('mousemove', function (e) {
     const r = this.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width * 100, y = (e.clientY - r.top) / r.height * 100;
