@@ -30,6 +30,7 @@
     <ul class="nav nav-pills nav-fill auth-tabs mb-3" role="tablist">
       <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tabLogin" type="button" role="tab">লগইন</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabRegister" type="button" role="tab">নতুন অ্যাকাউন্ট</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabOtp" type="button" role="tab" id="otpTabBtn"><i class="bi bi-phone"></i> OTP</button></li>
     </ul>
 
     <div class="tab-content">
@@ -60,6 +61,24 @@
           <button class="btn btn-brand btn-lg w-100 rounded-pill">অ্যাকাউন্ট তৈরি করুন</button>
         </form>
       </div>
+
+      <!-- মোবাইল নাম্বার + OTP (পাসওয়ার্ড লাগে না) -->
+      <div class="tab-pane fade" id="tabOtp" role="tabpanel">
+        <form id="otpPhoneForm" novalidate>
+          <div class="mb-3"><label class="form-label">মোবাইল নাম্বার *</label>
+            <input class="form-control form-control-lg" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required>
+            <div class="invalid-feedback">সঠিক বাংলাদেশি মোবাইল নাম্বার দিন</div></div>
+          <button class="btn btn-brand btn-lg w-100 rounded-pill">OTP পাঠান</button>
+        </form>
+        <form id="otpCodeForm" novalidate style="display:none">
+          <p class="text-center mb-2">৬ সংখ্যার কোড পাঠানো হয়েছে <b id="otpTo"></b> নাম্বারে</p>
+          <div class="otp-box mb-2" id="otpBox" role="group" aria-label="OTP কোড"></div>
+          <div class="invalid-feedback text-center" id="otpErr" style="display:none">কোড মেলেনি। আবার চেষ্টা করুন।</div>
+          <div class="alert alert-info small py-2 mt-3 mb-3">ডেমো OTP: <b>123456</b> (আসল SMS এর জন্য SMS গেটওয়ে লাগবে)</div>
+          <button class="btn btn-brand btn-lg w-100 rounded-pill" id="otpVerify">যাচাই করে লগইন</button>
+          <div class="d-flex justify-content-between small mt-3"><button type="button" class="btn btn-link p-0 text-brand" id="otpChange">নাম্বার বদলান</button><button type="button" class="btn btn-link p-0 text-brand" id="otpResend" disabled>আবার পাঠান (<span id="otpLeft">30</span>)</button></div>
+        </form>
+      </div>
     </div>
 
     <div class="text-center mt-4 small text-muted">অ্যাকাউন্ট ছাড়াও অর্ডার করা যায় — <a href="shop.html" class="text-brand">কেনাকাটা চালিয়ে যান</a></div>
@@ -72,6 +91,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/i18n.js"></script>
 <script>
 $(function () {
   const PHONE = /^(?:\+?88)?01[3-9]\d{8}$/, MAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -82,7 +102,7 @@ $(function () {
     $i.attr('type', show ? 'text' : 'password'); $(this).find('i').toggleClass('bi-eye', !show).toggleClass('bi-eye-slash', show);
   });
   $('.auth-tabs button').on('shown.bs.tab', function () {
-    $('#authTitle').text($(this).data('bs-target') === '#tabRegister' ? 'নতুন অ্যাকাউন্ট তৈরি করুন' : 'আপনার অ্যাকাউন্টে লগইন করুন');
+    $('#authTitle').text($(this).data('bs-target') === '#tabOtp' ? 'মোবাইল নাম্বার দিয়ে লগইন' : $(this).data('bs-target') === '#tabRegister' ? 'নতুন অ্যাকাউন্ট তৈরি করুন' : 'আপনার অ্যাকাউন্টে লগইন করুন');
   });
   if (location.hash === '#register') bootstrap.Tab.getOrCreateInstance($('.auth-tabs button').eq(1)[0]).show();
 
@@ -106,6 +126,27 @@ $(function () {
     HC.store.set('hc_user', { name: $.trim(f.name.value), id: f.phone.value });
     HC.toast('অ্যাকাউন্ট তৈরি হয়েছে ✓'); setTimeout(() => location.href = 'index.html', 700);
   });
+  // ---- OTP লগইন (ডেমো: কোড 123456; ৩ ভুলে লক, ৩০ সেকেন্ড পর পুনরায় পাঠানো) ----
+  let otpPhone = '', otpTry = 0, otpTimer = null;
+  $('#otpBox').html([0, 1, 2, 3, 4, 5].map(i => `<input inputmode="numeric" maxlength="1" autocomplete="${i ? 'off' : 'one-time-code'}" aria-label="অঙ্ক ${i + 1}">`).join(''));
+  const otpVal = () => $('#otpBox input').map((_, e) => e.value).get().join('');
+  function otpCountdown() { let n = 30; clearInterval(otpTimer); $('#otpResend').prop('disabled', true); $('#otpLeft').text(n); otpTimer = setInterval(() => { n--; $('#otpLeft').text(n); if (n <= 0) { clearInterval(otpTimer); $('#otpResend').prop('disabled', false).html('আবার পাঠান'); } }, 1000); }
+  $('#otpPhoneForm').on('submit', function (e) {
+    e.preventDefault(); const ph = HC.digits(this.phone.value).replace(/[\s-]/g, '');
+    if (flag($(this.phone), !PHONE.test(ph))) { otpPhone = ph.replace(/^\+?88/, ''); otpTry = 0; $(this).hide(); $('#otpTo').text(otpPhone); $('#otpCodeForm').show(); $('#otpBox input').val('').first().focus(); otpCountdown(); HC.toast('OTP পাঠানো হয়েছে (ডেমো)'); }
+  });
+  $('#otpBox').on('input', 'input', function () { this.value = HC.digits(this.value).replace(/\D/g, '').slice(0, 1); if (this.value) $(this).next().focus(); })
+    .on('keydown', 'input', function (e) { if (e.key === 'Backspace' && !this.value) $(this).prev().focus(); })
+    .on('paste', 'input', function (e) { const t = HC.digits((e.originalEvent.clipboardData || window.clipboardData).getData('text')).replace(/\D/g, '').slice(0, 6); if (!t) return; e.preventDefault(); $('#otpBox input').each((i, el) => el.value = t[i] || ''); });
+  $('#otpCodeForm').on('submit', function (e) {
+    e.preventDefault();
+    if (otpTry >= 3) { HC.toast('অনেকবার ভুল। নতুন OTP নিন।'); return; }
+    if (otpVal() === '123456') { const u = HC.store.get('hc_user', null); HC.store.set('hc_user', { name: (u && u.name) || 'গ্রাহক', id: otpPhone, via: 'otp' }); HC.toast('লগইন সফল ✓'); setTimeout(() => location.href = 'index.html', 700); }
+    else { otpTry++; $('#otpErr').show(); $('#otpBox input').val('').first().focus(); if (otpTry >= 3) $('#otpVerify').prop('disabled', true); }
+  });
+  $('#otpResend').on('click', function () { otpTry = 0; $('#otpVerify').prop('disabled', false); $('#otpErr').hide(); $('#otpBox input').val('').first().focus(); $(this).html('আবার পাঠান (<span id="otpLeft">30</span>)'); otpCountdown(); HC.toast('নতুন OTP পাঠানো হয়েছে (ডেমো)'); });
+  $('#otpChange').on('click', function () { clearInterval(otpTimer); $('#otpCodeForm').hide(); $('#otpPhoneForm').show(); });
+  if (location.hash === '#otp') bootstrap.Tab.getOrCreateInstance($('#otpTabBtn')[0]).show();
   $('#forgot').on('click', function (e) { e.preventDefault(); HC.toast('পাসওয়ার্ড রিসেট লিংক পাঠানো হবে (WooCommerce এ সংযুক্ত হবে)'); });
 });
 </script>

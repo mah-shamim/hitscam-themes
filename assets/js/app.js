@@ -124,6 +124,15 @@
 
   // ---------- WhatsApp এ অর্ডার ----------
   HC.WA_NUM = '8801614747054';
+  // পেমেন্ট ও ভুয়া-অর্ডার গার্ড কনফিগ (আসল সাইটে সার্ভার-সাইডেও যাচাই করবেন)
+  HC.PAY = { advance: 500, gateway: 'pay-demo.html' };                   // COD অগ্রিমের পরিমাণ; অনলাইন গেটওয়ে পেজ
+  HC.GUARD = { maxPerPhonePerDay: 3, codAdvanceAbove: 10000 };           // একই ফোনে দিনে সর্বোচ্চ অর্ডার; এর বেশি COD তে অগ্রিম লাগবে
+  // কুরিয়ার ট্র্যাকিং লিংক টেমপ্লেট ({id} = কনসাইনমেন্ট নং) — চালু করার আগে কুরিয়ারের বর্তমান লিংক মিলিয়ে নিন
+  HC.COURIERS = {
+    pathao: { name: 'Pathao', url: 'https://merchant.pathao.com/tracking?consignment_id={id}&phone={phone}' },
+    steadfast: { name: 'Steadfast', url: 'https://steadfast.com.bd/t/{id}' },
+    redx: { name: 'RedX', url: 'https://redx.com.bd/track-parcel/?trackingId={id}' }
+  };
   HC.waOpen = text => window.open('https://wa.me/' + HC.WA_NUM + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
   HC.waLine = (n, i) => `${n}) ${i.name}${i.label ? ' (' + i.label + ')' : ''} × ${i.qty} = ${BDT(i.sale * i.qty)}`;
   HC.waCartText = () => {
@@ -286,15 +295,21 @@
       <div class="col-md-6"><label class="form-label">ই-মেইল (ঐচ্ছিক)</label><input class="form-control" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com"><div class="invalid-feedback">সঠিক ই-মেইল দিন</div><div class="email-sugg" aria-live="polite"></div></div>
     </div>
     <div class="mb-3"><label class="form-label">Order notes (ঐচ্ছিক)</label><textarea class="form-control" name="notes" rows="2" placeholder="ডেলিভারি সম্পর্কে বিশেষ নির্দেশনা"></textarea></div>
+    <div class="hp-field" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
     <div class="mb-3"><label class="form-label fw-bold">Shipping method</label>
       <label class="ship-opt"><input type="radio" class="form-check-input ship-radio" name="ship" value="70" ${HC.ship() == 70 ? 'checked' : ''}><span>ঢাকার ভিতরে <small class="text-muted">(১-২ দিন)</small></span><b>৳70</b></label>
       <label class="ship-opt"><input type="radio" class="form-check-input ship-radio" name="ship" value="130" ${HC.ship() == 130 ? 'checked' : ''}><span>ঢাকার বাইরে <small class="text-muted">(২-৪ দিন)</small></span><b>৳130</b></label>
       <small class="text-muted">৳${FREE_SHIP.toLocaleString('en-IN')}+ অর্ডারে শিপিং ফ্রি</small></div>
     <div class="mb-1"><label class="form-label fw-bold">Payment method</label>
       <label class="pay-opt"><input type="radio" class="form-check-input" name="pay" value="ক্যাশ অন ডেলিভারি" checked><span><i class="bi bi-cash-coin text-success"></i> ক্যাশ অন ডেলিভারি</span></label>
+      <label class="pay-opt"><input type="radio" class="form-check-input" name="pay" value="COD + অগ্রিম"><span><i class="bi bi-cash-stack text-primary"></i> ক্যাশ অন ডেলিভারি — <b>অগ্রিম ৳${HC.PAY.advance}</b> বিকাশ/নগদে, বাকিটা ডেলিভারিতে</span></label>
+      <label class="pay-opt"><input type="radio" class="form-check-input" name="pay" value="অনলাইন পেমেন্ট"><span><i class="bi bi-credit-card-2-front text-info"></i> অনলাইন পেমেন্ট <small class="text-muted">(কার্ড / মোবাইল ব্যাংকিং — SSLCommerz)</small></span></label>
       <label class="pay-opt"><input type="radio" class="form-check-input" name="pay" value="বিকাশ"><span><i class="bi bi-wallet2 text-danger"></i> বিকাশ (পার্সোনাল)</span></label>
       <label class="pay-opt"><input type="radio" class="form-check-input" name="pay" value="নগদ"><span><i class="bi bi-wallet2 text-warning"></i> নগদ (পার্সোনাল)</span></label>
+      <div class="alert alert-warning small py-2 mt-2 mb-0" id="codGuard" style="display:none"></div>
       <div class="pay-extra" id="payExtra" style="display:none">
+        <div class="mb-2" id="advMethod" style="display:none"><span class="small me-2">অগ্রিম পাঠাবেন:</span>
+          <label class="me-3"><input type="radio" class="form-check-input" name="advm" value="বিকাশ" checked> বিকাশ</label><label><input type="radio" class="form-check-input" name="advm" value="নগদ"> নগদ</label></div>
         <div class="small mb-2" id="payHint"></div>
         <div class="mb-2"><label class="form-label mb-1">ট্রানজেকশন আইডি (TrxID) *</label>
           <input class="form-control" name="txn" autocomplete="off" autocapitalize="characters" placeholder="যেমন: 8N7A6B5C4D"><div class="invalid-feedback">সঠিক TrxID দিন (৬–২০ অক্ষর/সংখ্যা)</div></div>
@@ -321,6 +336,8 @@
       <div class="col-lg-6"><div class="panel" data-summary></div></div></div>`);
     HC.renderSummary($(el).find('[data-summary]'));
     HC.restoreDraft($(el).find('#orderForm'));
+    if (HC.payUi) HC.payUi();
+    if (/[?&]payfail=1/.test(location.search)) HC.toast('অনলাইন পেমেন্ট সম্পন্ন হয়নি। আবার চেষ্টা করুন বা অন্য মাধ্যম বাছুন।');
   };
   // স্লিপ ফাইল যাচাই: ছবি/PDF, সর্বোচ্চ ৫MB (WooCommerce এ ফাইল multipart ফর্মে সার্ভারে যাবে)
   const slipOk = f => (/^image\//.test(f.type) || f.type === 'application/pdf') && f.size <= 5 * 1024 * 1024;
@@ -331,7 +348,7 @@
     $(f).find('[name=name],[name=road],[name=thana],[name=district]').each(function () { const bad = !$.trim(this.value); $(this).toggleClass('is-invalid', bad); if (bad) ok = false; });
     const ph = $(f).find('[name=phone]'); const badp = !BD_PHONE.test(ph.val().replace(/[\s-]/g, '')); ph.toggleClass('is-invalid', badp); if (badp) ok = false;
     const em = $(f).find('[name=email]'), bade = !!$.trim(em.val()) && !HC.EMAIL_RE.test($.trim(em.val())); em.toggleClass('is-invalid', bade); if (bade) ok = false;
-    const pay = $(f).find('[name=pay]:checked').val(), mobile = !!PAY_NUMBERS[pay];
+    const pay = $(f).find('[name=pay]:checked').val(), advance = pay === 'COD + অগ্রিম', gateway = pay === 'অনলাইন পেমেন্ট', mobile = !!PAY_NUMBERS[pay] || advance;
     let txn = '', slipName = '';
     if (mobile) {
       const tx = $(f).find('[name=txn]'); txn = $.trim(tx.val()).toUpperCase();
@@ -340,15 +357,36 @@
       $(f).find('[name=slip]').toggleClass('is-invalid', bads); if (bads) ok = false; else slipName = fl.name;
     }
     if (!HC.cart().length) { HC.toast('কার্ট খালি!'); return; }
+    if ($(f).find('[name=website]').val()) return;                         // হানিপট: বট হলে চুপচাপ বাতিল
     if (!ok) { HC.toast('অনুগ্রহ করে লাল ঘরগুলো ঠিক করুন'); return; }
-    const t = HC.totals();
-    store.set('hc_last_order', {
+    const t = HC.totals(), g = HC.guard(v('phone'), pay, t.total);
+    if (g.block) { HC.toast(g.block); $('#codGuard').text(g.block).show(); return; }
+    const adv = advance ? Math.min(HC.PAY.advance, t.total) : 0;
+    const order = {
       id: 500 + Math.floor(Math.random() * 400), date: new Date().toISOString(), items: HC.cart(), totals: t,
-      name: v('name'), road: v('road'), thana: v('thana'), district: v('district'), address: [v('road'), v('thana'), v('district')].join(', '), phone: v('phone'), email: v('email'), notes: v('notes'), pay, txn, slipName
-    });
-    const ord = store.get('hc_last_order', null); if (ord) store.set('hc_orders', [ord].concat(HC.orders()).slice(0, 20));
-    memCart = []; store.set('hc_cart', []); store.set('hc_coupon', null); store.set('hc_draft', null);
+      name: v('name'), road: v('road'), thana: v('thana'), district: v('district'), address: [v('road'), v('thana'), v('district')].join(', '), phone: v('phone'), email: v('email'), notes: v('notes'), pay, txn, slipName,
+      advance: adv, due: advance ? t.total - adv : 0, advMethod: advance ? $(f).find('[name=advm]:checked').val() : '', risk: g.risk,
+      payStatus: gateway ? 'অনলাইন পেমেন্টের অপেক্ষায়' : advance ? 'অগ্রিম পরিশোধিত, বাকি ডেলিভারিতে' : mobile ? 'পেমেন্ট যাচাই হচ্ছে' : 'ডেলিভারিতে পরিশোধ'
+    };
+    if (gateway) { store.set('hc_pending_order', order); location.href = HC.PAY.gateway + '?o=' + order.id + '&amt=' + t.total; return; }
+    HC.finalizeOrder(order);
+  };
+  // অর্ডার চূড়ান্ত: ইতিহাসে রাখা, কার্ট/ড্রাফট মোছা, কনফার্ম পেজে যাওয়া
+  HC.finalizeOrder = order => {
+    store.set('hc_last_order', order); store.set('hc_orders', [order].concat(HC.orders()).slice(0, 20));
+    memCart = []; store.set('hc_cart', []); store.set('hc_coupon', null); store.set('hc_draft', null); store.set('hc_pending_order', null);
     location.href = 'order-received.html';
+  };
+  // ভুয়া-অর্ডার গার্ড: একই ফোনে দৈনিক সীমা, উচ্চমূল্যের সাধারণ COD তে অগ্রিম; অ্যাডমিনের জন্য risk ফ্ল্যাগ
+  HC.guard = (phone, pay, total) => {
+    const ph = HC.digits(phone).replace(/\D/g, '').slice(-10), day = Date.now() - 864e5;
+    const recent = HC.orders().filter(o => HC.digits(o.phone || '').replace(/\D/g, '').slice(-10) === ph && new Date(o.date).getTime() > day).length;
+    const risk = [];
+    if (recent >= HC.GUARD.maxPerPhonePerDay) return { block: 'এই নাম্বার থেকে ২৪ ঘণ্টায় সর্বোচ্চ ' + HC.GUARD.maxPerPhonePerDay + 'টি অর্ডার নেওয়া হয়। সাহায্যের জন্য আমাদের কল করুন।', risk };
+    if (pay === 'ক্যাশ অন ডেলিভারি' && total >= HC.GUARD.codAdvanceAbove) return { block: '৳' + HC.GUARD.codAdvanceAbove.toLocaleString('en-IN') + '+ অর্ডারে "অগ্রিমসহ ক্যাশ অন ডেলিভারি" বা অনলাইন পেমেন্ট বেছে নিন।', risk };
+    if (pay === 'ক্যাশ অন ডেলিভারি' && total >= HC.GUARD.codAdvanceAbove / 2) risk.push('high-value-cod');
+    if (recent >= 1) risk.push('repeat-phone');
+    return { block: '', risk };
   };
 
   /* ---------- Layout injection ---------- */
@@ -654,11 +692,16 @@
     });
     $(document).on('change', '.ship-radio', function () { store.set('hc_ship', +this.value); $(document).trigger('cartchange'); });
     // বিকাশ/নগদ বেছে নিলে TrxID ও স্লিপ আপলোড ফিল্ড দেখানো
-    $(document).on('change', '#orderForm [name=pay]', function () {
-      const v = $('#orderForm [name=pay]:checked').val(), num = PAY_NUMBERS[v];
-      $('#payExtra').toggle(!!num);
-      if (num) $('#payHint').html(`<b>${v}</b> পার্সোনাল নাম্বার <b class="text-brand user-select-all">${num}</b> এ <b>Send Money</b> করে নিচে TrxID ও স্লিপ দিন। মোট: <b>${BDT(HC.totals().total)}</b>`);
-    });
+    const payUi = () => {
+      const v = $('#orderForm [name=pay]:checked').val(), adv = v === 'COD + অগ্রিম', t = HC.totals(), m = adv ? $('#orderForm [name=advm]:checked').val() : v, num = PAY_NUMBERS[m];
+      $('#payExtra').toggle(!!num || adv); $('#advMethod').toggle(adv);
+      const amt = adv ? Math.min(HC.PAY.advance, t.total) : t.total;
+      if (num) $('#payHint').html(`<b>${m}</b> পার্সোনাল নাম্বার <b class="text-brand user-select-all">${num}</b> এ <b>Send Money</b> করে নিচে TrxID ও স্লিপ দিন। ${adv ? 'অগ্রিম' : 'মোট'}: <b>${BDT(amt)}</b>${adv ? ` · বাকি <b>${BDT(t.total - amt)}</b> ডেলিভারিতে` : ''}`);
+      const g = HC.guard($('#orderForm [name=phone]').val() || '', v, t.total);
+      $('#codGuard').toggle(!!g.block).text(g.block);
+    };
+    HC.payUi = payUi;
+    $(document).on('change', '#orderForm [name=pay], #orderForm [name=advm]', payUi).on('cartchange', () => { if ($('#orderForm').length) payUi(); });
     $(document).on('change', '#orderForm [name=slip]', function () {
       const fl = this.files[0], $p = $('#slipPreview').empty(); $(this).removeClass('is-invalid');
       if (!fl) return;

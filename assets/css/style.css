@@ -534,3 +534,13 @@ main:focus{outline:none}
 .rv-prev{display:flex;gap:.4rem;margin-top:.4rem}.rv-prev img{width:56px;height:56px;object-fit:cover;border-radius:8px}
 .wty-res{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);padding:1rem}
 [data-theme=dark] .fnd-why span,[data-theme=dark] .bnd-save,[data-theme=dark] .rv-badge{background:#052e16;color:#86efac}
+
+/* ---- v1.9.1 ---- */
+.hp-field{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.otp-box{display:flex;gap:.5rem;justify-content:center}.otp-box input{width:46px;height:54px;text-align:center;font-size:1.4rem;font-weight:700;border:2px solid var(--line);border-radius:12px;background:var(--card);color:inherit}
+.otp-box input:focus{border-color:var(--brand);outline:0}
+.lang-sw{display:inline-flex;gap:.25rem;align-items:center;margin-left:.75rem}
+.lang-sw button{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;font-size:.72rem;padding:.05rem .55rem;line-height:1.5}
+.lang-sw button.on{background:#fff;color:#0f172a;font-weight:700}
+.courier-ev{list-style:none;padding:0;margin:.75rem 0 0;border-left:2px solid var(--line)}.courier-ev li{position:relative;padding:0 0 .7rem 1rem;font-size:.9rem}.courier-ev li:before{content:"";position:absolute;left:-6px;top:.35rem;width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.pay-demo{max-width:460px;margin:2rem auto}

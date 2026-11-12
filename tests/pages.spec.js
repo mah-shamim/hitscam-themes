@@ -9,7 +9,7 @@ const PAGES = [
   'product.html?id=3',   // grouped
   'product.html?id=4',   // external / affiliate
   'product.html?id=12',  // স্টক আউট
-  'cart.html', 'checkout.html', 'order-received.html', 'track-order.html', 'login.html', 'compare.html', '404.html', 'finder.html', 'bundles.html', 'warranty.html',
+  'cart.html', 'checkout.html', 'order-received.html', 'track-order.html', 'login.html', 'compare.html', '404.html', 'finder.html', 'bundles.html', 'warranty.html', 'pay-demo.html',
   'terms.html', 'returns.html', 'shipping.html', 'contact.html', 'faq.html', 'minicart.html',
   'device-compatibility.html', 'social-compatibility.html',
 ];
