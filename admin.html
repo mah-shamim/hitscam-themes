@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23e03131'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23fff'/%3E%3C/svg%3E">
+<title>অ্যাডমিন ড্যাশবোর্ড (ডেমো) – HitsCam</title>
+<meta name="description" content="ডেমো অ্যাডমিন ড্যাশবোর্ড: অর্ডার, বিক্রি, কম স্টক।"><meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#e03131">
+
+
+<meta name="twitter:card" content="summary"><meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main class="container pb-5">
+  <div class="breadcrumb-bar"><a href="index.html">Home</a> / অ্যাডমিন ডেমো</div>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="page-title m-0">অ্যাডমিন ড্যাশবোর্ড</h1>
+    <span class="badge bg-warning text-dark">ডেমো — এই ব্রাউজারের অর্ডার + নমুনা ডাটা; আসল সার্ভার ডাটা নয়</span>
+  </div>
+  <div class="row g-3 mb-4" id="adKpi"></div>
+  <div class="row g-3 mb-4">
+    <div class="col-lg-8"><div class="panel h-100"><h2 class="h6 fw-bold mb-3">গত ৭ দিনের বিক্রি (৳)</h2><div id="adChart" role="img" aria-label="গত ৭ দিনের বিক্রির বার চার্ট"></div></div></div>
+    <div class="col-lg-4"><div class="panel h-100"><h2 class="h6 fw-bold mb-3"><i class="bi bi-exclamation-triangle-fill text-danger"></i> কম স্টক</h2><div id="adLow"></div></div></div>
+  </div>
+  <div class="row g-3">
+    <div class="col-lg-8"><div class="panel"><h2 class="h6 fw-bold mb-3">সাম্প্রতিক অর্ডার</h2><div class="table-responsive"><table class="table table-sm align-middle mb-0" id="adOrders"><thead><tr><th>#</th><th>গ্রাহক</th><th>মোট</th><th>পেমেন্ট</th><th>ঝুঁকি</th></tr></thead><tbody></tbody></table></div></div></div>
+    <div class="col-lg-4"><div class="panel"><h2 class="h6 fw-bold mb-3"><i class="bi bi-trophy-fill text-warning"></i> সবচেয়ে বেশি বিক্রি</h2><div id="adTop"></div></div></div>
+  </div>
+</main>
+<div id="site-footer"></div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/extras.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/analytics.js"></script>
+<script src="assets/js/pro.js"></script>
+<script>
+$(function () {
+  const B = HC.BDT, D = HC.D, day = d => d.toISOString().slice(0, 10);
+  // নমুনা (ডেমো) অর্ডার: গত ৭ দিন, নির্দিষ্ট সংখ্যা — আসল অর্ডারের সঙ্গে মিলিয়ে দেখানো হয়
+  const names = ['রাকিব হাসান', 'সুমাইয়া আক্তার', 'তানভীর আহমেদ', 'নুসরাত জাহান', 'মেহেদী হাসান', 'ফারহানা ইয়াসমিন', 'আরিফ হোসেন'];
+  const demo = [];
+  [3, 5, 2, 6, 4, 7, 3].forEach((n, di) => { for (let i = 0; i < n; i++) {
+    const p = D.products[(di * 3 + i) % D.products.length], t = new Date(); t.setDate(t.getDate() - (6 - di)); const qty = 1 + ((di + i) % 2), sale = HC.minPrice(p).sale;
+    demo.push({ id: 400 + demo.length, date: t.toISOString(), name: names[(di + i) % names.length], total: sale * qty + (sale * qty >= 5000 ? 0 : 70), pay: ['ক্যাশ অন ডেলিভারি', 'বিকাশ', 'COD + অগ্রিম', 'নগদ'][(di + i) % 4], items: [{ id: p.id, name: p.name, qty }], risk: (di + i) % 9 === 0 ? ['high-value-cod'] : [], demo: true }); } });
+  const real = HC.orders().map(o => ({ id: o.id, date: o.date, name: o.name, total: (o.totals || {}).total || 0, pay: o.pay, items: (o.items || []).map(i => ({ id: i.id, name: i.name, qty: i.qty })), risk: o.risk || [], demo: false, due: o.due || 0 }));
+  const byDate = (a, b) => b.date.localeCompare(a.date), all = real.sort(byDate).concat(demo.sort(byDate));   // আসল অর্ডার আগে
+  const rev = all.reduce((s, o) => s + o.total, 0), due = all.reduce((s, o) => s + (o.due || (o.pay === 'ক্যাশ অন ডেলিভারি' ? o.total : 0)), 0);
+  const kpi = [['bi-bag-check', 'মোট অর্ডার', all.length, 'text-brand'], ['bi-cash-stack', 'মোট বিক্রি', B(rev), 'text-success'], ['bi-receipt', 'গড় অর্ডার মূল্য', B(Math.round(rev / (all.length || 1))), 'text-primary'], ['bi-truck', 'ডেলিভারিতে আদায় বাকি', B(due), 'text-warning']];
+  $('#adKpi').html(kpi.map(k => `<div class="col-6 col-lg-3"><div class="panel h-100"><div class="small text-muted"><i class="bi ${k[0]} ${k[3]}"></i> ${k[1]}</div><div class="h4 fw-bold m-0 mt-1" data-kpi>${k[2]}</div></div></div>`).join(''));
+  // বার চার্ট (ইনলাইন SVG)
+  const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return day(d); });
+  const sums = days.map(d => all.filter(o => day(new Date(o.date)) === d).reduce((s, o) => s + o.total, 0)), mx = Math.max.apply(null, sums) || 1;
+  const W = 560, H = 190, bw = 52, gap = (W - bw * 7) / 8;
+  $('#adChart').html(`<svg viewBox="0 0 ${W} ${H + 28}" width="100%" style="max-width:100%">${sums.map((v, i) => { const h = Math.max(2, v / mx * H), x = gap + i * (bw + gap);
+    return `<g><rect x="${x}" y="${H - h}" width="${bw}" height="${h}" rx="6" fill="var(--brand)" opacity=".9"><title>${days[i]}: ${B(v)}</title></rect><text x="${x + bw / 2}" y="${H - h - 5}" font-size="10" text-anchor="middle" fill="currentColor">${v ? Math.round(v / 1000) + 'k' : ''}</text><text x="${x + bw / 2}" y="${H + 16}" font-size="10" text-anchor="middle" fill="currentColor" opacity=".7">${days[i].slice(5)}</text></g>`; }).join('')}</svg>`);
+  // কম স্টক
+  const low = D.products.filter(p => p.type !== 'external' && p.stock <= HC.LOW_STOCK).sort((a, b) => a.stock - b.stock);
+  $('#adLow').html(low.length ? low.map(p => `<div class="d-flex justify-content-between align-items-center border-bottom py-2"><a class="text-decoration-none small" href="product.html?id=${p.id}">${p.name.slice(0, 38)}</a><span class="badge ${p.stock ? 'bg-warning text-dark' : 'bg-danger'}">${p.stock ? p.stock + 'টি' : 'শেষ'}</span></div>`).join('') : '<div class="text-muted small">সব পণ্যের স্টক ঠিক আছে ✓</div>');
+  // অর্ডার টেবিল
+  $('#adOrders tbody').html(all.slice(0, 10).map(o => `<tr><td>#${o.id}${o.demo ? '' : ' <span class="badge bg-success">আসল</span>'}</td><td>${o.name}</td><td>${B(o.total)}</td><td class="small">${o.pay}</td><td>${o.risk.length ? '<span class="badge bg-danger">' + o.risk.join(', ') + '</span>' : '<span class="text-muted">—</span>'}</td></tr>`).join(''));
+  // টপ পণ্য (বিক্রির সংখ্যা)
+  const cnt = {}; all.forEach(o => o.items.forEach(i => { cnt[i.name] = (cnt[i.name] || 0) + i.qty; }));
+  $('#adTop').html(Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]).slice(0, 5).map((n, i) => `<div class="d-flex justify-content-between border-bottom py-2 small"><span>${i + 1}. ${n.slice(0, 34)}</span><b>${cnt[n]}টি</b></div>`).join(''));
+});
+</script>
+</body>
+</html>

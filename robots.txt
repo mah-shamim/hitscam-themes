@@ -6,6 +6,8 @@ Disallow: /track-order.html
 Disallow: /login.html
 Disallow: /minicart.html
 Disallow: /compare.html
+Disallow: /admin.html
+Disallow: /pay-demo.html
 
 # Deploy করার সময় আপনার আসল ডোমেইন বসান
 Sitemap: https://example.com/sitemap.xml
