@@ -32,4 +32,9 @@
   <url><loc>https://example.com/finder.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://example.com/bundles.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://example.com/warranty.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://example.com/blog.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://example.com/guide.html?slug=how-to-choose-cctv-camera</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://example.com/guide.html?slug=cctv-installation-guide</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://example.com/guide.html?slug=solar-vs-normal-camera</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://example.com/guide.html?slug=memory-card-size-guide</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>

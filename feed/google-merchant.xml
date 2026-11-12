@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>HitsCam</title>
+    <link>https://example.com</link>
+    <description>HitsCam প্রোডাক্ট ফিড</description>
+    <item>
+      <g:id>HC-PTZ-4G</g:id>
+      <title>4G PTZ Camera – সিম সাপোর্ট আউটডোর ক্যামেরা</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=1</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/e03131?text=4G%20PTZ%20Camera</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>6500.00 BDT</g:price>
+      <g:sale_price>5500.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>আইপি ক্যামেরা</g:product_type>
+    </item>
+    <item>
+      <g:id>HC-SOLAR-4L</g:id>
+      <title>4 Lens Solar Security Camera – 4G SIM ও WiFi স্মার্ট সিকিউরিটি ক্যামেরা</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=2</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/e03131?text=Solar%204%20Lens</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>12500.00 BDT</g:price>
+      <g:sale_price>11500.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>সিকিউরিটি ক্যামেরা</g:product_type>
+      <g:item_group_id>HC-SOLAR-4L</g:item_group_id>
+    </item>
+    <item>
+      <g:id>HC-KIT-3</g:id>
+      <title>স্মার্ট হোম সিকিউরিটি কিট (৩ আইটেম)</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=3</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/0f172a?text=Home%20Kit</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>800.00 BDT</g:price>
+      <g:sale_price>650.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>সিকিউরিটি ক্যামেরা</g:product_type>
+    </item>
+    <item>
+      <g:id>HC-UPS-12</g:id>
+      <title>Wireless Mini UPS 12V (পার্টনার স্টোর)</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=4</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/e03131?text=Mini%20UPS</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>1800.00 BDT</g:price>
+      <g:sale_price>1500.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>মিনি ইউপিএস</g:product_type>
+    </item>
+    <item>
+      <g:id>HC-MC-64</g:id>
+      <title>64GB হাই-স্পিড মেমোরি কার্ড</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=5</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/0f172a?text=64GB%20Card</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>950.00 BDT</g:price>
+      <g:sale_price>800.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>মেমোরি কার্ড</g:product_type>
+    </item>
+    <item>
+      <g:id>HC-MNT-1</g:id>
+      <title>ক্যামেরা মাউন্ট (ওয়াল/সিলিং)</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=6</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/e03131?text=Mount</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>550.00 BDT</g:price>
+      <g:sale_price>450.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>অ্যাক্সেসরিজ</g:product_type>
+    </item>
+    <item>
+      <g:id>HC-SP-10</g:id>
+      <title>১০W সোলার প্যানেল</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=7</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/0f172a?text=Solar%20Panel</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>1500.00 BDT</g:price>
+      <g:sale_price>1200.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>অ্যাক্সেসরিজ</g:product_type>
+    </item>
+    <item>
+      <g:id>HC-IND-W</g:id>
+      <title>Wi-Fi স্মার্ট ইনডোর ক্যামেরা ২MP/৩MP</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=8</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/e03131?text=Indoor%20Cam</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>2300.00 BDT</g:price>
+      <g:sale_price>1900.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>আইপি ক্যামেরা</g:product_type>
+      <g:item_group_id>HC-IND-W</g:item_group_id>
+    </item>
+    <item>
+      <g:id>HC-DVR-8</g:id>
+      <title>৮ চ্যানেল DVR + মোবাইল ভিউ</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=9</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/0f172a?text=DVR%208CH</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>7800.00 BDT</g:price>
+      <g:sale_price>6900.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>সিসি ক্যামেরা</g:product_type>
+    </item>
+    <item>
+      <g:id>HC-PKG-O</g:id>
+      <title>আউটডোর সিসি ক্যামেরা প্যাকেজ</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=10</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/e03131?text=CC%20Package</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>9500.00 BDT</g:price>
+      <g:sale_price>8500.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>সিসি ক্যামেরা</g:product_type>
+    </item>
+    <item>
+      <g:id>HC-MINI-1</g:id>
+      <title>Mini WiFi Camera 1080p</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=11</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/0f172a?text=Mini%20Cam</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>2200.00 BDT</g:price>
+      <g:sale_price>1800.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>আইপি ক্যামেরা</g:product_type>
+    </item>
+    <item>
+      <g:id>HC-GIM-1</g:id>
+      <title>স্মার্টফোন গিম্বল স্ট্যাবিলাইজার</title>
+      <description>এই পণ্যটি উন্নত প্রযুক্তি ও দীর্ঘস্থায়ী মান নিশ্চিত করে তৈরি। ঘরে, দোকানে বা অফিসে সহজেই ব্যবহার করা যায়। অফিসিয়াল ওয়ারেন্টিসহ সারা বাংলাদেশে ডেলিভারি।</description>
+      <link>https://example.com/product.html?id=12</link>
+      <g:image_link>https://placehold.co/600x600/f8f9fa/e03131?text=Gimbal</g:image_link>
+      <g:availability>out_of_stock</g:availability>
+      <g:price>4200.00 BDT</g:price>
+      <g:sale_price>3600.00 BDT</g:sale_price>
+      <g:condition>new</g:condition>
+      <g:brand>HitsCam</g:brand>
+      <g:product_type>স্মার্টফোন</g:product_type>
+    </item>
+  </channel>
+</rss>

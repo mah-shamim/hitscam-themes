@@ -565,3 +565,15 @@ main:focus{outline:none}
 .spin-ui{position:absolute;left:0;right:0;bottom:0;padding:.6rem 1rem;background:linear-gradient(transparent,rgba(0,0,0,.45));color:#fff;display:flex;flex-direction:column;gap:.3rem;font-size:.8rem}
 .spin-ui input{width:100%;accent-color:var(--brand)}
 .cmp-table.diff-only .cmp-same{display:none}
+
+/* ---- v1.9.3: ব্লগ/গাইড, কনসেন্ট ---- */
+.post-card{display:flex;flex-direction:column;height:100%;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;color:var(--ink);text-decoration:none;transition:box-shadow .2s,transform .2s}
+.post-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-2px);color:var(--ink)}
+.post-card img{width:100%;aspect-ratio:1200/630;object-fit:cover;background:var(--bg)}.post-card .pc-body{padding:1rem 1.1rem}
+.article-hero{width:100%;border-radius:16px;margin:.5rem 0 1.2rem;aspect-ratio:1200/630;object-fit:cover;background:var(--bg)}
+.article-body{font-size:1.05rem;line-height:1.85}.article-body h2{font-size:1.3rem;font-weight:700;margin:1.6rem 0 .6rem}
+.article-body a{color:var(--brand)}.article-body table{margin:1rem 0}
+[data-theme=dark] .post-card{background:var(--card)}
+.consent-bar{position:fixed;left:0;right:0;bottom:0;z-index:1080;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -6px 24px rgba(0,0,0,.12);padding:.8rem 1rem}
+.consent-bar .in{max-width:1100px;margin:0 auto;display:flex;gap:.8rem 1.2rem;align-items:center;flex-wrap:wrap;justify-content:space-between;font-size:.9rem}
+@media (max-width:991.98px){.consent-bar{bottom:0;padding-bottom:calc(.8rem + env(safe-area-inset-bottom))}}

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23e03131'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23fff'/%3E%3C/svg%3E">
+<title>গাইড – HitsCam</title>
+<meta name="description" content="HitsCam গাইড">
+<meta name="theme-color" content="#e03131">
+<meta property="og:site_name" content="HitsCam"><meta property="og:locale" content="bn_BD"><meta property="og:type" content="website">
+<meta property="og:title" content="গাইড – HitsCam"><meta property="og:description" content="HitsCam গাইড"><meta property="og:image" content="assets/icons/icon-512.png">
+<meta name="twitter:card" content="summary"><meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main class="container" style="max-width:860px">
+  <div class="breadcrumb-bar"><a href="index.html">Home</a> / <a href="blog.html">গাইড ও টিপস</a> / <span id="gCrumb"></span></div>
+  <article class="article" id="gArticle"></article>
+  <section class="mb-4" id="gFaqWrap" style="display:none"><h2 class="h4 fw-bold mb-3">সচরাচর জিজ্ঞাসা</h2><div class="accordion" id="gFaq"></div></section>
+  <section class="mb-5" id="gRelWrap" style="display:none"><h2 class="h4 fw-bold mb-3">সংশ্লিষ্ট পণ্য</h2><div class="row g-3" id="gRel"></div></section>
+</main>
+<div id="site-footer"></div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/posts.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/extras.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/analytics.js"></script>
+<script>
+$(function () {
+  const slug = new URLSearchParams(location.search).get('slug'), p = HC_POSTS.find(x => x.slug === slug);
+  if (!p) { $('#gArticle').html('<div class="text-center py-5"><h1 class="h3">গাইডটি পাওয়া যায়নি</h1><a class="btn btn-brand mt-3" href="blog.html">সব গাইড দেখুন</a></div>'); return; }
+  const fmt = d => new Date(d).toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.title = p.title + ' – HitsCam';
+  const setMeta = (sel, v) => $(sel).attr('content', v);
+  setMeta('meta[name=description]', p.excerpt); setMeta('meta[property="og:title"]', p.title); setMeta('meta[property="og:description"]', p.excerpt);
+  if (!$('meta[property="og:image"]').length) $('head').append('<meta property="og:image" content="' + p.img + '">'); $('meta[property="og:type"]').attr('content', 'article');
+  $('#gCrumb').text(p.title);
+  $('#gArticle').html(`<span class="badge bg-dark mb-2">${p.cat}</span><h1 class="fw-bold h2">${p.title}</h1>
+    <p class="text-muted"><i class="bi bi-calendar3"></i> ${fmt(p.date)} · <i class="bi bi-clock"></i> ${p.mins} মিনিট পড়া</p>
+    <img class="article-hero" src="${p.img}" alt="${p.title}"><div class="article-body">${p.body}</div>`);
+  if (p.faq && p.faq.length) {
+    $('#gFaqWrap').show();
+    $('#gFaq').html(p.faq.map((f, i) => `<div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button ${i ? 'collapsed' : ''}" data-bs-toggle="collapse" data-bs-target="#gf${i}">${f.q}</button></h3><div id="gf${i}" class="accordion-collapse collapse ${i ? '' : 'show'}" data-bs-parent="#gFaq"><div class="accordion-body">${f.a}</div></div></div>`).join(''));
+  }
+  const rel = (p.related || []).map(HC.find).filter(Boolean);
+  if (rel.length) { $('#gRelWrap').show(); $('#gRel').html(rel.map(x => `<div class="col-12 col-sm-6 col-lg-4">${HC.card(x)}</div>`).join('')); }
+  // স্ট্রাকচার্ড ডাটা: Article + BreadcrumbList + FAQPage
+  const graph = [
+    { '@type': 'Article', headline: p.title, description: p.excerpt, image: p.img, datePublished: p.date, dateModified: p.date, author: { '@type': 'Organization', name: 'HitsCam' }, publisher: { '@type': 'Organization', name: 'HitsCam' }, mainEntityOfPage: location.href },
+    { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: new URL('index.html', location.href).href }, { '@type': 'ListItem', position: 2, name: 'গাইড ও টিপস', item: new URL('blog.html', location.href).href }, { '@type': 'ListItem', position: 3, name: p.title }] }
+  ];
+  if (p.faq && p.faq.length) graph.push({ '@type': 'FAQPage', mainEntity: p.faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
+  const s = document.createElement('script'); s.type = 'application/ld+json'; s.text = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }); document.head.appendChild(s);
+});
+</script>
+</body>
+</html>

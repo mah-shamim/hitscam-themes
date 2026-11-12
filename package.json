@@ -9,7 +9,8 @@
     "test": "playwright test",
     "test:desktop": "playwright test --project=chromium --project=firefox --project=webkit",
     "test:mobile": "playwright test --project=pixel-7 --project=iphone-14 --project=iphone-se",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "feed": "node tools/merchant-feed.js"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
