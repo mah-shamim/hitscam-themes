@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23e03131'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23fff'/%3E%3C/svg%3E">
+<title>রিটার্ন ও রিপেয়ার অনুরোধ – HitsCam</title>
+<meta name="description" content="ডেলিভারির ৭ দিনের মধ্যে রিটার্ন বা রিপ্লেসমেন্ট এবং ওয়ারেন্টির মধ্যে রিপেয়ার — ছবিসহ অনুরোধ করুন ও অবস্থা ট্র্যাক করুন।">
+<meta name="theme-color" content="#e03131">
+<meta property="og:site_name" content="HitsCam"><meta property="og:locale" content="bn_BD"><meta property="og:type" content="website">
+<meta property="og:title" content="রিটার্ন ও রিপেয়ার অনুরোধ – HitsCam"><meta property="og:description" content="ডেলিভারির ৭ দিনের মধ্যে রিটার্ন বা রিপ্লেসমেন্ট এবং ওয়ারেন্টির মধ্যে রিপেয়ার — ছবিসহ অনুরোধ করুন ও অবস্থা ট্র্যাক করুন।"><meta property="og:image" content="assets/icons/icon-512.png">
+<meta name="twitter:card" content="summary"><meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>.accordion-button:not(.collapsed){background:var(--brand-soft);color:var(--brand);box-shadow:none}.accordion-button:focus{box-shadow:0 0 0 .2rem rgba(224,49,49,.15)}</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main class="container pb-5">
+  <div class="breadcrumb-bar"><a href="index.html">Home</a> / রিটার্ন ও রিপেয়ার</div>
+  <h1 class="page-title mb-2">রিটার্ন ও রিপেয়ার অনুরোধ</h1>
+  <p class="text-muted">ডেলিভারির ৭ দিনের মধ্যে রিটার্ন/রিপ্লেসমেন্ট; ওয়ারেন্টির মধ্যে রিপেয়ার। <a href="returns.html">নীতিমালা দেখুন</a></p>
+  <div data-rma-page class="row g-4">
+    <div class="col-lg-6"><div class="panel"><h2 class="h5 fw-bold mb-3">নতুন অনুরোধ</h2>
+      <form id="rmaForm" novalidate>
+        <div class="mb-2"><label class="form-label small" for="rmaOrder">অর্ডার *</label><select class="form-select" name="order" id="rmaOrder"></select></div>
+        <div class="mb-2"><label class="form-label small" for="rmaProd">পণ্য *</label><select class="form-select" name="prod" id="rmaProd"></select></div>
+        <div class="mb-2"><label class="form-label small" for="rmaPhone">ফোন *</label><input class="form-control" name="phone" id="rmaPhone" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX"></div>
+        <div class="mb-2"><div class="form-label small">ধরন *</div>
+          <label class="pay-opt"><input type="radio" class="form-check-input" name="type" value="রিটার্ন" checked><span>রিটার্ন (ফেরত)</span></label>
+          <label class="pay-opt"><input type="radio" class="form-check-input" name="type" value="রিপ্লেসমেন্ট"><span>রিপ্লেসমেন্ট (বদল)</span></label>
+          <label class="pay-opt"><input type="radio" class="form-check-input" name="type" value="রিপেয়ার"><span>রিপেয়ার / ওয়ারেন্টি সার্ভিস</span></label></div>
+        <div class="mb-2"><label class="form-label small" for="rmaReason">কারণ *</label><select class="form-select" name="reason" id="rmaReason"><option>ড্যামেজড / ভাঙা এসেছে</option><option>চালু হচ্ছে না / কাজ করছে না</option><option>ভুল পণ্য এসেছে</option><option>বিবরণের সাথে মেলেনি</option><option>অন্য কারণ</option></select></div>
+        <div class="mb-2"><label class="form-label small" for="rmaDesc">সমস্যার বিবরণ * <small class="text-muted">(কমপক্ষে ১০ অক্ষর)</small></label><textarea class="form-control" name="desc" id="rmaDesc" rows="3"></textarea></div>
+        <div class="mb-2"><label class="form-label small" for="rmaPhotos">ছবি (সর্বোচ্চ ৩টি, JPG/PNG)</label><input class="form-control" type="file" id="rmaPhotos" accept="image/jpeg,image/png,image/webp" multiple><div id="rmaThumbs" class="mt-2"></div></div>
+        <div class="small text-danger mb-2" id="rmaMsg" role="alert"></div>
+        <button class="btn btn-brand w-100" type="submit">অনুরোধ জমা দিন</button>
+      </form></div></div>
+    <div class="col-lg-6">
+      <div class="panel mb-3"><h2 class="h6 fw-bold mb-2">অনুরোধ খুঁজুন</h2>
+        <form id="rmaFind" class="row g-2"><div class="col-6"><input class="form-control form-control-sm" name="rid" placeholder="RMA-12345" aria-label="RMA নম্বর"></div><div class="col-6"><input class="form-control form-control-sm" name="rphone" placeholder="ফোন" inputmode="tel" aria-label="ফোন"></div><div class="col-12"><button class="btn btn-soft btn-sm" type="submit">খুঁজুন</button></div></form><div id="rmaFound" class="mt-2"></div></div>
+      <h2 class="h6 fw-bold mb-2">আমার অনুরোধ</h2><div id="rmaList"></div>
+      <div class="small text-muted">ডেমো: ধাপগুলো এই ব্রাউজারে "পরের ধাপে যান" বাটনে এগোয়; আসল সাইটে অ্যাডমিন আপডেট করবে।</div>
+    </div>
+  </div>
+</main>
+<div id="site-footer"></div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/extras.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/analytics.js"></script>
+<script src="assets/js/pro.js"></script>
+<script src="assets/js/services.js"></script>
+<script src="assets/js/support.js"></script>
+</body>
+</html>

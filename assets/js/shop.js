@@ -46,21 +46,35 @@
       $('#fCmpCount').text(HC.cmp().length);
     }
     $(document).on('input', '#fMinR', () => syncRange('min')).on('input', '#fMaxR', () => syncRange('max')).on('input change', '#fMin, #fMax', () => syncRange('num')).on('input', '#fRate', () => syncRange('rate')).on('cmpchange', () => syncRange('rate'));
+    // সংরক্ষিত ফিল্টার: শেষ ব্যবহৃত ফিল্টার পরের ভিজিটে ফিরে আসে (URL এ q/cat থাকলে নয়)
+    const FKEY = 'hc_filters_' + (fixedCat || 'shop');
+    const curF = () => ({ cats: fixedCat ? [] : $('.f-cat:checked').map((_, e) => e.value).get(), types: $('.f-type:checked').map((_, e) => e.value).get(), min: +$('#fMinR').val(), max: +$('#fMaxR').val(), rate: +$('#fRate').val() });
+    const isDefault = f => !f.cats.length && !f.types.length && f.min <= PMIN && f.max >= PMAX && !f.rate;
+    function saveFilters() { if (!$('#fMinR').length) return; const f = curF(); HC.store.set(FKEY, isDefault(f) ? null : f); }
     function apply() {
       const cats = fixedCat ? [fixedCat] : $('.f-cat:checked').map((_, e) => e.value).get();
       const types = $('.f-type:checked').map((_, e) => e.value).get();
       const min = +$('#fMinR').val(), max = +$('#fMaxR').val(), rate = +$('#fRate').val(), q = $.trim($('#fQ').val()).toLowerCase();
       let list = D.products.filter(p => {
         const price = HC.minPrice(p).sale;
-        return (!cats.length || cats.includes(p.cat)) && (!types.length || types.includes(p.type)) && price >= min && price <= max && p.rating >= rate && (!q || p.name.toLowerCase().includes(q));
+        return (!cats.length || cats.includes(p.cat)) && (!types.length || types.includes(p.type)) && price >= min && price <= max && p.rating >= rate && (!q || (HC.searchMatch ? HC.searchMatch(p, q) : p.name.toLowerCase().includes(q)));
       });
       const s = $('#sortBy').val();
       list.sort((a, b) => s === 'low' ? HC.minPrice(a).sale - HC.minPrice(b).sale : s === 'high' ? HC.minPrice(b).sale - HC.minPrice(a).sale : s === 'rating' ? b.rating - a.rating : b.reviews - a.reviews);
+      saveFilters();
       $('#resultCount').text(list.length + 'টি পণ্য পাওয়া গেছে');
       HC.grid('#productList', list, 'col-12 col-sm-6 col-md-4');
     }
     $(document).on('change input', '#filters input, #filters select, #sortBy', apply);
     $('#fReset').on('click', function () { $('#filters input[type=checkbox]').prop('checked', false); $('#fQ').val(''); $('#fMinR, #fMin').val(PMIN); $('#fMaxR, #fMax').val(PMAX); $('#fRate').val(0); syncRange('rate'); apply(); });
+    const saved = !q0 && !qs.get('cat') && HC.store.get(FKEY, null);
+    if (saved && !isDefault(saved)) {
+      $('.f-cat').each(function () { this.checked = (saved.cats || []).indexOf(this.value) > -1; });
+      $('.f-type').each(function () { this.checked = (saved.types || []).indexOf(this.value) > -1; });
+      $('#fMinR, #fMin').val(Math.max(PMIN, saved.min)); $('#fMaxR, #fMax').val(Math.min(PMAX, saved.max)); $('#fRate').val(saved.rate || 0);
+      $('#productList').before('<div class="alert alert-info py-1 px-3 small d-flex justify-content-between align-items-center mb-3" id="filtersRestored" role="status"><span>আগের ফিল্টার ফিরিয়ে আনা হয়েছে</span><button type="button" class="btn btn-link btn-sm p-0" id="filtersRestoredClear">মুছুন</button></div>');
+    }
+    $(document).on('click', '#filtersRestoredClear', function () { $('#filtersRestored').remove(); HC.store.set(FKEY, null); $('#fReset').trigger('click'); });
     syncRange('rate'); apply();
   };
 })(jQuery);

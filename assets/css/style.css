@@ -603,3 +603,17 @@ main:focus{outline:none}
 [data-theme=dark] .compat-res.bad{background:#2a0a0a;color:#fca5a5;border-color:#7f1d1d}
 .post-upsell{border:2px solid var(--brand);background:linear-gradient(135deg,rgba(224,49,49,.06),transparent)}
 .ref-card{border-style:dashed}
+
+/* v1.10.1 — সাপোর্ট ও ডিসকভারি */
+.chip-btn,.chip-link{display:inline-flex;align-items:center;gap:.25rem;border:1px solid var(--line);background:var(--card);color:inherit;border-radius:999px;padding:.3rem .8rem;font-size:.85rem;text-decoration:none;cursor:pointer;margin:0 .3rem .3rem 0}
+.chip-btn.on,.chip-btn:hover:not([disabled]),.chip-link:hover{background:var(--brand);border-color:var(--brand);color:#fff}
+.chip-btn[disabled]{opacity:.5;cursor:not-allowed}
+.sugg-pop{padding:.6rem .8rem}.sugg-hint{display:block}
+.ss-form[hidden]{display:none}
+.pickup-opt{margin-top:.4rem}.pickup-sel{padding:.3rem 0 .3rem 1.7rem}.pickup-sel[hidden]{display:none}
+.store-card .badge{height:fit-content}
+.rma-line{list-style:none;display:flex;gap:.25rem;padding:0;margin:0;overflow-x:auto}
+.rma-line li{flex:1;min-width:64px;text-align:center;font-size:.72rem;position:relative}
+.rma-line .dot{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--line);align-items:center;justify-content:center;font-weight:700;margin-bottom:.2rem}
+.rma-line li.done .dot{background:#16a34a;color:#fff}.rma-line li.current .dot{background:var(--brand);color:#fff}
+.rma-line .lbl{display:block;line-height:1.2}

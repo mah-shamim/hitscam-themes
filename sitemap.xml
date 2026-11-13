@@ -4,6 +4,9 @@
   <url><loc>https://example.com/shop.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://example.com/contact.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://example.com/faq.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://example.com/help.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://example.com/rma.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://example.com/stores.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://example.com/terms.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://example.com/returns.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://example.com/shipping.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
