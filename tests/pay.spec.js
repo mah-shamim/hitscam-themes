@@ -1,6 +1,7 @@
 // v1.9.1 — COD অগ্রিম, অনলাইন পেমেন্ট ডেমো, ভুয়া-অর্ডার গার্ড, কুরিয়ার ট্র্যাকিং, OTP লগইন, বাংলা/ইংরেজি
 const { test, expect } = require('@playwright/test');
 const { prepare } = require('./helpers');
+// ৩২০px এ স্টিকি হেডার + মোবাইল ডক রেডিও ঢেকে দেয়, তাই পেমেন্ট রেডিও .evaluate(e => e.click()) দিয়ে বাছা হয় (change ইভেন্ট ঠিকই চলে)
 test.beforeEach(async ({ page }, ti) => { ti.problems = await prepare(page); });
 test.afterEach(async ({}, ti) => { expect(ti.problems, 'কনসোল/নেটওয়ার্ক সমস্যা').toEqual([]); });
 
@@ -19,7 +20,7 @@ test('COD অগ্রিম: ফিল্ড/হিন্ট আসে, TrxID �
   await seed(cart(3000))(page);
   await page.goto('/checkout.html');
   await fill(page);
-  await page.locator('[name=pay][value="COD + অগ্রিম"]').check();
+  await page.locator('[name=pay][value="COD + অগ্রিম"]').evaluate(e => e.click());
   await expect(page.locator('#payExtra')).toBeVisible();
   await expect(page.locator('#advMethod')).toBeVisible();
   await expect(page.locator('#payHint')).toContainText('অগ্রিম');
@@ -39,14 +40,14 @@ test('COD অগ্রিম: ফিল্ড/হিন্ট আসে, TrxID �
 test('অনলাইন পেমেন্ট: গেটওয়ে ডেমোতে যায়; সফলে কনফার্ম, ব্যর্থে চেকআউটে ফেরে ও কার্ট থাকে', async ({ page }) => {
   await seed(cart(3000))(page);
   await page.goto('/checkout.html'); await fill(page);
-  await page.locator('[name=pay][value="অনলাইন পেমেন্ট"]').check();
+  await page.locator('[name=pay][value="অনলাইন পেমেন্ট"]').evaluate(e => e.click());
   await submit(page);
   await page.waitForURL(/pay-demo\.html/);
   await expect(page.locator('#pgAmt')).toContainText('3,070');
   await page.locator('#pgFail').click();
   await page.waitForURL(/checkout\.html\?payfail=1/);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('hc_cart')).length)).toBe(1);
-  await fill(page); await page.locator('[name=pay][value="অনলাইন পেমেন্ট"]').check(); await submit(page);
+  await fill(page); await page.locator('[name=pay][value="অনলাইন পেমেন্ট"]').evaluate(e => e.click()); await submit(page);
   await page.waitForURL(/pay-demo/); await page.locator('#pgOk').click();
   await page.waitForURL(/order-received/);
   const o = await page.evaluate(() => JSON.parse(localStorage.getItem('hc_last_order')));
@@ -60,12 +61,12 @@ test('ভুয়া-অর্ডার গার্ড: ৳১০,০০০+ �
   await expect(page.locator('#codGuard')).toBeVisible();
   await expect(page.locator('#codGuard')).toContainText('অগ্রিম');
   await submit(page); await expect(page).toHaveURL(/checkout/);
-  await page.locator('[name=pay][value="COD + অগ্রিম"]').check();
+  await page.locator('[name=pay][value="COD + অগ্রিম"]').evaluate(e => e.click());
   await expect(page.locator('#codGuard')).toBeHidden();
   // ফোন-সীমা
   const mk = i => ({ id: 600 + i, date: new Date().toISOString(), phone: '01712345678', items: [], totals: { total: 100 } });
   await page.evaluate(m => localStorage.setItem('hc_orders', JSON.stringify(m)), [mk(1), mk(2), mk(3)]);
-  await page.locator('[name=pay][value="ক্যাশ অন ডেলিভারি"]').check();
+  await page.locator('[name=pay][value="ক্যাশ অন ডেলিভারি"]').evaluate(e => e.click());
   await page.evaluate(() => localStorage.setItem('hc_cart', JSON.stringify([{ key: '5|0', id: 5, name: 'Y', label: '', img: '', regular: 900, sale: 800, qty: 1 }])));
   await page.reload(); await fill(page); await submit(page);
   await expect(page.locator('#codGuard')).toContainText('২৪ ঘণ্টায়');

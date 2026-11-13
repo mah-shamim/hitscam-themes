@@ -9,6 +9,7 @@ const withCfg = page => page.addInitScript(c => { window.HC_ANALYTICS = c; }, cf
 
 test('গাইড তালিকা → পোস্ট: Article + BreadcrumbList + FAQPage JSON-LD, FAQ ও সংশ্লিষ্ট পণ্য', async ({ page }) => {
   await page.goto('/blog.html');
+  await expect(page.locator('#postList .post-card').first()).toBeVisible();      // তালিকা JS দিয়ে বসে; WebKit এ দেরি হতে পারে
   expect(await page.locator('#postList .post-card').count()).toBeGreaterThanOrEqual(4);
   await page.locator('#postList .post-card').first().dispatchEvent('click');
   await expect(page).toHaveURL(/guide\.html\?slug=/);
