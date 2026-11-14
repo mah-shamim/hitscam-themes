@@ -639,3 +639,10 @@ main:focus{outline:none}
 .pc-group label.na b{color:#475569}
 .pay-opt:has(input:checked) .text-muted,.ship-opt:has(input:checked) .text-muted{color:#475569!important}
 .accordion-button:not(.collapsed){color:#7a1818!important}
+
+/* v1.10.3 — iPhone SE (WebKit) এ rma.html অনুভূমিক স্ক্রল: ফাইল-ইনপুটের ভেতরের টেক্সট বাইরে উপচে পড়ত */
+input[type=file]{display:block;width:100%;max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis}
+input[type=file]::file-selector-button{max-width:50%}
+.panel{min-width:0}
+.form-select,.form-control{max-width:100%;min-width:0}
+.pay-opt span,.ship-opt span{min-width:0;overflow-wrap:anywhere}

@@ -3,7 +3,7 @@
    - একই ডোমেইনের CSS/JS/ছবি/ফন্ট: stale-while-revalidate
    - অন্য ডোমেইন (CDN ইত্যাদি) ছোঁয়া হয় না
    ক্যাশ ভার্সন বদলালে (VERSION) পুরোনো ক্যাশ মুছে যায়। */
-const VERSION = 'hc-v1.10.2';
+const VERSION = 'hc-v1.10.3';
 const CORE = ['index.html', 'shop.html', 'cart.html', 'checkout.html', '404.html', 'assets/css/style.css', 'assets/js/app.js', 'assets/js/data.js', 'assets/js/extras.js', 'assets/js/i18n.js', 'assets/js/analytics.js', 'assets/js/pro.js', 'assets/js/services.js', 'assets/js/support.js', 'assets/js/ops.js', 'assets/js/posts.js', 'assets/icons/icon.svg', 'manifest.webmanifest'];
 
 self.addEventListener('install', e => {

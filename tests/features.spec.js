@@ -187,6 +187,7 @@ test.describe('রিডিউসড মোশন', () => {
   test('রিডিউসড-মোশনে ব্লিংক বন্ধ', async ({ page }) => {
     await page.addInitScript(cart3);
     await page.goto('/cart.html');
+    await page.waitForSelector('.free-ship', { state: 'attached' });   // WebKit/iPad এ কার্ট রেন্ডার একটু দেরিতে হয়
     expect(await page.evaluate(() => getComputedStyle(document.querySelector('.free-ship')).animationName)).toBe('none');
   });
 });
