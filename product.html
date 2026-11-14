@@ -135,7 +135,7 @@
       <form id="reviewForm">
         <div class="mb-2"><label class="form-label d-block">আপনার রেটিং *</label>
           <div class="rating-input"><input type="radio" name="rate" id="r5" value="5"><label for="r5">★</label><input type="radio" name="rate" id="r4" value="4"><label for="r4">★</label><input type="radio" name="rate" id="r3" value="3"><label for="r3">★</label><input type="radio" name="rate" id="r2" value="2"><label for="r2">★</label><input type="radio" name="rate" id="r1" value="1"><label for="r1">★</label></div></div>
-        <div class="mb-3"><label class="form-label">আপনার রিভিউ *</label><textarea class="form-control" name="text" rows="4" required></textarea></div>
+        <div class="mb-3"><label class="form-label" for="rvText">আপনার রিভিউ *</label><textarea id="rvText" class="form-control" name="text" rows="4" required></textarea></div>
         <div class="row g-2 mb-3"><div class="col-md-6"><input class="form-control" name="name" placeholder="নাম *" required></div><div class="col-md-6"><input class="form-control" type="email" name="email" placeholder="ই-মেইল (ঐচ্ছিক)"></div></div>
         <div class="mb-3"><label class="form-label" for="rvPhotos">ছবি যোগ করুন (ঐচ্ছিক, সর্বোচ্চ ২টি)</label><input class="form-control" type="file" id="rvPhotos" accept="image/*" multiple><div class="rv-prev" id="rvPrev"></div></div>
         <button class="btn btn-brand">রিভিউ জমা দিন</button></form></div></div>
@@ -173,6 +173,7 @@
 <script src="assets/js/pro.js"></script>
 <script src="assets/js/services.js"></script>
 <script src="assets/js/support.js"></script>
+<script src="assets/js/ops.js"></script>
 <script>
 $(function () {
   const id = +(new URLSearchParams(location.search).get('id')) || 1;

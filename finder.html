@@ -37,6 +37,7 @@
 <script src="assets/js/pro.js"></script>
 <script src="assets/js/services.js"></script>
 <script src="assets/js/support.js"></script>
+<script src="assets/js/ops.js"></script>
 <script>
 $(function () {
   const B = HC.BDT;
@@ -52,13 +53,13 @@ $(function () {
   function draw() {
     $('#fndRes').empty();
     const q = Q[step];
-    $('#fnd').html(`<div class="fnd-prog mb-3" role="progressbar" aria-valuemin="0" aria-valuemax="${Q.length}" aria-valuenow="${step}"><i style="width:${step / Q.length * 100}%"></i></div>
+    $('#fnd').html(`<div class="fnd-prog mb-3" role="progressbar" aria-label="অগ্রগতি" aria-valuemin="0" aria-valuemax="${Q.length}" aria-valuenow="${step}"><i style="width:${step / Q.length * 100}%"></i></div>
       <div class="small text-muted mb-1">প্রশ্ন ${step + 1} / ${Q.length}</div><h2 class="h4 fw-bold mb-3">${q.t}</h2>
       <div class="fnd-opts">${q.o.map(o => `<button type="button" class="fnd-opt" data-v="${o[0]}"><i class="bi ${o[1]}"></i>${o[2]}<small>${o[3]}</small></button>`).join('')}</div>
       ${step ? '<button type="button" class="btn btn-link text-brand mt-3 p-0" id="fndBack"><i class="bi bi-arrow-left"></i> পিছনে</button>' : ''}`);
   }
   function result() {
-    $('#fnd').html(`<div class="fnd-prog mb-3"><i style="width:100%"></i></div><h2 class="h4 fw-bold mb-2">আপনার জন্য সেরা মিল</h2>
+    $('#fnd').html(`<div class="fnd-prog mb-3" role="progressbar" aria-label="অগ্রগতি" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i style="width:100%"></i></div><h2 class="h4 fw-bold mb-2">আপনার জন্য সেরা মিল</h2>
       <p class="text-muted small mb-2">${LBL.place[ans.place]} · ${LBL.power[ans.power]} · ${LBL.net[ans.net]} · বাজেট: ${Q[3].o.find(o => o[0] === ans.budget)[2]}</p>
       <button type="button" class="btn btn-soft btn-sm" id="fndAgain"><i class="bi bi-arrow-repeat"></i> আবার শুরু করুন</button>`);
     const rows = HC.D.products.filter(p => p.fit).map(p => {

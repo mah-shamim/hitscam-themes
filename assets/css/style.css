@@ -617,3 +617,25 @@ main:focus{outline:none}
 .rma-line .dot{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--line);align-items:center;justify-content:center;font-weight:700;margin-bottom:.2rem}
 .rma-line li.done .dot{background:#16a34a;color:#fff}.rma-line li.current .dot{background:var(--brand);color:#fff}
 .rma-line .lbl{display:block;line-height:1.2}
+
+/* v1.10.2 — বাল্ক/ডিলার ও অ্যাডমিন টুলস */
+.bulk-box{margin:.4rem 0 .8rem;font-size:.9rem;display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.bulk-chip{border:1px dashed var(--brand);border-radius:999px;padding:.1rem .6rem;font-size:.82rem}
+.bulk-note{margin:0 0 1rem;padding:.6rem .9rem;border-radius:12px;background:rgba(224,49,49,.07);font-size:.88rem}
+.bulk-note:empty{display:none}
+
+/* v1.10.2 — axe (WCAG AA) রঙের কনট্রাস্ট ও লিংক সংশোধন */
+:root{--green:#15803d}
+.pc-sold{color:#166534;background:#dcf5e5}
+.stock.low{color:#b43e0b}
+.btn-wa{background:#0f7a40;border-color:#0f7a40}.btn-wa:hover,.btn-wa:focus{background:#0c6a37;border-color:#0c6a37}
+.btn-wa-outline{color:#0f6a38;border-color:#0f7a40}.btn-wa-outline:hover{background:#0f7a40;color:#fff}
+.pc-group label.na{opacity:1;color:#475569;border-style:dashed}.pc-group label.na .attr-price{color:#475569}
+.wal-item.dis{opacity:1;color:#475569}.wal-item.dis .small,.wal-item.dis .text-muted{color:#475569!important}
+.text-muted{color:var(--muted)!important}
+.text-center .text-brand,p .text-brand,.small .text-brand{text-decoration:underline}
+.accordion-button:not(.collapsed){color:#7a1818;background:var(--brand-soft)}
+.pc-group label b,.pc-group .attr-price{color:var(--brand-dark)}
+.pc-group label.na b{color:#475569}
+.pay-opt:has(input:checked) .text-muted,.ship-opt:has(input:checked) .text-muted{color:#475569!important}
+.accordion-button:not(.collapsed){color:#7a1818!important}

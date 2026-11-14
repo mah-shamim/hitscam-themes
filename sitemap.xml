@@ -7,6 +7,7 @@
   <url><loc>https://example.com/help.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://example.com/rma.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://example.com/stores.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://example.com/dealer.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://example.com/terms.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://example.com/returns.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://example.com/shipping.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>

@@ -289,7 +289,7 @@
     <div class="mb-3"><label class="form-label">বাসা / রোড / এলাকা *</label><input class="form-control" name="road" required autocomplete="address-line1" placeholder="বাসা নং, রোড/গ্রাম, এলাকা"><div class="invalid-feedback">বাসা/রোড/এলাকা লিখুন</div></div>
     <div class="row g-3 mb-3">
       <div class="col-md-6"><label class="form-label">থানা / উপজেলা *</label><input class="form-control" name="thana" required autocomplete="address-level2" placeholder="যেমন: মিরপুর / সাভার"><div class="invalid-feedback">থানা/উপজেলা লিখুন</div></div>
-      <div class="col-md-6"><label class="form-label">জেলা *</label><select class="form-select" name="district" required autocomplete="address-level1"><option value="">জেলা বেছে নিন</option>${HC.DISTRICTS.map(d => `<option value="${d}">${d}</option>`).join('')}</select><div class="invalid-feedback">জেলা বেছে নিন</div></div>
+      <div class="col-md-6"><label class="form-label" for="coDistrict">জেলা *</label><select id="coDistrict" class="form-select" name="district" required autocomplete="address-level1"><option value="">জেলা বেছে নিন</option>${HC.DISTRICTS.map(d => `<option value="${d}">${d}</option>`).join('')}</select><div class="invalid-feedback">জেলা বেছে নিন</div></div>
       <div class="col-12 form-text mt-1">ঢাকা জেলা বাছলে শিপিং ৳70, অন্য জেলায় ৳130 (৳${FREE_SHIP.toLocaleString('en-IN')}+ অর্ডারে ফ্রি)।</div>
     </div>
     <div class="row g-3 mb-3">
@@ -426,7 +426,7 @@
         <p>সিসিটিভি, আইপি ক্যামেরা ও স্মার্ট গ্যাজেটের বিশ্বস্ত অনলাইন শপ। অরিজিনাল পণ্য, দ্রুত ডেলিভারি, বিক্রয়োত্তর সাপোর্ট।</p>
         <p class="mb-0"><i class="bi bi-telephone"></i> +880 1614-747054<br><i class="bi bi-envelope"></i> support@hitscam.com</p></div>
       <div class="col-6 col-lg-2"><h6>কোম্পানি</h6><a href="index.html">হোম</a><a href="shop.html">শপ</a><a href="contact.html">যোগাযোগ</a><a href="faq.html">FAQ</a><a href="blog.html">গাইড ও টিপস</a><a href="finder.html">ক্যামেরা বাছাই</a><a href="bundles.html">বান্ডেল অফার</a><a href="warranty.html">ওয়ারেন্টি চেক</a><a href="compare.html">পণ্য তুলনা</a></div>
-      <div class="col-6 col-lg-3"><h6>পলিসি</h6><a href="terms.html">শর্তাবলী</a><a href="returns.html">রিটার্ন, রিফান্ড ও ওয়ারেন্টি</a><a href="shipping.html">শিপিং তথ্য</a><a href="track-order.html">অর্ডার ট্র্যাক</a><a href="help.html">হেল্প সেন্টার</a><a href="rma.html">রিটার্ন / রিপেয়ার</a><a href="stores.html">স্টোর</a></div>
+      <div class="col-6 col-lg-3"><h6>পলিসি</h6><a href="terms.html">শর্তাবলী</a><a href="returns.html">রিটার্ন, রিফান্ড ও ওয়ারেন্টি</a><a href="shipping.html">শিপিং তথ্য</a><a href="track-order.html">অর্ডার ট্র্যাক</a><a href="help.html">হেল্প সেন্টার</a><a href="rma.html">রিটার্ন / রিপেয়ার</a><a href="stores.html">স্টোর</a><a href="dealer.html">ডিলার</a></div>
       <div class="col-lg-3"><h6>কম্পেটিবিলিটি</h6><a href="device-compatibility.html">ডিভাইস ও ব্রাউজার</a><a href="social-compatibility.html">সোশ্যাল মিডিয়া অ্যাপ ব্রাউজার</a><a href="minicart.html">মিনি কার্ট</a></div></div>
       <div class="footer-bottom d-flex justify-content-between flex-wrap gap-2"><span>© 2026 HitsCam. সর্বস্বত্ব সংরক্ষিত।</span><span>পেমেন্ট: ক্যাশ অন ডেলিভারি · বিকাশ · নগদ</span></div></div></footer>`;
   // মোবাইল ভিউতে নিচে ফিক্সড গোল আইকন মেনু (ডেস্কটপে CSS দিয়ে লুকানো)

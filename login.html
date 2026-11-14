@@ -40,8 +40,8 @@
           <div class="mb-3"><label class="form-label">ফোন নাম্বার বা ই-মেইল *</label>
             <input class="form-control form-control-lg" name="id" autocomplete="username" placeholder="01XXXXXXXXX বা you@example.com" required>
             <div class="invalid-feedback">সঠিক ফোন নাম্বার বা ই-মেইল দিন</div></div>
-          <div class="mb-2"><label class="form-label">পাসওয়ার্ড *</label>
-            <div class="input-group"><input class="form-control form-control-lg" type="password" name="pass" autocomplete="current-password" required minlength="6"><button class="btn btn-soft pw-toggle" type="button" aria-label="পাসওয়ার্ড দেখান"><i class="bi bi-eye"></i></button></div></div>
+          <div class="mb-2"><label class="form-label" for="pwIn">পাসওয়ার্ড *</label>
+            <div class="input-group"><input class="form-control form-control-lg" id="pwIn" type="password" name="pass" autocomplete="current-password" required minlength="6"><button class="btn btn-soft pw-toggle" type="button" aria-label="পাসওয়ার্ড দেখান"><i class="bi bi-eye"></i></button></div></div>
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="form-check"><input class="form-check-input" type="checkbox" id="remember" checked><label class="form-check-label" for="remember">মনে রাখুন</label></div>
             <a href="#" class="text-brand small" id="forgot">পাসওয়ার্ড ভুলে গেছেন?</a></div>
@@ -97,6 +97,7 @@
 <script src="assets/js/pro.js"></script>
 <script src="assets/js/services.js"></script>
 <script src="assets/js/support.js"></script>
+<script src="assets/js/ops.js"></script>
 <script>
 $(function () {
   const PHONE = /^(?:\+?88)?01[3-9]\d{8}$/, MAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

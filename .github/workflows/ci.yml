@@ -8,6 +8,10 @@ on:
     - cron: '0 3 * * 1'        # প্রতি সোমবার ০৩:০০ UTC (ঢাকা সকাল ৯টা) — CDN/ব্রাউজার আপডেটে কিছু ভাঙল কিনা ধরতে
   workflow_dispatch:
     inputs:
+      update_visual:
+        description: 'ভিজ্যুয়াল রিগ্রেশনের বেসলাইন স্ক্রিনশট নতুন করে বানান (ডিজাইন ইচ্ছাকৃত বদলালে)'
+        type: boolean
+        default: false
       live_cdn:
         description: 'আসল CDN (jsDelivr/cdnjs/jQuery) থেকে লাইব্রেরি লোড করে টেস্ট চালান'
         type: boolean
@@ -113,6 +117,56 @@ jobs:
           name: report-${{ matrix.os }}-${{ matrix.browser }}
           path: playwright-report/
           retention-days: 7
+
+  # ─────── ৩ক) Lighthouse বাজেট (পারফরম্যান্স/অ্যাক্সেসিবিলিটি/SEO) — গেটের বাইরে, ব্যর্থ হলে শুধু সতর্কতা ───
+  lighthouse:
+    name: Lighthouse budget (non-blocking)
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx --yes @lhci/cli@0.14.x autorun --config=lighthouserc.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: lighthouse
+          path: .lighthouseci/
+          retention-days: 14
+
+  # ─────── ৩খ) ভিজ্যুয়াল রিগ্রেশন (ম্যানুয়াল: Run workflow → update_visual দিয়ে বেসলাইন বানান/হালনাগাদ) ───
+  visual:
+    name: Visual regression (manual)
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Compare / update snapshots
+        run: npx playwright test tests/visual.spec.js --project=chromium --project=pixel-7 --project=ipad ${{ inputs.update_visual && '--update-snapshots' || '' }}
+        env:
+          VISUAL: '1'
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: visual-snapshots
+          path: |
+            tests/visual.spec.js-snapshots/
+            test-results/
+          retention-days: 14
 
   # ─────── ৪) একটি মাত্র "required check" (Branch protection এ এটাই দিন) ───────
   compat-gate:

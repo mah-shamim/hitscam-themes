@@ -10,9 +10,13 @@
     "test:desktop": "playwright test --project=chromium --project=firefox --project=webkit",
     "test:mobile": "playwright test --project=pixel-7 --project=iphone-14 --project=iphone-se",
     "report": "playwright show-report",
+    "test:a11y": "playwright test tests/a11y.spec.js --project=chromium",
+    "test:visual": "VISUAL=1 playwright test tests/visual.spec.js --project=chromium --project=pixel-7 --project=ipad",
+    "lhci": "npx @lhci/cli@0.14.x autorun --config=lighthouserc.json",
     "feed": "node tools/merchant-feed.js"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
     "@playwright/test": "1.63.0",
     "bootstrap": "5.3.3",
     "bootstrap-icons": "1.11.3",
