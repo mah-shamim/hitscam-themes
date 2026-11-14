@@ -31,7 +31,16 @@ for (const url of PAGES) {
         return r.width > 0 && r.right > vw + 1 && getComputedStyle(e).position !== 'fixed' &&
           !e.closest('.owl-carousel,.m-slider,.offcanvas,.modal,.nav,.table-responsive,.submenu,.buybar,.float-stack,.toast-wrap,.sugg,.mobile-dock');
       }).slice(0, 5).map(e => e.tagName.toLowerCase() + (e.className && e.className.baseVal === undefined ? '.' + String(e.className).trim().split(/\s+/).join('.') : ''));
-      return { sw: de.scrollWidth, vw, offenders };
+      // ফেইল হলে আরও গভীর ডায়াগনস্টিক: বাদ-দেওয়া কন্টেইনারসহ সব এলিমেন্ট + অভ্যন্তরীণ স্ক্রল-উপচানো (WebKit এর শ্যাডো-DOM ইত্যাদি)
+      if (de.scrollWidth > vw + 1) {
+        const nm = e => e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (typeof e.className === 'string' && e.className ? '.' + e.className.trim().split(/\s+/).join('.') : '');
+        [...document.querySelectorAll('body *')].forEach(e => {
+          const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+          if (r.width > 0 && r.right > vw + 1 && cs.position !== 'fixed') offenders.push('[wide] ' + nm(e) + ' right=' + Math.round(r.right));
+          else if (e.scrollWidth > e.clientWidth + 1 && cs.overflowX === 'visible' && e.clientWidth > 0) offenders.push('[inner] ' + nm(e) + ' sw=' + e.scrollWidth + ' cw=' + e.clientWidth);
+        });
+      }
+      return { sw: de.scrollWidth, vw, offenders: offenders.slice(0, 12) };
     });
     expect(ov.sw, `অনুভূমিক স্ক্রল (${ov.sw}px > ${ov.vw}px)। সম্ভাব্য কারণ: ${ov.offenders.join(' | ')}`).toBeLessThanOrEqual(ov.vw + 1);
 

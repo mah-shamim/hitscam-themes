@@ -646,3 +646,6 @@ input[type=file]::file-selector-button{max-width:50%}
 .panel{min-width:0}
 .form-select,.form-control{max-width:100%;min-width:0}
 .pay-opt span,.ship-opt span{min-width:0;overflow-wrap:anywhere}
+
+/* v1.10.4 — rma.html: WebKit (iPhone SE) এ ডকুমেন্ট ২৫px প্রশস্ত হচ্ছিল; কন্টেন্ট এলাকার বাইরের উপচানো কেটে দেওয়া */
+[data-rma-page]{overflow-x:clip}
